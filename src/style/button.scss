@@ -1,0 +1,61 @@
+@import './variables.scss';
+
+.button {
+    // font-weight: var(--mio-theme-v2-title-m-font-weight);
+    display: inline-flex;
+    position: relative;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 40px;
+    text-decoration: initial;
+    cursor: pointer;
+    vertical-align: middle;
+
+    &__elevated {
+        box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, .3), 0px 1px 3px 1px rgba(0, 0, 0, .15);
+        background: $color-on-primary;
+        color: $color-primary;
+    }
+
+    &__outlined {
+        background: $color-on-primary;
+        color: $color-primary;
+        border: 1px solid $color-primary;
+    }
+
+    &__filled {
+        color: $color-on-primary;
+        background: $color-primary;
+    }
+
+    &__tonal {
+        color: $color-on-secondary;
+        background: $color-secondary-container;
+    }
+}
+
+// wizard button
+.fw-btn {
+    color: $color-on-primary;
+    background: $color-primary;
+    // font-weight: var(--mio-theme-v2-title-m-font-weight);
+    display: inline-flex;
+    position: relative;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 40px;
+    text-decoration: initial;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.form-wizard .fw-step-active {
+    color: $color-on-primary !important;
+    background: $color-primary !important;
+}
