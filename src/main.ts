@@ -2,9 +2,9 @@ import { createApp } from "vue";
 import App from "./App.vue";
 
 // Global styles
-import "./style/button.scss";
-import "./style/popup.scss";
-import "./style/select.scss";
+// import "./style/button.scss";
+// import "./style/popup.scss";
+// import "./style/select.scss";
 
 // Vuetify
 import 'vuetify/styles'
@@ -17,4 +17,4 @@ const vuetify = createVuetify({
     directives,
 })
 
-createApp(App).mount("#app");
+createApp(App).use(vuetify).mount('#app');

@@ -1,7 +1,7 @@
 // @ts-ignore
 import DiagramLib from '../diagram'
-import {Coordinates} from "@/types/HelperTypes";
-import {GropiusShape, GropiusShapeStyle} from "@/lib/gropius-compatibility/types";
+import { Coordinates } from "@/types/HelperTypes";
+import { GropiusShape, GropiusShapeStyle } from "@/lib/gropius-compatibility/types";
 import GropiusDefaultTypes from "@/lib/gropius-compatibility/gropiusDefaultTypes";
 
 export default class GropiusCompatibility {
@@ -68,7 +68,7 @@ export default class GropiusCompatibility {
 
     public drawGropiusType(coordinates: Coordinates, grShape: GropiusShape) {
         let shape;
-        switch(grShape.grType) {
+        switch (grShape.grType) {
             case 'shape-gropius-component':
                 shape = {
                     x: coordinates.x,
@@ -124,9 +124,11 @@ export default class GropiusCompatibility {
             type: "diamond-custom",
             custom: {
                 label: "Test",
-                style: {fill: 'red', stroke: 'black', strokeWidth: 2, strokeDasharray: 2}
+                style: { fill: 'red', stroke: 'black', strokeWidth: 2, strokeDasharray: 2 }
             }
         });
+        console.log("shape1", shape1)
+        console.log("root", this.root)
 
         this.canvas.addShape(shape1, this.root);
     }
