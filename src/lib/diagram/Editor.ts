@@ -25,6 +25,10 @@ import RulesModule from 'diagram-js/lib/features/rules';
 import SelectionModule from 'diagram-js/lib/features/selection';
 // @ts-ignore
 import ZoomScrollModule from 'diagram-js/lib/navigation/zoomscroll';
+// @ts-ignore
+import Layouter from 'diagram-js/lib/layout';
+
+
 
 // @ts-ignore
 import ConnectionPreviewModule from "./features/connection-preview";
@@ -37,7 +41,6 @@ import ProvidersModule from './providers';
 
 // @ts-ignore
 import RendererModule from './draw'
-import Editor from "@/components/Editor.vue";
 
 /**
  * A module that changes the default diagram look.
@@ -61,10 +64,7 @@ const ElementStyleModule = {
  * @return {Diagram}
  */
 export default function EditorLib(container: Element): Diagram {
-    const additionalModules = [
-        ConnectionPreviewModule,
-        Move
-    ]
+
 
     // default modules provided by the toolbox
     const builtinModules = [
@@ -72,9 +72,7 @@ export default function EditorLib(container: Element): Diagram {
         ContextPadModule,
         CreateModule,
         LassoToolModule,
-        ModelingModule,
         MoveCanvasModule,
-        //MoveModule,
         OutlineModule,
         PaletteModule,
         ResizeModule,
@@ -87,13 +85,15 @@ export default function EditorLib(container: Element): Diagram {
     const customModules = [
         ProvidersModule,
         RendererModule,
-        ElementStyleModule
+        ElementStyleModule,
+        ConnectionPreviewModule,
+        Move,
+        ModelingModule,
     ];
 
     const modules = [
         ...builtinModules,
         ...customModules,
-        ...additionalModules,
     ]
 
     const diagram = new Diagram({
