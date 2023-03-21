@@ -5,7 +5,7 @@ import RulesModule from 'diagram-js/lib/features/rules';
 import DraggingModule from 'diagram-js/lib/features/dragging';
 import PreviewSupportModule from 'diagram-js/lib/features/preview-support';
 
-import Move from 'diagram-js/lib/features/move/Move';
+import Move from './Move';
 import MovePreview from './MovePreview';
 
 export default {

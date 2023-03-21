@@ -115,143 +115,21 @@ export default function MovePreview(
     // to let others modify the move context before
     // we draw things
     eventBus.on('shape.move.start', LOW_PRIORITY, function (event) {
-        var context = event.context,
-            dragShapes = context.shapes,
-            allDraggedElements = context.allDraggedElements;
-
-        var visuallyDraggedShapes = getVisualDragShapes(dragShapes);
-
-        if (!context.dragGroup) {
-            var dragGroup = svgCreate('g');
-
-            svgAttr(dragGroup, styles.cls('djs-drag-group', ['no-events']));
-
-            var activeLayer = canvas.getActiveLayer();
-
-            svgAppend(activeLayer, dragGroup);
-
-            context.dragGroup = dragGroup;
-        }
-
-        // add previews
-        visuallyDraggedShapes.forEach(function (shape) {
-            previewSupport.addDragger(shape, context.dragGroup);
-        });
-
-        // cache all dragged elements / gfx
-        // so that we can quickly undo their state changes later
-        if (!allDraggedElements) {
-            allDraggedElements = getAllDraggedElements(dragShapes);
-        } else {
-            allDraggedElements = flatten([
-                allDraggedElements,
-                getAllDraggedElements(dragShapes)
-            ]);
-        }
-
-        // add dragging marker
-        forEach(allDraggedElements, function (e) {
-            canvas.addMarker(e, MARKER_DRAGGING);
-        });
-
-        context.allDraggedElements = allDraggedElements;
-
-        // determine, if any of the dragged elements have different parents
-        context.differentParents = haveDifferentParents(dragShapes);
+      
     });
 
     // update previews
     eventBus.on('shape.move.move', LOW_PRIORITY, function (event) {
-        var context = event.context,
-            dragGroup = context.dragGroup,
-            target = context.target,
-            parent = context.shape.parent,
-            canExecute = context.canExecute;
 
-        if (target) {
-            if (canExecute === 'attach') {
-                setMarker(target, MARKER_ATTACH);
-            } else if (context.canExecute && target && target.id !== parent.id) {
-                setMarker(target, MARKER_NEW_PARENT);
-            } else {
-                setMarker(target, context.canExecute ? MARKER_OK : MARKER_NOT_OK);
-            }
-        }
-
-        translate(dragGroup, event.dx, event.dy);
-
-        let allDraggedElements = context.allDraggedElements;
-        let connectionPreviewGfx = context.connectionPreviewGfx
-        if(!connectionPreviewGfx)
-            connectionPreviewGfx = event.context.connectionPreviewGfx = connectionPreview.createConnectionPreviewGfx()
-        svgClear(connectionPreviewGfx)
-        forEach(allDraggedElements, function (e) {
-            if (isConnection(e)) {
-                drawConnectionPreview(event, e)
-            }
-        });
     });
 
-    function drawConnectionPreview(event, e) {
-        let context = event.context,
-            connection = e,
-            source = connection.source,
-            target = connection.target,
-            newWaypoints = connection.waypoints.slice(),
-            drawPreviewHints = {};
-
-        let eventCoordinates = {
-            x: event.x,
-            y: event.y
-        }
-
-        let connectionEndCoordinates = getBoundsMid((context.shape.id == connection.target.id) ? source : target)
-
-        if (connectionPreview) {
-            newWaypoints = [connectionEndCoordinates, eventCoordinates]
-
-            drawPreviewHints.noCropping = true;
-            drawPreviewHints.noLayout = true;
-            drawPreviewHints.source = source;
-            drawPreviewHints.target = target;
-            drawPreviewHints.waypoints = newWaypoints;
-            connectionPreview.drawPreview(context, true, drawPreviewHints, false);
-        }
-    }
-
     eventBus.on(['shape.move.out', 'shape.move.cleanup'], function (event) {
-        var context = event.context,
-            target = context.target;
 
-        if (target) {
-            setMarker(target, null);
-        }
     });
 
     // remove previews
     eventBus.on('shape.move.cleanup', function (event) {
 
-        var context = event.context,
-            allDraggedElements = context.allDraggedElements,
-            dragGroup = context.dragGroup;
-
-
-        // remove dragging marker
-        forEach(allDraggedElements, function (e) {
-            canvas.removeMarker(e, MARKER_DRAGGING);
-        });
-
-        if (dragGroup) {
-            svgRemove(dragGroup);
-        }
-
-        forEach(allDraggedElements, function (e) {
-            if (isConnection(e)) {
-                if (connectionPreview) {
-                    connectionPreview.cleanUp(context);
-                }
-            }
-        });
     });
 
 
