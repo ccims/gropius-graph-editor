@@ -14,10 +14,13 @@ import RulesModule from 'diagram-js/lib/features/rules';
 import SelectionModule from 'diagram-js/lib/features/selection';
 import ZoomScrollModule from 'diagram-js/lib/navigation/zoomscroll';
 
+import ConnectionPreviewModule from "./features/connection-preview";
+//import ConnectionPreviewModule from "diagram-js/lib/features/connection-preview";
+import Move from './features/move'
+
 import ProvidersModule from './providers';
 
 import RendererModule from './draw'
-import DefaultRenderer from "diagram-js/lib/draw/DefaultRenderer";
 
 /**
  * A module that changes the default diagram look.
@@ -45,7 +48,8 @@ export default function EditorLib(options) {
     const {
         container,
         additionalModules = [
-
+            ConnectionPreviewModule,
+            Move
         ]
     } = options;
 
@@ -57,7 +61,7 @@ export default function EditorLib(options) {
         LassoToolModule,
         ModelingModule,
         MoveCanvasModule,
-        MoveModule,
+        //MoveModule,
         OutlineModule,
         PaletteModule,
         ResizeModule,

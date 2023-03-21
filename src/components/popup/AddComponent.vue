@@ -16,6 +16,9 @@
                 :items="componentChoices"
                 :item-title="plainName"
               ></v-select>
+              <div v-for="(comp, index) in componentChoices" :key="index">
+                <v-btn>{{ comp.plainName }}</v-btn>
+              </div>
               <v-btn @click="next">Next</v-btn>
             </v-container>
           </v-window-item>
@@ -36,7 +39,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 // @ts-ignore
-import Wizard from "form-wizard-vue3";
 import "form-wizard-vue3/dist/form-wizard-vue3.css";
 import GropiusDefaultTypes, {
   GropiusType,
@@ -47,7 +49,6 @@ let componentChoices: GropiusType[];
 
 export default defineComponent({
   name: "AddComponent",
-  components: { Wizard },
   data() {
     return {
       customTabs: [{ title: "Component" }, { title: "Version" }],
@@ -70,6 +71,7 @@ export default defineComponent({
       gropiusId: "shape-custom-mytype",
       diagramId: "rectangle-custom",
     });
+    console.log("componentChoices", componentChoices);
   },
   methods: {
     /**
