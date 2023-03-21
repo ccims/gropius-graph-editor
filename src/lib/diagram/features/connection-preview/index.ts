@@ -1,3 +1,4 @@
+// @ts-ignore
 import ConnectionPreview from './ConnectionPreview';
 
 export default {

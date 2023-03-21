@@ -24,15 +24,21 @@ var LOW_PRIORITY = 500,
     MEDIUM_PRIORITY = 1250,
     HIGH_PRIORITY = 1500;
 
+// @ts-ignore
 import {getOriginal as getOriginalEvent} from 'diagram-js/lib/util/Event';
 
 import {
     isPrimaryButton
+// @ts-ignore
 } from 'diagram-js/lib/util/Mouse';
+
+import EventBus from 'diagram-js/lib/core/EventBus';
+import Modeling from 'diagram-js/lib/features/modeling/Modeling';
+import {Base} from "diagram-js/lib/model";
 
 var round = Math.round;
 
-function mid(element) {
+function mid(element: any) {
     return {
         x: element.x + round(element.width / 2),
         y: element.y + round(element.height / 2)
@@ -49,12 +55,12 @@ function mid(element) {
  * @param {Rules} rules
  */
 export default function MoveEvents(
-    eventBus, dragging, modeling,
-    selection, rules) {
+    eventBus: EventBus, dragging: any, modeling: Modeling,
+    selection: any, rules: any) {
 
     // rules
 
-    function canMove(shapes, delta, position, target) {
+    function canMove(shapes: any, delta?: any, position?: any, target?: any) {
 
         return rules.allowed('elements.move', {
             shapes: shapes,
@@ -78,7 +84,7 @@ export default function MoveEvents(
     // * validatedShapes: a list of shapes that are being checked
     //                    against the rules before and during move
     //
-    eventBus.on('shape.move.start', HIGH_PRIORITY, function (event) {
+    eventBus.on('shape.move.start', HIGH_PRIORITY, function (event: any) {
 
         var context = event.context,
             shape = event.shape,
@@ -107,7 +113,7 @@ export default function MoveEvents(
     // others may hook up later, e.g. at default priority and modify
     // the move environment
     //
-    eventBus.on('shape.move.start', MEDIUM_PRIORITY, function (event) {
+    eventBus.on('shape.move.start', MEDIUM_PRIORITY, function (event: any) {
         var context = event.context,
             validatedShapes = context.validatedShapes,
             canExecute;
@@ -124,7 +130,7 @@ export default function MoveEvents(
     // to let others modify the move event before we update
     // the context
     //
-    eventBus.on('shape.move.move', LOW_PRIORITY, function (event) {
+    eventBus.on('shape.move.move', LOW_PRIORITY, function (event: any) {
         var context = event.context,
             validatedShapes = context.validatedShapes,
             hover = event.hover,
@@ -157,7 +163,7 @@ export default function MoveEvents(
         moveShape(event)
     });
 
-    function moveShape(event) {
+    function moveShape(event: any) {
         var context = event.context;
 
         var delta = context.delta,
@@ -193,7 +199,7 @@ export default function MoveEvents(
 
     // move activation
 
-    eventBus.on('element.mousedown', function (event) {
+    eventBus.on('element.mousedown', function (event: any) {
 
         if (!isPrimaryButton(event)) {
             return;
@@ -216,7 +222,7 @@ export default function MoveEvents(
      * @param {boolean} [activate]
      * @param {Object} [context]
      */
-    function start(event, element, activate, context) {
+    function start(event: any, element: any, activate?: boolean, context?: any) {
         if (isObject(activate)) {
             context = activate;
             activate = false;
@@ -249,6 +255,7 @@ export default function MoveEvents(
 
     // API
 
+    // @ts-ignore
     this.start = start;
 }
 
@@ -269,11 +276,11 @@ MoveEvents.$inject = [
  *
  * @return {Array<Base>} filtered
  */
-function removeNested(elements) {
+function removeNested(elements: Array<Base>) {
 
     var ids = groupBy(elements, 'id');
 
-    return filter(elements, function (element) {
+    return filter(elements, function (element: Base) {
         while ((element = element.parent)) {
 
             // parent in selection

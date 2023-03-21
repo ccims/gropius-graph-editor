@@ -115,7 +115,7 @@ export default function MovePreview(
     // to let others modify the move context before
     // we draw things
     eventBus.on('shape.move.start', LOW_PRIORITY, function (event) {
-      
+
     });
 
     // update previews

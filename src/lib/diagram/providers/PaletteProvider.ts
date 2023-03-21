@@ -1,16 +1,24 @@
+import ElementFactory from 'diagram-js/lib/core/ElementFactory';
+
 /**
  * A example palette provider.
  */
-export default function ExamplePaletteProvider(create, elementFactory, lassoTool, palette) {
+export default function PaletteProvider(create: any, elementFactory: ElementFactory, lassoTool: any, palette: any) {
+
+  // @ts-ignore
   this._create = create;
+  // @ts-ignore
   this._elementFactory = elementFactory;
+  // @ts-ignore
   this._lassoTool = lassoTool;
+  // @ts-ignore
   this._palette = palette;
 
+  // @ts-ignore
   palette.registerProvider(this);
 }
 
-ExamplePaletteProvider.$inject = [
+PaletteProvider.$inject = [
   'create',
   'elementFactory',
   'lassoTool',
@@ -18,7 +26,7 @@ ExamplePaletteProvider.$inject = [
 ];
 
 
-ExamplePaletteProvider.prototype.getPaletteEntries = function() {
+PaletteProvider.prototype.getPaletteEntries = function() {
   var create = this._create,
       elementFactory = this._elementFactory,
       lassoTool = this._lassoTool;
@@ -29,7 +37,7 @@ ExamplePaletteProvider.prototype.getPaletteEntries = function() {
       className: 'palette-icon-lasso-tool',
       title: 'Activate Lasso Tool',
       action: {
-        click: function(event) {
+        click: function(event: any) {
           lassoTool.activateSelection(event);
         }
       }

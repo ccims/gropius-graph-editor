@@ -1,11 +1,14 @@
 // @ts-ignore
-import DiagramLib from '../diagram'
-import { Coordinates } from "@/types/HelperTypes";
-import { GropiusShape, GropiusShapeStyle } from "@/lib/gropius-compatibility/types";
+import EditorLib from '../diagram/Editor'
+import {Coordinates} from "@/types/HelperTypes";
+import {GropiusShape, GropiusShapeStyle} from "@/lib/gropius-compatibility/types";
 import GropiusDefaultTypes from "@/lib/gropius-compatibility/gropiusDefaultTypes";
 
+// @ts-ignore
+import Diagram from "diagram-js";
+
 export default class GropiusCompatibility {
-    private diagram: DiagramLib;
+    private diagram: Diagram;
     private canvas: any;
     private elementFactory: any;
     private modeling: any;
@@ -19,10 +22,10 @@ export default class GropiusCompatibility {
     public onDeleteShape?: (element: any) => void;
 
 
-    public init(container: Element | null) {
-        this.diagram = new DiagramLib({
-            container: container,
-        });
+    public init(container: Element) {
+
+        // @ts-ignore
+        this.diagram = new EditorLib(container);
 
         this.canvas = this.diagram.get('canvas');
         this.elementFactory = this.diagram.get('elementFactory');
@@ -116,14 +119,14 @@ export default class GropiusCompatibility {
     }
 
     public test() {
-        this.drawGropiusType({ x: 350, y: 100 },
-            { grId: "1", grType: "shape-gropius-component" })
+        this.drawGropiusType({x: 350, y: 100},
+            {grId: "1", grType: "shape-gropius-component"})
 
-        this.drawGropiusType({ x: 150, y: 100 },
-            { grId: "2", grType: "shape-gropius-component" })
+        this.drawGropiusType({x: 150, y: 100},
+            {grId: "2", grType: "shape-gropius-component"})
 
-        this.drawGropiusType({ x: 250, y: 300 },
-            { grId: "3", grType: "shape-gropius-component" })
+        this.drawGropiusType({x: 250, y: 300},
+            {grId: "3", grType: "shape-gropius-component"})
 
         // var connection1 = this.elementFactory.createConnection({
         //     waypoints: [

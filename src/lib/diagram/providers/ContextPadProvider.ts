@@ -1,14 +1,20 @@
+import EventBus from 'diagram-js/lib/core/EventBus';
+import Modeling from 'diagram-js/lib/features/modeling/Modeling';
+
 /**
  * A example context pad provider.
  */
-export default function ExampleContextPadProvider(eventBus, connect, create, contextPad, modeling) {
+export default function ContextPadProvider(eventBus: EventBus, connect: any, create: any, contextPad: any, modeling: Modeling) {
+    // @ts-ignore
     this._connect = connect;
+    // @ts-ignore
     this._modeling = modeling;
 
+    // @ts-ignore
     contextPad.registerProvider(this);
 }
 
-ExampleContextPadProvider.$inject = [
+ContextPadProvider.$inject = [
     'eventBus',
     'connect',
     'create',
@@ -17,7 +23,7 @@ ExampleContextPadProvider.$inject = [
 ];
 
 
-ExampleContextPadProvider.prototype.getContextPadEntries = function (element) {
+ContextPadProvider.prototype.getContextPadEntries = function (element: any) {
     var connect = this._connect,
         modeling = this._modeling;
 
@@ -26,7 +32,7 @@ ExampleContextPadProvider.prototype.getContextPadEntries = function (element) {
         modeling._eventBus.fire('context.shape.delete', {element: element})
     }
 
-    function startConnect(event, element, autoActivate) {
+    function startConnect(event: any, element: any, autoActivate: any) {
         connect.start(event, element, autoActivate);
     }
 
