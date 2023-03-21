@@ -45,7 +45,7 @@ export default class GropiusCompatibility {
             if (this.onAddShape)
                 this.onAddShape(coordinates)
         });
-        this.canvas._eventBus.on("palette.shape.delete", (e: any) => {
+        this.canvas._eventBus.on("context.shape.delete", (e: any) => {
             if (this.onDeleteShape)
                 this.onDeleteShape(e.element)
         });
@@ -68,7 +68,7 @@ export default class GropiusCompatibility {
 
     public drawGropiusType(coordinates: Coordinates, grShape: GropiusShape) {
         let shape;
-        switch(grShape.grType) {
+        switch (grShape.grType) {
             case 'shape-gropius-component':
                 shape = {
                     x: coordinates.x,
@@ -116,19 +116,26 @@ export default class GropiusCompatibility {
     }
 
     public test() {
-        var shape1 = this.elementFactory.createShape({
-            x: 150,
-            y: 100,
-            width: 100,
-            height: 100,
-            type: "diamond-custom",
-            custom: {
-                label: "Test",
-                style: {fill: 'red', stroke: 'black', strokeWidth: 2, strokeDasharray: 2}
-            }
-        });
+        this.drawGropiusType({x: 350, y: 100},
+            {grId: "1", grType: "shape-gropius-component"})
 
-        this.canvas.addShape(shape1, this.root);
+        this.drawGropiusType({x: 150, y: 100},
+            {grId: "2", grType: "shape-gropius-component"})
+
+        this.drawGropiusType({x: 250, y: 300},
+            {grId: "3", grType: "shape-gropius-component"})
+
+        // var connection1 = this.elementFactory.createConnection({
+        //     waypoints: [
+        //         {x: shape1.x, y: shape1.y},
+        //         {x: shape2.x, y: shape2.y},
+        //     ],
+        //     source: shape1,
+        //     target: shape2,
+        // });
+        //
+        // this.canvas.addConnection(connection1, this.root);
+
     }
 
     public deleteShape(element: any) {
