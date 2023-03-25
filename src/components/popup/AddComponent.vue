@@ -52,11 +52,8 @@ export default defineComponent({
   mixins: [gropiusapi],
   data() {
     return {
-      customTabs: [{ title: "Component" }, { title: "Version" }],
-      currentTabIndex: 0,
       componentVersions: ["A", "B", "C"],
       selectedComponentVersion: "",
-      showOverlay: true,
       tab: null,
       selectedGropiusId: "",
     };
@@ -86,7 +83,6 @@ export default defineComponent({
      */
     wizardCompleted() {
       ///let selectedComponentType = GropiusDefaultTypes.get
-      console.log("gropius id", this.selectedGropiusId);
       if (this.selectedGropiusId !== "") {
         selectedComponent = componentChoices.filter((choice) => {
           return choice.gropiusId === this.selectedGropiusId;

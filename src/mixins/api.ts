@@ -19,6 +19,10 @@ export default {
                 diagramId: "rectangle-custom",
             });
             return componentChoices;
+        },
+
+        getValidRelationTypes() {
+
         }
     },
 }

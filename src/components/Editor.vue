@@ -3,8 +3,8 @@
     <Confirm
       v-if="showConfirmPopup"
       :msg="'Really want to delete the component?'"
-      @onConfirm="onConfirm"
-      @onDeny="onDeny"
+      @onConfirm="onConfirmDelete"
+      @onDeny="onDenyDelete"
     ></Confirm>
     <!-- ref anstelle -->
     <div id="container"></div>
@@ -13,12 +13,18 @@
       v-if="showAddComponent"
       @onChoiceDone="onComponentSelected"
     ></AddComponent>
+
+    <AddRelation
+      v-if="showAddRelation"
+      @onChoiceDone="onRelationSelected"
+    ></AddRelation>
   </div>
 </template>
 
 <script lang="ts">
 import Confirm from "./popup/Confirm.vue";
 import AddComponent from "./popup/AddComponent.vue";
+import AddRelation from "./popup/AddRelation.vue";
 
 import GropiusCompatibility from "../lib/gropius-compatibility";
 import {
@@ -43,12 +49,13 @@ export default defineComponent({
   components: {
     AddComponent,
     Confirm,
+    AddRelation,
   },
   data() {
     return {
       showConfirmPopup: false,
       showAddComponent: false,
-      componentChoices: ["Component A", "Component B"],
+      showAddRelation: true,
     };
   },
 
@@ -64,7 +71,6 @@ export default defineComponent({
         x: coordinatesAdded.x,
         y: coordinatesAdded.y,
       };
-      console.log("coordinates", coordinates);
     };
 
     diagram.onDeleteShape = (element: any) => {
@@ -73,17 +79,25 @@ export default defineComponent({
     };
   },
   methods: {
-    onConfirm() {
+    /**
+     * Called when user confirms the popup that the component is to be deleted
+     */
+    onConfirmDelete() {
       this.showConfirmPopup = false;
       diagram?.deleteShape(element);
     },
 
-    onDeny() {
+    /**
+     * Called when user cancels deleting the component
+     */
+    onDenyDelete() {
       this.showConfirmPopup = false;
     },
 
+    /**
+     * Called when the user has selected a component type and version
+     */
     onComponentSelected(type: GropiusType, version: String) {
-      console.log("coordinates", coordinates);
       if (type.isGropiusDefault) {
         //type = this.diagram ? this.diagram?.getGropiusShapeName(type) : "";
         let grShape = {
@@ -111,6 +125,10 @@ export default defineComponent({
       }
 
       this.showAddComponent = false;
+    },
+
+    onRelationSelected() {
+      this.showAddRelation = false;
     },
   },
 });
