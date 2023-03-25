@@ -12,14 +12,12 @@
             <v-container fluid>
               <h3>Select a component</h3>
               <v-select
+                v-model="selectedGropiusId"
                 label="Select"
-                :items="componentChoices"
-                :item-title="plainName"
+                :items="componentChoiceNames"
+                :item-title="'name'"
+                :item-value="'id'"
               ></v-select>
-              <div v-for="(comp, index) in componentChoices" :key="index">
-                <v-btn>{{ comp.plainName }}</v-btn>
-              </div>
-              <v-btn @click="next">Next</v-btn>
             </v-container>
           </v-window-item>
           <!-- Select Version -->
@@ -27,8 +25,7 @@
             <v-container fluid>
               <h3>Select a version</h3>
               <v-select label="Select" :items="componentVersions"></v-select>
-              <v-btn @click="previous">Previous</v-btn>
-              <v-btn @click="wizardCompleted">Next</v-btn>
+              <v-btn @click="wizardCompleted">Completed</v-btn>
             </v-container>
           </v-window-item>
         </v-window>
@@ -38,17 +35,21 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-// @ts-ignore
-import "form-wizard-vue3/dist/form-wizard-vue3.css";
-import GropiusDefaultTypes, {
-  GropiusType,
-} from "@/lib/gropius-compatibility/gropiusDefaultTypes";
+import { GropiusType } from "@/lib/gropius-compatibility/gropiusDefaultTypes";
+import gropiusapi from "@/mixins/api";
 
 let selectedComponent: GropiusType;
 let componentChoices: GropiusType[];
+let componentChoiceNames: String[] = [];
+
+interface ComponentChoiceNames {
+  name: string;
+  id: string;
+}
 
 export default defineComponent({
   name: "AddComponent",
+  mixins: [gropiusapi],
   data() {
     return {
       customTabs: [{ title: "Component" }, { title: "Version" }],
@@ -57,21 +58,26 @@ export default defineComponent({
       selectedComponentVersion: "",
       showOverlay: true,
       tab: null,
+      selectedGropiusId: "",
     };
   },
   computed: {
     hideNextButton(): Boolean {
       return selectedComponent === null;
     },
+    componentChoiceNames(): ComponentChoiceNames[] {
+      let componentChoiceNames: ComponentChoiceNames[] = [];
+      componentChoices.forEach((choice) => {
+        componentChoiceNames.push({
+          name: choice.plainName,
+          id: choice.gropiusId,
+        });
+      });
+      return componentChoiceNames;
+    },
   },
   mounted() {
-    componentChoices = Array.from(GropiusDefaultTypes.values());
-    componentChoices.push({
-      plainName: "My custom type",
-      gropiusId: "shape-custom-mytype",
-      diagramId: "rectangle-custom",
-    });
-    console.log("componentChoices", componentChoices);
+    this.initComponentChoices();
   },
   methods: {
     /**
@@ -80,21 +86,26 @@ export default defineComponent({
      */
     wizardCompleted() {
       ///let selectedComponentType = GropiusDefaultTypes.get
-      selectedComponent = componentChoices[1];
+      console.log("gropius id", this.selectedGropiusId);
+      if (this.selectedGropiusId !== "") {
+        selectedComponent = componentChoices.filter((choice) => {
+          return choice.gropiusId === this.selectedGropiusId;
+        })[0];
+      }
+
       this.$emit(
         "onChoiceDone",
         selectedComponent,
         this.selectedComponentVersion
       );
     },
+
     /**
-     * Called when user wants to go to the previous tab
+     * Api call via gropius-api mixin
      */
-    previous() {},
-    /**
-     * Called when user wants to go to next tab
-     */
-    next() {},
+    initComponentChoices() {
+      componentChoices = this.getComponentTypes();
+    },
   },
 });
 </script>

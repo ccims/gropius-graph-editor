@@ -58,12 +58,13 @@ export default defineComponent({
     // this.diagram.getGropiusShapeNames()
     diagram.test();
 
-    diagram.onAddShape = (coordinates: Coordinates) => {
+    diagram.onAddShape = (coordinatesAdded: Coordinates) => {
       this.showAddComponent = true;
       coordinates = {
-        x: coordinates.x,
-        y: coordinates.y,
+        x: coordinatesAdded.x,
+        y: coordinatesAdded.y,
       };
+      console.log("coordinates", coordinates);
     };
 
     diagram.onDeleteShape = (element: any) => {
@@ -82,6 +83,7 @@ export default defineComponent({
     },
 
     onComponentSelected(type: GropiusType, version: String) {
+      console.log("coordinates", coordinates);
       if (type.isGropiusDefault) {
         //type = this.diagram ? this.diagram?.getGropiusShapeName(type) : "";
         let grShape = {
