@@ -20,6 +20,7 @@ export default class GropiusCompatibility {
 
     public onAddShape?: (coordinates: Coordinates) => void;
     public onDeleteShape?: (element: any) => void;
+    public onAddConnection?: (sourceElement: any, targetElement: any) => void;
 
 
     public init(container: Element) {
