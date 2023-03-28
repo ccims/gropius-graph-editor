@@ -118,7 +118,7 @@ export default defineComponent({
           color: "orange",
           stroke: "black",
           strokeWidth: 2,
-          strokeDasharray: 2,
+          strokeDasharray: "2 5",
           radius: 10,
         };
         diagram?.drawCustomType(type.diagramId, coordinates, grShape, grStyle);

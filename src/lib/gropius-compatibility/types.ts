@@ -10,6 +10,6 @@ export interface GropiusShapeStyle {
     color: string,
     stroke: string,
     strokeWidth: number,
-    strokeDasharray: number,
+    strokeDasharray: string,
     radius?: number
 }
