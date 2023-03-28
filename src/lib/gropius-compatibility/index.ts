@@ -80,7 +80,17 @@ export default class GropiusCompatibility {
                     width: 100,
                     height: 100,
                     type: "rectangle",
-                    grShape: grShape
+                    grShape: grShape,
+                    custom: {
+                        style: {
+                            ry: 0,
+                            rx: 0,
+                            fill: "none",
+                            stroke: "black",
+                            strokeWidth: "2",
+                            strokeDasharray: "0"
+                        },
+                    },
                 }
                 this.createShape(shape);
                 break;
@@ -89,9 +99,19 @@ export default class GropiusCompatibility {
                     x: coordinates.x,
                     y: coordinates.y,
                     width: 100,
-                    height: 100,
-                    type: "rectangle-rounded",
-                    grShape: grShape
+                    height: 80,
+                    type: "rectangle",
+                    grShape: grShape,
+                    custom: {
+                        style: {
+                            rx: 5,
+                            ry: 5,
+                            fill: "yellow",
+                            stroke: "black",
+                            strokeWidth: "2",
+                            strokeDasharray: "0"
+                        },
+                    },
                 }
                 this.createShape(shape);
                 break;
@@ -107,8 +127,9 @@ export default class GropiusCompatibility {
             type: type,
             grShape: grShape,
             custom: {
-                r: grStyle.radius,
                 style: {
+                    rx: grStyle.radius,
+                    ry: grStyle.radius,
                     fill: grStyle.color,
                     stroke: grStyle.stroke,
                     strokeWidth: grStyle.strokeWidth,
@@ -157,10 +178,11 @@ export default class GropiusCompatibility {
             y: coordinates.y,
             width: grStyle.width,
             height: grStyle.height,
-            type: "rectangle-custom",
+            type: "rectangle",
             custom: {
-                r: grStyle.radius,
                 style: {
+                    rx: grStyle.radius,
+                    ry: grStyle.radius,
                     fill: grStyle.color,
                     stroke: grStyle.stroke,
                     strokeWidth: grStyle.strokeWidth,
@@ -178,7 +200,7 @@ export default class GropiusCompatibility {
             y: coordinates.y,
             width: grStyle.width,
             height: grStyle.height,
-            type: "diamond-custom",
+            type: "diamond",
             custom: {
                 style: {
                     fill: grStyle.color,

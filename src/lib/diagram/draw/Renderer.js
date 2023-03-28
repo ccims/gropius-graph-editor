@@ -62,18 +62,9 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     this.handler = function (visuals, element) {
         switch (element.type) {
             case 'rectangle':
-                renderRectangle(visuals, element, 0, this.SHAPE_STYLE);
-                break;
-            case 'rectangle-custom':
-                renderRectangle(visuals, element, element.custom.r, element.custom.style)
-                break;
-            case 'rectangle-rounded':
-                renderRectangle(visuals, element, 10, this.SHAPE_STYLE);
+                renderRectangle(visuals, element, element.custom.style)
                 break;
             case 'diamond':
-                renderDiamond(visuals, element, this.SHAPE_STYLE)
-                break;
-            case 'diamond-custom':
                 renderDiamond(visuals, element, element.custom.style)
                 break;
             default:
@@ -91,7 +82,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         return drawConnectionSegments(visuals, element.waypoints, attrs)
     }
 
-    function renderRectangle(visuals, element, r, attrs) {
+    function renderRectangle(visuals, element, attrs) {
         var rect = svgCreate('rect');
 
         attrs = styles.style(attrs);
@@ -99,10 +90,8 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         svgAttr(rect, {
             x: 0,
             y: 0,
-            width: element.width || 0,
-            height: element.height || 0,
-            rx: r,
-            ry: r,
+            width: element.width || 10,
+            height: element.height || 10,
             // fill: 'grey', stroke: 'black', strokeWidth: 2,
             ...attrs
         });
