@@ -6,6 +6,7 @@ import GropiusDefaultTypes from "@/lib/gropius-compatibility/gropiusDefaultTypes
 
 // @ts-ignore
 import Diagram from "diagram-js";
+import {Connection} from "diagram-js/lib/model";
 
 export default class GropiusCompatibility {
     private diagram: Diagram;
@@ -20,7 +21,7 @@ export default class GropiusCompatibility {
 
     public onAddShape?: (coordinates: Coordinates) => void;
     public onDeleteShape?: (element: any) => void;
-    public onAddConnection?: (sourceElement: any, targetElement: any) => void;
+    public onAddConnection?: (connection: Connection) => void;
 
 
     public init(container: Element) {
@@ -38,7 +39,7 @@ export default class GropiusCompatibility {
         this.canvas._eventBus.on("shape.added", (e: any) => {
             if (!e.element.isFrame)
                 return;
-            let element = e.element;
+            const element = e.element;
             this.canvas.removeShape(element);
 
             let coordinates: Coordinates = {
@@ -54,20 +55,19 @@ export default class GropiusCompatibility {
                 this.onDeleteShape(e.element)
         });
 
-    }
+        this.canvas._eventBus.on("connection.added", (e: any) => {
+            const element = e.element;
 
-    public isGropiusType(plainName: string): boolean {
-        //return this.gropiusShapeNameMap.has(plainName);
-        return GropiusDefaultTypes.has(plainName);
-    }
+            // If connection has been created by API or UI
+            if(element.customRendered)
+                return // Ignore if it custom rendered, i.e. not by UI. Otherwise infinite recursion!
 
-    public getGropiusShapeNames(): Array<string> {
-        return Array.from(this.gropiusShapeNameMap.keys())
-    }
+            this.canvas.removeConnection(element);
 
-    public getGropiusShapeName(plainName: string): string {
-        let type = this.gropiusShapeNameMap.get(plainName)
-        return type ? type : ""
+            if(this.onAddConnection)
+                this.onAddConnection(e.element)
+        });
+
     }
 
     public drawGropiusType(coordinates: Coordinates, grShape: GropiusShape) {
@@ -190,6 +190,21 @@ export default class GropiusCompatibility {
             grShape: grShape
         };
         this.createShape(shape)
+    }
+
+    public createConnection(connection: Connection) {
+        this.createConnectionBasic(connection.source, connection.target, connection.waypoints)
+    }
+
+    public createConnectionBasic(source: any, target: any, waypoints: Array<Coordinates>) {
+        var connection = this.elementFactory.createConnection({
+            waypoints: waypoints,
+            source: source,
+            target: target,
+        });
+        connection.customRendered = true;
+
+        this.canvas.addConnection(connection, this.root);
     }
 
 }
