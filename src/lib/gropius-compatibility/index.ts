@@ -1,12 +1,12 @@
 // @ts-ignore
 import EditorLib from '../diagram/Editor'
-import {Coordinates} from "@/types/HelperTypes";
-import {GropiusShape, GropiusShapeStyle} from "@/lib/gropius-compatibility/types";
+import { Coordinates } from "@/types/HelperTypes";
+import { GropiusShape, GropiusShapeStyle } from "@/lib/gropius-compatibility/types";
 import GropiusDefaultTypes from "@/lib/gropius-compatibility/gropiusDefaultTypes";
 
 // @ts-ignore
 import Diagram from "diagram-js";
-import {Connection} from "diagram-js/lib/model";
+import { Connection } from "diagram-js/lib/model";
 
 export default class GropiusCompatibility {
     private diagram: Diagram;
@@ -59,12 +59,12 @@ export default class GropiusCompatibility {
             const element = e.element;
 
             // If connection has been created by API or UI
-            if(element.customRendered)
+            if (element.customRendered)
                 return // Ignore if it custom rendered, i.e. not by UI. Otherwise infinite recursion!
 
             this.canvas.removeConnection(element);
 
-            if(this.onAddConnection)
+            if (this.onAddConnection)
                 this.onAddConnection(e.element)
         });
 
@@ -115,6 +115,48 @@ export default class GropiusCompatibility {
                 }
                 this.createShape(shape);
                 break;
+            case 'shape-gropius-hexagon':
+                shape = {
+                    x: coordinates.x,
+                    y: coordinates.y,
+                    width: 100,
+                    height: 100,
+                    type: "hexagon",
+                    grShape: grShape,
+                    custom: {
+                        style: {
+                            fill: "none",
+                            stroke: "black",
+                            strokeWidth: "2",
+                            strokeDasharray: "0"
+                        }
+                    }
+                }
+                this.createShape(shape)
+                break;
+            case 'shape-gropius-ellipse':
+                shape = {
+                    x: coordinates.x,
+                    y: coordinates.y,
+                    width: 50,
+                    height: 25,
+                    type: "ellipse",
+                    grShape: grShape,
+                    custom: {
+                        style: {
+                            cx: coordinates.x / 2,
+                            cy: coordinates.y / 2,
+                            rx: "100",
+                            ry: "50",
+                            fill: "none",
+                            stroke: "black",
+                            strokeWidth: "2",
+                            strokeDasharray: "0"
+                        }
+                    }
+                }
+                this.createShape(shape)
+                break;
         }
     }
 
@@ -137,18 +179,18 @@ export default class GropiusCompatibility {
                 }
             }
         }
-        this.createShape(shape)
+        this.createShape(shape);
     }
 
     public test() {
-        this.drawGropiusType({x: 350, y: 100},
-            {grId: "1", grType: "shape-gropius-component"})
+        this.drawGropiusType({ x: 350, y: 100 },
+            { grId: "1", grType: "shape-gropius-component" })
 
-        this.drawGropiusType({x: 150, y: 100},
-            {grId: "2", grType: "shape-gropius-component"})
+        this.drawGropiusType({ x: 150, y: 100 },
+            { grId: "2", grType: "shape-gropius-component" })
 
-        this.drawGropiusType({x: 250, y: 300},
-            {grId: "3", grType: "shape-gropius-component"})
+        this.drawGropiusType({ x: 250, y: 300 },
+            { grId: "3", grType: "shape-gropius-component" })
 
         // var connection1 = this.elementFactory.createConnection({
         //     waypoints: [

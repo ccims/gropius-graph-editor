@@ -8,6 +8,16 @@ const GropiusDefaultTypes: Map<string, GropiusType> = new Map<string, GropiusTyp
         plainName: "Library",
         gropiusId: "shape-gropius-library",
         isGropiusDefault: true
+    }],
+    ["Hexagon", {
+        plainName: "Hexagon",
+        gropiusId: "shape-gropius-hexagon",
+        isGropiusDefault: true
+    }],
+    ["Ellipse", {
+        plainName: "Ellipse",
+        gropiusId: "shape-gropius-ellipse",
+        isGropiusDefault: true
     }]
 ])
 

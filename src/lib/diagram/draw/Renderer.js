@@ -2,7 +2,7 @@ import inherits from 'inherits-browser';
 
 import BaseRenderer from 'diagram-js/lib/draw/BaseRenderer';
 import DefaultRenderer from 'diagram-js/lib/draw/DefaultRenderer';
-import {getColor, getFillColor, getStrokeColor} from './RenderUtil'
+import { getColor, getFillColor, getStrokeColor } from './RenderUtil'
 
 import {
     componentsToPath,
@@ -17,7 +17,7 @@ import {
     remove as svgRemove
 } from 'tiny-svg';
 
-import {assign} from 'min-dash';
+import { assign } from 'min-dash';
 
 import {
     isFrameElement
@@ -28,7 +28,7 @@ import {
     query as domQuery
 } from 'min-dom';
 import Ids from 'ids';
-import {vi} from "vuetify/locale";
+import { vi } from "vuetify/locale";
 
 var RENDERER_IDS = new Ids();
 
@@ -52,8 +52,8 @@ var DEFAULT_TEXT_SIZE = 16;
 export default function Renderer(eventBus, styles, canvas, textRenderer) {
     DefaultRenderer.call(this, eventBus, styles);
 
-    this.CONNECTION_STYLE = styles.style(['no-fill'], {strokeWidth: 5, stroke: 'blue'});
-    this.SHAPE_STYLE = styles.style({fill: 'white', stroke: 'black', strokeWidth: 2, strokeDasharray: 0});
+    this.CONNECTION_STYLE = styles.style(['no-fill'], { strokeWidth: 5, stroke: 'blue' });
+    this.SHAPE_STYLE = styles.style({ fill: 'white', stroke: 'black', strokeWidth: 2, strokeDasharray: 0 });
 
     var rendererId = RENDERER_IDS.next();
 
@@ -62,10 +62,16 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     this.handler = function (visuals, element) {
         switch (element.type) {
             case 'rectangle':
-                renderRectangle(visuals, element, element.custom.style)
+                renderRectangle(visuals, element, element.custom.style);
                 break;
             case 'diamond':
-                renderDiamond(visuals, element, element.custom.style)
+                renderDiamond(visuals, element, element.custom.style);
+                break;
+            case 'hexagon':
+                renderHexagon(visuals, element, element.custom.style);
+                break;
+            case 'ellipse':
+                renderEllipse(visuals, element, element.custom.style);
                 break;
             default:
                 renderRectangle(visuals, element, 0, this.SHAPE_STYLE);
@@ -74,12 +80,60 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
             renderEmbeddedLabel(visuals, element, "center-middle", element.custom.label);
     }
 
-    this.connectionHandler = function(visuals, element, attrs) {
+    this.connectionHandler = function (visuals, element, attrs) {
         const fill = "red",
             stroke = "black";
         attrs = {}
         attrs.markerEnd = marker("", fill, stroke)
         return drawConnectionSegments(visuals, element.waypoints, attrs)
+    }
+
+    function renderEllipse(parentGfx, element, attrs) {
+        attrs = styles.style(attrs);
+
+        var ellipse = svgCreate('ellipse', {
+            ...attrs,
+            x: 0,
+            y: 0
+        });
+
+        svgAppend(parentGfx, ellipse);
+
+        return ellipse;
+    }
+
+    function renderHexagon(parentGfx, element, attrs) {
+        let width = element.width;
+        let height = element.height;
+
+        var x_2 = width / 2;
+        var y_2_1 = height / 3;
+        let y_2_2 = (height * 2) / 3;
+
+
+        var points = [
+            { x: x_2, y: 0 },
+            { x: width, y: y_2_1 },
+            { x: width, y: y_2_2 },
+            { x: x_2, y: height },
+            { x: 0, y: y_2_2 },
+            { x: 0, y: y_2_1 },
+        ];
+
+        var pointsString = points.map(function (point) {
+            return point.x + ',' + point.y;
+        }).join(' ');
+
+        attrs = styles.style(attrs);
+
+        var polygon = svgCreate('polygon', {
+            ...attrs,
+            points: pointsString
+        });
+
+        svgAppend(parentGfx, polygon);
+
+        return polygon;
     }
 
     function renderRectangle(visuals, element, attrs) {
@@ -109,10 +163,10 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         var y_2 = height / 2;
 
         var points = [
-            {x: x_2, y: 0},
-            {x: width, y: y_2},
-            {x: x_2, y: height},
-            {x: 0, y: y_2}
+            { x: x_2, y: 0 },
+            { x: width, y: y_2 },
+            { x: x_2, y: height },
+            { x: 0, y: y_2 }
         ];
 
         var pointsString = points.map(function (point) {
@@ -191,7 +245,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
     function addMarker(id, options) {
         var {
-            ref = {x: 0, y: 0},
+            ref = { x: 0, y: 0 },
             scale = 1,
             element
         } = options;
@@ -252,7 +306,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
         addMarker(id, {
             element: associationStart,
-            ref: {x: 1, y: 10},
+            ref: { x: 1, y: 10 },
             scale: 0.5
         });
     }
