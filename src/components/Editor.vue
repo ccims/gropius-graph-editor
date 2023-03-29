@@ -1,5 +1,5 @@
 <template>
-  <div class="editor-container" @click="connectionNotification()">
+  <div class="editor-container">
     <Transition>
       <v-alert
         class="notification"
