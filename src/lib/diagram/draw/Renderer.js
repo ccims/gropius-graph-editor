@@ -4,6 +4,12 @@ import BaseRenderer from "diagram-js/lib/draw/BaseRenderer";
 import DefaultRenderer from "diagram-js/lib/draw/DefaultRenderer";
 import { getColor, getFillColor, getStrokeColor } from "./RenderUtil";
 
+import {
+  rotate,
+  transform,
+  translate,
+} from "diagram-js/lib/util/SvgTransformUtil";
+
 import { componentsToPath, createLine } from "diagram-js/lib/util/RenderUtil";
 
 import {
@@ -86,11 +92,13 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   };
 
   this.connectionHandler = function (visuals, element, attrs) {
-    const fill = "red",
+    const fill = "black",
       stroke = "black";
     attrs = {};
-    attrs.markerStart = marker("", fill, stroke);
+    //attrs.markerStart = marker("", fill, stroke);
     attrs.markerEnd = marker("", fill, stroke);
+    // if ((element.custom && element.custom.label) || true)
+    //   renderExternalLabel(visuals, element, "test");
     return drawConnectionSegments(visuals, element.waypoints, attrs);
   };
 
@@ -235,6 +243,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function renderExternalLabel(parentGfx, element, text) {
+    console.log(element);
     var box = {
       width: 90,
       height: 30,
@@ -243,7 +252,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     };
     return renderLabel(parentGfx, text, {
       box: box,
-      fitBox: true,
+      fitbox: true,
       style: assign({}, textRenderer.getExternalStyle(), {
         fill: "black",
       }),
@@ -317,7 +326,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     var associationEnd = svgCreate("path", {
       d: "M 1 5 L 11 10 L 1 15 Z",
       ...lineStyle({
-        fill: "none",
+        fill: fill,
         stroke: stroke,
         strokeWidth: 1.5,
 
