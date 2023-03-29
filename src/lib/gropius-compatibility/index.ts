@@ -66,6 +66,8 @@ export default class GropiusCompatibility {
 
       if (this.onAddConnection)
         this.onAddConnection(e.element);
+
+      this.createConnection(element);
     });
 
   }
@@ -89,7 +91,8 @@ export default class GropiusCompatibility {
               stroke: "black",
               strokeWidth: "2",
               strokeDasharray: "0"
-            }
+            },
+            label : grShape.label
           }
         };
         this.createShape(shape);
@@ -110,7 +113,8 @@ export default class GropiusCompatibility {
               stroke: "black",
               strokeWidth: "2",
               strokeDasharray: "0"
-            }
+            },
+            label : grShape.label
           }
         };
         this.createShape(shape);
@@ -134,7 +138,8 @@ export default class GropiusCompatibility {
           stroke: grStyle.stroke,
           strokeWidth: grStyle.strokeWidth,
           strokeDasharray: grStyle.strokeDasharray
-        }
+        },
+        label: grShape.label
       }
     };
     this.createShape(shape);
@@ -142,13 +147,13 @@ export default class GropiusCompatibility {
 
   public test() {
     this.drawGropiusType({ x: 350, y: 100 },
-      { grId: "1", grType: "shape-gropius-component" });
+      { grId: "1", grType: "shape-gropius-component", label: "test" });
 
     this.drawGropiusType({ x: 150, y: 100 },
-      { grId: "2", grType: "shape-gropius-component" });
+      { grId: "2", grType: "shape-gropius-component", label: "ABC" });
 
     this.drawGropiusType({ x: 250, y: 300 },
-      { grId: "3", grType: "shape-gropius-component" });
+      { grId: "3", grType: "shape-gropius-component", label: "Hello World" });
 
     // var connection1 = this.elementFactory.createConnection({
     //     waypoints: [

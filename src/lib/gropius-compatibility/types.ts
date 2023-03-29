@@ -1,6 +1,7 @@
 export interface GropiusShape {
   grId: string,
   grType: string,
+  label?: string
 }
 
 export interface GropiusShapeStyle {
