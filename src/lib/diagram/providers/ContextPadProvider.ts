@@ -23,7 +23,7 @@ ContextPadProvider.$inject = [
 ];
 
 
-ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
+ContextPadProvider.prototype.getContextPadEntries = function (element: any) {
   var connect = this._connect,
     modeling = this._modeling;
 

@@ -20,15 +20,15 @@ CustomRuleProvider.$inject = ["eventBus"];
 inherits(CustomRuleProvider, RuleProvider);
 
 
-CustomRuleProvider.prototype.init = function() {
-  this.addRule("shape.create", function(context: any) {
+CustomRuleProvider.prototype.init = function () {
+  this.addRule("shape.create", function (context: any) {
     var target = context.target,
       shape = context.shape;
 
     return target.parent === shape.target;
   });
 
-  this.addRule("connection.create", function(context: any) {
+  this.addRule("connection.create", function (context: any) {
     var source = context.source,
       target = context.target;
     if (source.grShape && target.grShape)
@@ -37,7 +37,7 @@ CustomRuleProvider.prototype.init = function() {
     return false;
   });
 
-  this.addRule("shape.resize", function(context: any) {
+  this.addRule("shape.resize", function (context: any) {
     var shape = context.shape;
 
     return isFrameElement(shape);

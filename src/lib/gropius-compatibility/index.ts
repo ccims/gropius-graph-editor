@@ -92,7 +92,7 @@ export default class GropiusCompatibility {
               strokeWidth: "2",
               strokeDasharray: "0"
             },
-            label : grShape.label
+            label: grShape.label
           }
         };
         this.createShape(shape);
@@ -114,10 +114,54 @@ export default class GropiusCompatibility {
               strokeWidth: "2",
               strokeDasharray: "0"
             },
-            label : grShape.label
+            label: grShape.label
           }
         };
         this.createShape(shape);
+        break;
+      case 'shape-gropius-hexagon':
+        shape = {
+          x: coordinates.x,
+          y: coordinates.y,
+          width: 100,
+          height: 100,
+          type: "hexagon",
+          grShape: grShape,
+          custom: {
+            style: {
+              fill: "none",
+              stroke: "black",
+              strokeWidth: "2",
+              strokeDasharray: "0"
+            },
+            label: grShape.label
+          }
+        }
+        this.createShape(shape)
+        break;
+      case 'shape-gropius-ellipse':
+        shape = {
+          x: coordinates.x,
+          y: coordinates.y,
+          width: 100,
+          height: 50,
+          type: "ellipse",
+          grShape: grShape,
+          custom: {
+            style: {
+              cx: coordinates.x,
+              cy: coordinates.y,
+              rx: "100",
+              ry: "50",
+              fill: "none",
+              stroke: "black",
+              strokeWidth: "2",
+              strokeDasharray: "0"
+            },
+            label: grShape.label
+          }
+        }
+        this.createShape(shape)
         break;
     }
   }

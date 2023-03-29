@@ -1,6 +1,9 @@
 import GropiusDefaultTypes, {
     GropiusType,
 } from "@/lib/gropius-compatibility/gropiusDefaultTypes";
+import {
+    GropiusShapeStyle,
+} from "@/lib/gropius-compatibility/types";
 
 export default {
     data() {
@@ -16,13 +19,27 @@ export default {
             componentChoices.push({
                 plainName: "My custom type",
                 gropiusId: "shape-custom-mytype",
-                diagramId: "rectangle",
+                diagramId: "diamond",
             });
             return componentChoices;
         },
 
         getValidRelationTypes() {
 
+        },
+
+        getComponentStyle(gropiusId: string): GropiusShapeStyle {
+            // api call
+            const shapeStyle = {
+                width: 100,
+                height: 50,
+                color: "orange",
+                stroke: "black",
+                strokeWidth: 2,
+                strokeDasharray: "2 5",
+                radius: 10,
+            };
+            return shapeStyle;
         }
     },
 }

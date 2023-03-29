@@ -29,7 +29,7 @@ import { query as domQuery } from "min-dom";
 import Ids from "ids";
 import { vi } from "vuetify/locale";
 
-var RENDERER_IDS = new Ids();
+let RENDERER_IDS = new Ids();
 
 /**
  * @typedef {import("../core/EventBus").default} EventBus
@@ -38,8 +38,8 @@ var RENDERER_IDS = new Ids();
 
 // apply default renderer with lowest possible priority
 // so that it only kicks in if noone else could render
-var DEFAULT_RENDER_PRIORITY = 1;
-var DEFAULT_TEXT_SIZE = 16;
+let DEFAULT_RENDER_PRIORITY = 1;
+let DEFAULT_TEXT_SIZE = 16;
 
 /**
  * The default renderer used for shapes and connections.
@@ -72,6 +72,12 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         break;
       case "diamond":
         renderDiamond(visuals, element, element.custom.style);
+        break;
+      case "hexagon":
+        renderHexagon(visuals, element, element.custom.style);
+        break;
+      case "ellipse":
+        renderEllipse(visuals, element, element.custom.style);
         break;
       default:
         renderRectangle(visuals, element, 0, this.SHAPE_STYLE);
@@ -113,6 +119,56 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     svgAppend(visuals, rect);
 
     return rect;
+  }
+
+  function renderEllipse(parentGfx, element, attrs) {
+    let ellipse = svgCreate("ellipse");
+
+    attrs = styles.style(attrs);
+
+    svgAttr(ellipse, {
+      ...attrs,
+      x: 0,
+      y: 0
+    });
+
+    svgAppend(parentGfx, ellipse);
+
+    return ellipse;
+  }
+
+  function renderHexagon(parentGfx, element, attrs) {
+    let width = element.width;
+    let height = element.height;
+
+    let x_2 = width / 2;
+    let y_2_1 = height / 3;
+    let y_2_2 = (height * 2) / 3;
+
+
+    let points = [
+      { x: x_2, y: 0 },
+      { x: width, y: y_2_1 },
+      { x: width, y: y_2_2 },
+      { x: x_2, y: height },
+      { x: 0, y: y_2_2 },
+      { x: 0, y: y_2_1 },
+    ];
+
+    let pointsString = points.map(function (point) {
+      return point.x + ',' + point.y;
+    }).join(' ');
+
+    attrs = styles.style(attrs);
+
+    let polygon = svgCreate('polygon', {
+      ...attrs,
+      points: pointsString
+    });
+
+    svgAppend(parentGfx, polygon);
+
+    return polygon;
   }
 
   function renderDiamond(parentGfx, element, attrs) {
@@ -385,9 +441,9 @@ Renderer.prototype.getConnectionPath = function getConnectionPath(connection) {
 
 Renderer.$inject = ["eventBus", "styles", "canvas", "textRenderer"];
 
-DefaultRenderer.prototype.drawShape = function drawShape(visuals, element) {};
+DefaultRenderer.prototype.drawShape = function drawShape(visuals, element) { };
 
 DefaultRenderer.prototype.drawConnection = function drawShape(
   visuals,
   element
-) {};
+) { };

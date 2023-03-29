@@ -26,7 +26,7 @@ PaletteProvider.$inject = [
 ];
 
 
-PaletteProvider.prototype.getPaletteEntries = function() {
+PaletteProvider.prototype.getPaletteEntries = function () {
   var create = this._create,
     elementFactory = this._elementFactory,
     lassoTool = this._lassoTool;
@@ -37,7 +37,7 @@ PaletteProvider.prototype.getPaletteEntries = function() {
       className: "palette-icon-lasso-tool",
       title: "Activate Lasso Tool",
       action: {
-        click: function(event: any) {
+        click: function (event: any) {
           lassoTool.activateSelection(event);
         }
       }
@@ -51,8 +51,8 @@ PaletteProvider.prototype.getPaletteEntries = function() {
       className: "palette-icon-create-shape",
       title: "Create Shape",
       action: {
-        click: function() {
-          var shape = elementFactory.createShape({
+        click: function () {
+          let shape = elementFactory.createShape({
             width: 100,
             height: 80,
             isFrame: true
@@ -68,7 +68,7 @@ PaletteProvider.prototype.getPaletteEntries = function() {
     //   title: 'Create Frame',
     //   action: {
     //     click: function() {
-    //       var shape = elementFactory.createShape({
+    //       let shape = elementFactory.createShape({
     //         width: 100,
     //         height: 100,
     //         isFrame: true

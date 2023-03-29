@@ -1,5 +1,15 @@
 <template>
-  <div>
+  <div class="editor-container" @click="connectionNotification()">
+    <Transition>
+      <v-alert
+        class="notification"
+        v-if="showConnectionNotification"
+        density="compact"
+        type="warning"
+        title="No connection available"
+        text="There is no valid connection between component A and component B"
+      ></v-alert>
+    </Transition>
     <Confirm
       v-if="showConfirmPopup"
       :msg="'Really want to delete the component?'"
@@ -35,6 +45,8 @@ import { Coordinates } from "@/types/HelperTypes";
 import { GropiusType } from "@/lib/gropius-compatibility/gropiusDefaultTypes";
 import { defineComponent } from "vue";
 
+import gropiusapi from "@/mixins/api";
+
 let diagram: GropiusCompatibility;
 let coordinates: Coordinates = {
   x: 0,
@@ -51,11 +63,13 @@ export default defineComponent({
     Confirm,
     AddRelation,
   },
+  mixins: [gropiusapi],
   data() {
     return {
       showConfirmPopup: false,
       showAddComponent: false,
-      showAddRelation: false,
+      showAddRelation: true,
+      showConnectionNotification: false,
     };
   },
 
@@ -111,17 +125,9 @@ export default defineComponent({
         let grShape: GropiusShape = {
           grId: "2",
           grType: type.gropiusId,
-          label: "test"
+          label: "test",
         };
-        let grStyle: GropiusShapeStyle = {
-          width: 100,
-          height: 50,
-          color: "orange",
-          stroke: "black",
-          strokeWidth: 2,
-          strokeDasharray: "2 5",
-          radius: 10,
-        };
+        let grStyle = this.getComponentStyle("");
         diagram?.drawCustomType(type.diagramId, coordinates, grShape, grStyle);
       }
 
@@ -131,6 +137,13 @@ export default defineComponent({
     onRelationSelected() {
       this.showAddRelation = false;
     },
+
+    connectionNotification() {
+      this.showConnectionNotification = true;
+      setTimeout(() => {
+        this.showConnectionNotification = false;
+      }, 4000);
+    },
   },
 });
 </script>
@@ -138,6 +151,26 @@ export default defineComponent({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 @import "../../node_modules/diagram-js/assets/diagram-js.css";
+
+.editor-container {
+  display: grid;
+}
+
+.notification {
+  margin: 10px;
+  position: absolute !important;
+  justify-self: center;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease-in;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
 
 #container,
 #container > div {

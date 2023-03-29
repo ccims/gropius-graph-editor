@@ -34,7 +34,7 @@ import { getBoundsMid } from "diagram-js/lib/layout/LayoutUtil";
  * @typedef {import("../../draw/Styles").default} Styles
  */
 
-var LOW_PRIORITY = 499;
+let LOW_PRIORITY = 499;
 
 var MARKER_DRAGGING = "djs-dragging",
   MARKER_OK = "drop-ok",
@@ -67,7 +67,7 @@ export default function MovePreview(
   function getAllDraggedElements(shapes) {
     var allShapes = selfAndAllChildren(shapes, true);
 
-    var allConnections = map(allShapes, function(shape) {
+    var allConnections = map(allShapes, function (shape) {
       return (shape.incoming || []).concat(shape.outgoing || []);
     });
 
@@ -79,7 +79,7 @@ export default function MovePreview(
    */
   function setMarker(element, marker) {
 
-    [MARKER_ATTACH, MARKER_OK, MARKER_NOT_OK, MARKER_NEW_PARENT].forEach(function(m) {
+    [MARKER_ATTACH, MARKER_OK, MARKER_NOT_OK, MARKER_NEW_PARENT].forEach(function (m) {
 
       if (m === marker) {
         canvas.addMarker(element, m);
@@ -114,21 +114,21 @@ export default function MovePreview(
   // assign a low priority to this handler
   // to let others modify the move context before
   // we draw things
-  eventBus.on("shape.move.start", LOW_PRIORITY, function(event) {
+  eventBus.on("shape.move.start", LOW_PRIORITY, function (event) {
 
   });
 
   // update previews
-  eventBus.on("shape.move.move", LOW_PRIORITY, function(event) {
+  eventBus.on("shape.move.move", LOW_PRIORITY, function (event) {
 
   });
 
-  eventBus.on(["shape.move.out", "shape.move.cleanup"], function(event) {
+  eventBus.on(["shape.move.out", "shape.move.cleanup"], function (event) {
 
   });
 
   // remove previews
-  eventBus.on("shape.move.cleanup", function(event) {
+  eventBus.on("shape.move.cleanup", function (event) {
 
   });
 
@@ -162,7 +162,7 @@ MovePreview.$inject = [
  */
 function removeEdges(elements) {
 
-  var filteredElements = filter(elements, function(element) {
+  var filteredElements = filter(elements, function (element) {
 
     if (!isConnection(element)) {
       return true;
@@ -179,13 +179,13 @@ function removeEdges(elements) {
 }
 
 function getEdges(elements) {
-  return filter(elements, function(element) {
+  return filter(elements, function (element) {
     return isConnection(element);
   });
 }
 
 function haveDifferentParents(elements) {
-  return size(groupBy(elements, function(e) {
+  return size(groupBy(elements, function (e) {
     return e.parent && e.parent.id;
   })) !== 1;
 }

@@ -11,7 +11,11 @@ export interface GropiusShapeStyle {
   stroke: string,
   strokeWidth: number,
   strokeDasharray: string,
-  radius?: number
+  radius?: number,
+  rx?: string,
+  ry?: string,
+  cx?: string,
+  cy?: string
 }
 
 export interface GropiusConnectionStyle {

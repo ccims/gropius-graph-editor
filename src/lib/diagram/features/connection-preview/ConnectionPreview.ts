@@ -14,13 +14,13 @@ import {
 import {
   getElementLineIntersection,
   getMid
-// @ts-ignore
+  // @ts-ignore
 } from "diagram-js/lib/layout/LayoutUtil";
 
 // @ts-ignore
 import {
   createLine
-// @ts-ignore
+  // @ts-ignore
 } from "diagram-js/lib/util/RenderUtil";
 
 /**
@@ -37,7 +37,7 @@ import {
  * @typedef {import("../../core/GraphicsFactory").default} GraphicsFactory
  */
 
-var MARKER_CONNECTION_PREVIEW = "djs-connection-preview";
+let MARKER_CONNECTION_PREVIEW = "djs-connection-preview";
 
 import GraphicsFactory from "diagram-js/lib/core/GraphicsFactory";
 import Canvas from "diagram-js/lib/core/Canvas";
@@ -98,10 +98,10 @@ ConnectionPreview.$inject = [
  * @param {boolean} [hints.noCropping] true if preview should not be cropped
  * @param {boolean} [hints.noNoop] true if simple connection should not be drawn
  */
-ConnectionPreview.prototype.drawPreview = function(context: any, canConnect: boolean, hints: any, clear = true) {
+ConnectionPreview.prototype.drawPreview = function (context: any, canConnect: boolean, hints: any, clear = true) {
   hints = hints || {};
 
-  var connectionPreviewGfx = context.connectionPreviewGfx,
+  let connectionPreviewGfx = context.connectionPreviewGfx,
     getConnection = context.getConnection,
     source = hints.source,
     target = hints.target,
@@ -113,7 +113,7 @@ ConnectionPreview.prototype.drawPreview = function(context: any, canConnect: boo
     noNoop = hints.noNoop,
     connection;
 
-  var self = this;
+  let self = this;
 
   if (!connectionPreviewGfx) {
     connectionPreviewGfx = context.connectionPreviewGfx = this.createConnectionPreviewGfx();
@@ -123,7 +123,7 @@ ConnectionPreview.prototype.drawPreview = function(context: any, canConnect: boo
     svgClear(connectionPreviewGfx);
 
   if (!getConnection) {
-    getConnection = context.getConnection = cacheReturnValues(function(canConnect: boolean, source: any, target: any) {
+    getConnection = context.getConnection = cacheReturnValues(function (canConnect: boolean, source: any, target: any) {
       return self.getConnection(canConnect, source, target);
     });
   }
@@ -176,15 +176,15 @@ ConnectionPreview.prototype.drawPreview = function(context: any, canConnect: boo
  * @param {Point} [hints.connectionStart] required if source is not provided
  * @param {Point} [hints.connectionEnd] required if target is not provided
  */
-ConnectionPreview.prototype.drawNoopPreview = function(connectionPreviewGfx: any, hints: any) {
-  var source = hints.source,
+ConnectionPreview.prototype.drawNoopPreview = function (connectionPreviewGfx: any, hints: any) {
+  let source = hints.source,
     target = hints.target,
     start = hints.connectionStart || getMid(source),
     end = hints.connectionEnd || getMid(target);
 
-  var waypoints = this.cropWaypoints(start, end, source, target);
+  let waypoints = this.cropWaypoints(start, end, source, target);
 
-  var connection = this.createNoopConnection(waypoints[0], waypoints[1]);
+  let connection = this.createNoopConnection(waypoints[0], waypoints[1]);
 
   svgAppend(connectionPreviewGfx, connection);
 };
@@ -199,8 +199,8 @@ ConnectionPreview.prototype.drawNoopPreview = function(connectionPreviewGfx: any
  *
  * @returns {Point[]}
  */
-ConnectionPreview.prototype.cropWaypoints = function(start: any, end: any, source: any, target: any) {
-  var graphicsFactory = this._graphicsFactory,
+ConnectionPreview.prototype.cropWaypoints = function (start: any, end: any, source: any, target: any) {
+  let graphicsFactory = this._graphicsFactory,
     sourcePath = source && graphicsFactory.getShapePath(source),
     targetPath = target && graphicsFactory.getShapePath(target),
     connectionPath = graphicsFactory.getConnectionPath({ waypoints: [start, end] });
@@ -217,7 +217,7 @@ ConnectionPreview.prototype.cropWaypoints = function(start: any, end: any, sourc
  * @param {Object} [context]
  * @param {SVGElement} [context.connectionPreviewGfx] preview container
  */
-ConnectionPreview.prototype.cleanUp = function(context: any) {
+ConnectionPreview.prototype.cleanUp = function (context: any) {
   if (context && context.connectionPreviewGfx) {
     svgRemove(context.connectionPreviewGfx);
   }
@@ -230,8 +230,8 @@ ConnectionPreview.prototype.cleanUp = function(context: any) {
  *
  * @returns {Connection}
  */
-ConnectionPreview.prototype.getConnection = function(canConnect: boolean) {
-  var attrs = ensureConnectionAttrs(canConnect);
+ConnectionPreview.prototype.getConnection = function (canConnect: boolean) {
+  let attrs = ensureConnectionAttrs(canConnect);
 
   return this._elementFactory.createConnection(attrs);
 };
@@ -242,8 +242,8 @@ ConnectionPreview.prototype.getConnection = function(canConnect: boolean) {
  *
  * @returns {SVGElement}
  */
-ConnectionPreview.prototype.createConnectionPreviewGfx = function() {
-  var gfx = svgCreate("g");
+ConnectionPreview.prototype.createConnectionPreviewGfx = function () {
+  let gfx = svgCreate("g");
 
   svgAttr(gfx, {
     pointerEvents: "none"
@@ -264,7 +264,7 @@ ConnectionPreview.prototype.createConnectionPreviewGfx = function() {
  *
  * @returns {SVGElement}
  */
-ConnectionPreview.prototype.createNoopConnection = function(start: any, end: any) {
+ConnectionPreview.prototype.createNoopConnection = function (start: any, end: any) {
   return createLine([start, end], {
     "stroke": "#333",
     "strokeDasharray": [1],
@@ -283,18 +283,18 @@ ConnectionPreview.prototype.createNoopConnection = function(start: any, end: any
  * @return {Function}
  */
 function cacheReturnValues(fn: any) {
-  var returnValues = {};
+  let returnValues = {};
 
   /**
    * Return cached return value referenced by stringified first argument.
    *
    * @returns {*}
    */
-  return function(firstArgument: any) {
-    var key = JSON.stringify(firstArgument);
+  return function (firstArgument: any) {
+    let key = JSON.stringify(firstArgument);
 
     // @ts-ignore
-    var returnValue = returnValues[key];
+    let returnValue = returnValues[key];
 
     if (!returnValue) {
       // @ts-ignore

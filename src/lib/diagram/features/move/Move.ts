@@ -29,14 +29,14 @@ import { getOriginal as getOriginalEvent } from "diagram-js/lib/util/Event";
 
 import {
   isPrimaryButton
-// @ts-ignore
+  // @ts-ignore
 } from "diagram-js/lib/util/Mouse";
 
 import EventBus from "diagram-js/lib/core/EventBus";
 import Modeling from "diagram-js/lib/features/modeling/Modeling";
 import { Base } from "diagram-js/lib/model";
 
-var round = Math.round;
+let round = Math.round;
 
 function mid(element: any) {
   return {
@@ -84,7 +84,7 @@ export default function MoveEvents(
   // * validatedShapes: a list of shapes that are being checked
   //                    against the rules before and during move
   //
-  eventBus.on("shape.move.start", HIGH_PRIORITY, function(event: any) {
+  eventBus.on("shape.move.start", HIGH_PRIORITY, function (event: any) {
 
     var context = event.context,
       shape = event.shape,
@@ -113,7 +113,7 @@ export default function MoveEvents(
   // others may hook up later, e.g. at default priority and modify
   // the move environment
   //
-  eventBus.on("shape.move.start", MEDIUM_PRIORITY, function(event: any) {
+  eventBus.on("shape.move.start", MEDIUM_PRIORITY, function (event: any) {
     var context = event.context,
       validatedShapes = context.validatedShapes,
       canExecute;
@@ -130,7 +130,7 @@ export default function MoveEvents(
   // to let others modify the move event before we update
   // the context
   //
-  eventBus.on("shape.move.move", LOW_PRIORITY, function(event: any) {
+  eventBus.on("shape.move.move", LOW_PRIORITY, function (event: any) {
     var context = event.context,
       validatedShapes = context.validatedShapes,
       hover = event.hover,
@@ -192,14 +192,14 @@ export default function MoveEvents(
     });
   }
 
-  eventBus.on("shape.move.end", function(event) {
+  eventBus.on("shape.move.end", function (event) {
     moveShape(event);
   });
 
 
   // move activation
 
-  eventBus.on("element.mousedown", function(event: any) {
+  eventBus.on("element.mousedown", function (event: any) {
 
     if (!isPrimaryButton(event)) {
       return;
@@ -280,7 +280,7 @@ function removeNested(elements: Array<Base>) {
 
   var ids = groupBy(elements, "id");
 
-  return filter(elements, function(element: Base) {
+  return filter(elements, function (element: Base) {
     while ((element = element.parent)) {
 
       // parent in selection
