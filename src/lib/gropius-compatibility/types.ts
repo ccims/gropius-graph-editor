@@ -13,3 +13,8 @@ export interface GropiusShapeStyle {
   strokeDasharray: string,
   radius?: number
 }
+
+export interface GropiusConnectionStyle {
+  stroke: string,
+  fill: string,
+}
