@@ -35,6 +35,8 @@ import { Coordinates } from "@/types/HelperTypes";
 import { GropiusType } from "@/lib/gropius-compatibility/gropiusDefaultTypes";
 import { defineComponent } from "vue";
 
+import gropiusapi from "@/mixins/api";
+
 let diagram: GropiusCompatibility;
 let coordinates: Coordinates = {
   x: 0,
@@ -51,6 +53,7 @@ export default defineComponent({
     Confirm,
     AddRelation,
   },
+  mixins: [gropiusapi],
   data() {
     return {
       showConfirmPopup: false,
@@ -112,15 +115,7 @@ export default defineComponent({
           grId: "2",
           grType: type.gropiusId,
         };
-        let grStyle: GropiusShapeStyle = {
-          width: 100,
-          height: 50,
-          color: "orange",
-          stroke: "black",
-          strokeWidth: 2,
-          strokeDasharray: "2 5",
-          radius: 10,
-        };
+        let grStyle = this.getComponentStyle("");
         diagram?.drawCustomType(type.diagramId, coordinates, grShape, grStyle);
       }
 
