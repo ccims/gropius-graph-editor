@@ -34,9 +34,9 @@ import { getBoundsMid } from "diagram-js/lib/layout/LayoutUtil";
  * @typedef {import("../../draw/Styles").default} Styles
  */
 
-let LOW_PRIORITY = 499;
+const LOW_PRIORITY = 499;
 
-var MARKER_DRAGGING = "djs-dragging",
+const MARKER_DRAGGING = "djs-dragging",
   MARKER_OK = "drop-ok",
   MARKER_NOT_OK = "drop-not-ok",
   MARKER_NEW_PARENT = "new-parent",
@@ -54,20 +54,20 @@ var MARKER_DRAGGING = "djs-dragging",
 export default function MovePreview(
   injector, eventBus, canvas, styles, previewSupport) {
 
-  let connectionPreview = injector.get("connectionPreview", false);
+  // let connectionPreview = injector.get("connectionPreview", false);
 
   function getVisualDragShapes(shapes) {
-    var elements = getAllDraggedElements(shapes);
+    const elements = getAllDraggedElements(shapes);
 
-    var filteredElements = removeEdges(elements);
+    const filteredElements = removeEdges(elements);
 
     return filteredElements;
   }
 
   function getAllDraggedElements(shapes) {
-    var allShapes = selfAndAllChildren(shapes, true);
+    const allShapes = selfAndAllChildren(shapes, true);
 
-    var allConnections = map(allShapes, function (shape) {
+    const allConnections = map(allShapes, function (shape) {
       return (shape.incoming || []).concat(shape.outgoing || []);
     });
 
@@ -162,7 +162,7 @@ MovePreview.$inject = [
  */
 function removeEdges(elements) {
 
-  var filteredElements = filter(elements, function (element) {
+  const filteredElements = filter(elements, function (element) {
 
     if (!isConnection(element)) {
       return true;

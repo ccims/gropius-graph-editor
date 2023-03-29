@@ -20,7 +20,7 @@ import {
  * @typedef {import("../selection/Selection").default} Selection
  */
 
-var LOW_PRIORITY = 500,
+const LOW_PRIORITY = 500,
   MEDIUM_PRIORITY = 1250,
   HIGH_PRIORITY = 1500;
 
@@ -36,7 +36,7 @@ import EventBus from "diagram-js/lib/core/EventBus";
 import Modeling from "diagram-js/lib/features/modeling/Modeling";
 import { Base } from "diagram-js/lib/model";
 
-let round = Math.round;
+const round = Math.round;
 
 function mid(element: any) {
   return {
@@ -86,7 +86,7 @@ export default function MoveEvents(
   //
   eventBus.on("shape.move.start", HIGH_PRIORITY, function (event: any) {
 
-    var context = event.context,
+    let context = event.context,
       shape = event.shape,
       shapes = selection.get().slice();
 
@@ -114,7 +114,7 @@ export default function MoveEvents(
   // the move environment
   //
   eventBus.on("shape.move.start", MEDIUM_PRIORITY, function (event: any) {
-    var context = event.context,
+    let context = event.context,
       validatedShapes = context.validatedShapes,
       canExecute;
 
@@ -131,7 +131,7 @@ export default function MoveEvents(
   // the context
   //
   eventBus.on("shape.move.move", LOW_PRIORITY, function (event: any) {
-    var context = event.context,
+    let context = event.context,
       validatedShapes = context.validatedShapes,
       hover = event.hover,
       delta = { x: event.dx, y: event.dy },
@@ -164,9 +164,9 @@ export default function MoveEvents(
   });
 
   function moveShape(event: any) {
-    var context = event.context;
+    const context = event.context;
 
-    var delta = context.delta,
+    let delta = context.delta,
       canExecute = context.canExecute,
       isAttach = canExecute === "attach",
       shapes = context.shapes;
@@ -205,7 +205,7 @@ export default function MoveEvents(
       return;
     }
 
-    var originalEvent = getOriginalEvent(event);
+    const originalEvent = getOriginalEvent(event);
 
     if (!originalEvent) {
       throw new Error("must supply DOM mousedown event");
@@ -238,7 +238,7 @@ export default function MoveEvents(
       return;
     }
 
-    var referencePoint = mid(element);
+    const referencePoint = mid(element);
 
     dragging.init(event, referencePoint, "shape.move", {
       cursor: "grabbing",
@@ -278,7 +278,7 @@ MoveEvents.$inject = [
  */
 function removeNested(elements: Array<Base>) {
 
-  var ids = groupBy(elements, "id");
+  const ids = groupBy(elements, "id");
 
   return filter(elements, function (element: Base) {
     while ((element = element.parent)) {

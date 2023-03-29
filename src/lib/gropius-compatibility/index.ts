@@ -42,7 +42,7 @@ export default class GropiusCompatibility {
       const element = e.element;
       this.canvas.removeShape(element);
 
-      let coordinates: Coordinates = {
+      const coordinates: Coordinates = {
         x: element.x,
         y: element.y
       };
@@ -195,7 +195,7 @@ export default class GropiusCompatibility {
     this.drawGropiusType({ x: 250, y: 300 },
       { grId: "3", grType: "shape-gropius-component", label: "Hello World" });
 
-    // var connection1 = this.elementFactory.createConnection({
+    // let connection1 = this.elementFactory.createConnection({
     //     waypoints: [
     //         {x: shape1.x, y: shape1.y},
     //         {x: shape2.x, y: shape2.y},
@@ -213,12 +213,12 @@ export default class GropiusCompatibility {
   }
 
   private createShape(shape: any) {
-    let _shape = this.elementFactory.createShape(shape);
+    const _shape = this.elementFactory.createShape(shape);
     this.canvas.addShape(_shape, this.root);
   }
 
   public createCustomRectangle(coordinates: Coordinates, grShape: GropiusShape, grStyle: GropiusShapeStyle) {
-    let shape = {
+    const shape = {
       x: coordinates.x,
       y: coordinates.y,
       width: grStyle.width,
@@ -240,7 +240,7 @@ export default class GropiusCompatibility {
   }
 
   public createCustomDiamond(coordinates: Coordinates, grShape: GropiusShape, grStyle: GropiusShapeStyle) {
-    let shape = {
+    const shape = {
       x: coordinates.x,
       y: coordinates.y,
       width: grStyle.width,
@@ -264,7 +264,7 @@ export default class GropiusCompatibility {
   }
 
   public createConnectionBasic(source: any, target: any, waypoints: Array<Coordinates>) {
-    var connection = this.elementFactory.createConnection({
+    let connection = this.elementFactory.createConnection({
       waypoints: waypoints,
       source: source,
       target: target

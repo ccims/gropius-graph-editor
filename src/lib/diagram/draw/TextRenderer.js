@@ -2,11 +2,11 @@ import { assign } from "min-dash";
 
 import TextUtil from "diagram-js/lib/util/Text";
 
-let DEFAULT_FONT_SIZE = 16;
-let LINE_HEIGHT_RATIO = 1.2;
+const DEFAULT_FONT_SIZE = 16;
+const LINE_HEIGHT_RATIO = 1.2;
 
 export default function TextRenderer(config) {
-    let defaultStyle = assign(
+    const defaultStyle = assign(
         {
             fontFamily: "IBM Plex, sans-serif",
             fontSize: DEFAULT_FONT_SIZE,
@@ -16,9 +16,9 @@ export default function TextRenderer(config) {
         (config && config.defaultStyle) || {}
     );
 
-    let fontSize = parseInt(defaultStyle.fontSize, 10) - 1;
+    const fontSize = parseInt(defaultStyle.fontSize, 10) - 1;
 
-    let externalStyle = assign(
+    const externalStyle = assign(
         {},
         defaultStyle,
         {
@@ -27,7 +27,7 @@ export default function TextRenderer(config) {
         (config && config.externalStyle) || {}
     );
 
-    let textUtil = new TextUtil({
+    const textUtil = new TextUtil({
         style: defaultStyle,
     });
 
@@ -41,7 +41,7 @@ export default function TextRenderer(config) {
      * @return {Bounds}
      */
     this.getExternalLabelBounds = function (bounds, text) {
-        let layoutedDimensions = textUtil.getDimensions(text, {
+        const layoutedDimensions = textUtil.getDimensions(text, {
             box: {
                 width: 90,
                 height: 30,

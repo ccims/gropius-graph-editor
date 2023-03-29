@@ -44,7 +44,7 @@ export default defineComponent({
   },
   computed: {
     relationChoiceNames(): RelationChoiceNames[] {
-      let relationChoiceNames: RelationChoiceNames[] = [];
+      const relationChoiceNames: RelationChoiceNames[] = [];
 
       return relationChoiceNames;
     },

@@ -38,8 +38,8 @@ let RENDERER_IDS = new Ids();
 
 // apply default renderer with lowest possible priority
 // so that it only kicks in if noone else could render
-let DEFAULT_RENDER_PRIORITY = 1;
-let DEFAULT_TEXT_SIZE = 16;
+const DEFAULT_RENDER_PRIORITY = 1;
+const DEFAULT_TEXT_SIZE = 16;
 
 /**
  * The default renderer used for shapes and connections.
@@ -61,9 +61,9 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     strokeDasharray: 0,
   });
 
-  var rendererId = RENDERER_IDS.next();
+  let rendererId = RENDERER_IDS.next();
 
-  var markers = {};
+  let markers = {};
 
   this.handler = function (visuals, element) {
     switch (element.type) {
@@ -103,7 +103,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   };
 
   function renderRectangle(visuals, element, attrs) {
-    var rect = svgCreate("rect");
+    let rect = svgCreate("rect");
 
     attrs = styles.style(attrs);
 
@@ -146,15 +146,15 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function renderHexagon(parentGfx, element, attrs) {
-    let width = element.width;
-    let height = element.height;
+    const width = element.width;
+    const height = element.height;
 
-    let x_2 = width / 2;
-    let y_2_1 = height / 3;
-    let y_2_2 = (height * 2) / 3;
+    const x_2 = width / 2;
+    const y_2_1 = height / 3;
+    const y_2_2 = (height * 2) / 3;
 
 
-    let points = [
+    const points = [
       { x: x_2, y: 0 },
       { x: width, y: y_2_1 },
       { x: width, y: y_2_2 },
@@ -163,13 +163,13 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       { x: 0, y: y_2_1 },
     ];
 
-    let pointsString = points.map(function (point) {
+    const pointsString = points.map(function (point) {
       return point.x + ',' + point.y;
     }).join(' ');
 
     attrs = styles.style(attrs);
 
-    let polygon = svgCreate('polygon', {
+    const polygon = svgCreate('polygon', {
       ...attrs,
       points: pointsString
     });
@@ -180,20 +180,20 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function renderDiamond(parentGfx, element, attrs) {
-    let width = element.width;
-    let height = element.height;
+    const width = element.width;
+    const height = element.height;
 
-    var x_2 = width / 2;
-    var y_2 = height / 2;
+    const x_2 = width / 2;
+    const y_2 = height / 2;
 
-    var points = [
+    const points = [
       { x: x_2, y: 0 },
       { x: width, y: y_2 },
       { x: x_2, y: height },
       { x: 0, y: y_2 },
     ];
 
-    var pointsString = points
+    const pointsString = points
       .map(function (point) {
         return point.x + "," + point.y;
       })
@@ -201,7 +201,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
     attrs = styles.style(attrs);
 
-    var polygon = svgCreate("polygon", {
+    const polygon = svgCreate("polygon", {
       ...attrs,
       points: pointsString,
     });
@@ -221,7 +221,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       options
     );
 
-    var text = textRenderer.createText(label || "", options);
+    const text = textRenderer.createText(label || "", options);
 
     svgClasses(text).add("djs-label");
 
@@ -244,7 +244,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
   function renderExternalLabel(parentGfx, element, text) {
     console.log(element);
-    var box = {
+    const box = {
       width: 90,
       height: 30,
       x: element.width / 2 + element.x,
@@ -273,9 +273,9 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function addMarker(id, options) {
-    var { ref = { x: 0, y: 0 }, scale = 1, element } = options;
+    const { ref = { x: 0, y: 0 }, scale = 1, element } = options;
 
-    var marker = svgCreate("marker", {
+    const marker = svgCreate("marker", {
       id: id,
       viewBox: "0 0 20 20",
       refX: ref.x,
@@ -287,7 +287,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
     svgAppend(marker, element);
 
-    var defs = domQuery("defs", canvas._svg);
+    let defs = domQuery("defs", canvas._svg);
 
     if (!defs) {
       defs = svgCreate("defs");
@@ -306,7 +306,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function marker(type, fill, stroke) {
-    var id =
+    const id =
       type +
       "-" +
       colorEscape(fill) +
@@ -323,7 +323,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function createMarker(id, type, fill, stroke) {
-    var associationEnd = svgCreate("path", {
+    const associationEnd = svgCreate("path", {
       d: "M 1 5 L 11 10 L 1 15 Z",
       ...lineStyle({
         fill: fill,
@@ -354,7 +354,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   function drawLine(parentGfx, waypoints, attrs, radius) {
     attrs = lineStyle(attrs);
 
-    var line = createLine(waypoints, attrs, radius);
+    const line = createLine(waypoints, attrs, radius);
 
     svgAppend(parentGfx, line);
 
@@ -375,7 +375,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   function drawPath(parentGfx, d, attrs) {
     attrs = lineStyle(attrs);
 
-    var path = svgCreate("path", {
+    const path = svgCreate("path", {
       ...attrs,
       d,
     });
@@ -401,7 +401,7 @@ Renderer.prototype.drawConnection = function drawConnection(
   connection,
   attrs
 ) {
-  // var line = createLine(connection.waypoints, assign({}, this.CONNECTION_STYLE, attrs || {}));
+  // let line = createLine(connection.waypoints, assign({}, this.CONNECTION_STYLE, attrs || {}));
   // svgAppend(visuals, line);
   //
   // return line;
@@ -413,12 +413,12 @@ Renderer.prototype.drawShape = function drawShape(visuals, element) {
 };
 
 Renderer.prototype.getShapePath = function getShapePath(shape) {
-  var x = shape.x,
+  const x = shape.x,
     y = shape.y,
     width = shape.width,
     height = shape.height;
 
-  var shapePath = [
+  const shapePath = [
     ["M", x, y],
     ["l", width, 0],
     ["l", 0, height],
@@ -430,9 +430,9 @@ Renderer.prototype.getShapePath = function getShapePath(shape) {
 };
 
 Renderer.prototype.getConnectionPath = function getConnectionPath(connection) {
-  var waypoints = connection.waypoints;
+  const waypoints = connection.waypoints;
 
-  var idx,
+  let idx,
     point,
     connectionPath = [];
 

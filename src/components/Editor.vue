@@ -114,7 +114,7 @@ export default defineComponent({
     onComponentSelected(type: GropiusType, version: String) {
       if (type.isGropiusDefault) {
         //type = this.diagram ? this.diagram?.getGropiusShapeName(type) : "";
-        let grShape = {
+        const grShape = {
           grId: "000",
           grType: type.gropiusId,
         };
@@ -122,12 +122,12 @@ export default defineComponent({
       } else {
         // TODO Get styling for custom component
         if (!type.diagramId) throw Error("Diagram ID is not defined");
-        let grShape: GropiusShape = {
+        const grShape: GropiusShape = {
           grId: "2",
           grType: type.gropiusId,
           label: "test",
         };
-        let grStyle = this.getComponentStyle("");
+        const grStyle = this.getComponentStyle("");
         diagram?.drawCustomType(type.diagramId, coordinates, grShape, grStyle);
       }
 

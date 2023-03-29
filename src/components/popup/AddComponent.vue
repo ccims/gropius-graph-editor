@@ -82,7 +82,6 @@ export default defineComponent({
      * Steps popup is closed then
      */
     wizardCompleted() {
-      ///let selectedComponentType = GropiusDefaultTypes.get
       if (this.selectedGropiusId !== "") {
         selectedComponent = componentChoices.filter((choice) => {
           return choice.gropiusId === this.selectedGropiusId;

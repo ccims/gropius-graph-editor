@@ -22,14 +22,14 @@ inherits(CustomRuleProvider, RuleProvider);
 
 CustomRuleProvider.prototype.init = function () {
   this.addRule("shape.create", function (context: any) {
-    var target = context.target,
+    const target = context.target,
       shape = context.shape;
 
     return target.parent === shape.target;
   });
 
   this.addRule("connection.create", function (context: any) {
-    var source = context.source,
+    const source = context.source,
       target = context.target;
     if (source.grShape && target.grShape)
       return source.grShape.grType.startsWith("shape-") && target.grShape.grType.startsWith("shape-");
@@ -38,7 +38,7 @@ CustomRuleProvider.prototype.init = function () {
   });
 
   this.addRule("shape.resize", function (context: any) {
-    var shape = context.shape;
+    const shape = context.shape;
 
     return isFrameElement(shape);
   });

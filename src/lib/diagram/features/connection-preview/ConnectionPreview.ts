@@ -37,7 +37,7 @@ import {
  * @typedef {import("../../core/GraphicsFactory").default} GraphicsFactory
  */
 
-let MARKER_CONNECTION_PREVIEW = "djs-connection-preview";
+const MARKER_CONNECTION_PREVIEW = "djs-connection-preview";
 
 import GraphicsFactory from "diagram-js/lib/core/GraphicsFactory";
 import Canvas from "diagram-js/lib/core/Canvas";
@@ -113,7 +113,7 @@ ConnectionPreview.prototype.drawPreview = function (context: any, canConnect: bo
     noNoop = hints.noNoop,
     connection;
 
-  let self = this;
+  const self = this;
 
   if (!connectionPreviewGfx) {
     connectionPreviewGfx = context.connectionPreviewGfx = this.createConnectionPreviewGfx();
@@ -177,14 +177,14 @@ ConnectionPreview.prototype.drawPreview = function (context: any, canConnect: bo
  * @param {Point} [hints.connectionEnd] required if target is not provided
  */
 ConnectionPreview.prototype.drawNoopPreview = function (connectionPreviewGfx: any, hints: any) {
-  let source = hints.source,
+  const source = hints.source,
     target = hints.target,
     start = hints.connectionStart || getMid(source),
     end = hints.connectionEnd || getMid(target);
 
-  let waypoints = this.cropWaypoints(start, end, source, target);
+  const waypoints = this.cropWaypoints(start, end, source, target);
 
-  let connection = this.createNoopConnection(waypoints[0], waypoints[1]);
+  const connection = this.createNoopConnection(waypoints[0], waypoints[1]);
 
   svgAppend(connectionPreviewGfx, connection);
 };
@@ -200,7 +200,7 @@ ConnectionPreview.prototype.drawNoopPreview = function (connectionPreviewGfx: an
  * @returns {Point[]}
  */
 ConnectionPreview.prototype.cropWaypoints = function (start: any, end: any, source: any, target: any) {
-  let graphicsFactory = this._graphicsFactory,
+  const graphicsFactory = this._graphicsFactory,
     sourcePath = source && graphicsFactory.getShapePath(source),
     targetPath = target && graphicsFactory.getShapePath(target),
     connectionPath = graphicsFactory.getConnectionPath({ waypoints: [start, end] });
@@ -231,7 +231,7 @@ ConnectionPreview.prototype.cleanUp = function (context: any) {
  * @returns {Connection}
  */
 ConnectionPreview.prototype.getConnection = function (canConnect: boolean) {
-  let attrs = ensureConnectionAttrs(canConnect);
+  const attrs = ensureConnectionAttrs(canConnect);
 
   return this._elementFactory.createConnection(attrs);
 };
@@ -243,7 +243,7 @@ ConnectionPreview.prototype.getConnection = function (canConnect: boolean) {
  * @returns {SVGElement}
  */
 ConnectionPreview.prototype.createConnectionPreviewGfx = function () {
-  let gfx = svgCreate("g");
+  const gfx = svgCreate("g");
 
   svgAttr(gfx, {
     pointerEvents: "none"
@@ -291,7 +291,7 @@ function cacheReturnValues(fn: any) {
    * @returns {*}
    */
   return function (firstArgument: any) {
-    let key = JSON.stringify(firstArgument);
+    const key = JSON.stringify(firstArgument);
 
     // @ts-ignore
     let returnValue = returnValues[key];
