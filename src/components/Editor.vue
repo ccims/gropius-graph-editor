@@ -68,7 +68,7 @@ export default defineComponent({
     return {
       showConfirmPopup: false,
       showAddComponent: false,
-      showAddRelation: true,
+      showAddRelation: false,
       showConnectionNotification: false,
     };
   },
