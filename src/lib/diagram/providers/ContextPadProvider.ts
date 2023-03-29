@@ -24,12 +24,12 @@ ContextPadProvider.$inject = [
 
 
 ContextPadProvider.prototype.getContextPadEntries = function (element: any) {
-    var connect = this._connect,
+    let connect = this._connect,
         modeling = this._modeling;
 
     function removeElement() {
         // modeling.removeElements([ element ]);
-        modeling._eventBus.fire('context.shape.delete', {element: element})
+        modeling._eventBus.fire('context.shape.delete', { element: element })
     }
 
     function startConnect(event: any, element: any, autoActivate: any) {

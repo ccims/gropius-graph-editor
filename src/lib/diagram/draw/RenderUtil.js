@@ -23,12 +23,12 @@ export function getStrokeColor(element, defaultColor) {
 // cropping path customizations //////////////////////
 
 export function getRectPath(shape) {
-    var x = shape.x,
+    let x = shape.x,
         y = shape.y,
         width = shape.width,
         height = shape.height;
 
-    var rectPath = [
+    let rectPath = [
         ["M", x, y],
         ["l", width, 0],
         ["l", 0, height],

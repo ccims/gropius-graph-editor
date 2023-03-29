@@ -21,9 +21,9 @@ import {
     clear as svgClear
 } from 'tiny-svg';
 
-import {translate} from 'diagram-js/lib/util/SvgTransformUtil';
+import { translate } from 'diagram-js/lib/util/SvgTransformUtil';
 
-import {getBoundsMid} from 'diagram-js/lib/layout/LayoutUtil';
+import { getBoundsMid } from 'diagram-js/lib/layout/LayoutUtil';
 
 /**
  * @typedef {import('../../model').Base} Base
@@ -34,9 +34,9 @@ import {getBoundsMid} from 'diagram-js/lib/layout/LayoutUtil';
  * @typedef {import('../../draw/Styles').default} Styles
  */
 
-var LOW_PRIORITY = 499;
+let LOW_PRIORITY = 499;
 
-var MARKER_DRAGGING = 'djs-dragging',
+let MARKER_DRAGGING = 'djs-dragging',
     MARKER_OK = 'drop-ok',
     MARKER_NOT_OK = 'drop-not-ok',
     MARKER_NEW_PARENT = 'new-parent',
@@ -57,17 +57,17 @@ export default function MovePreview(
     let connectionPreview = injector.get('connectionPreview', false);
 
     function getVisualDragShapes(shapes) {
-        var elements = getAllDraggedElements(shapes);
+        let elements = getAllDraggedElements(shapes);
 
-        var filteredElements = removeEdges(elements);
+        let filteredElements = removeEdges(elements);
 
         return filteredElements;
     }
 
     function getAllDraggedElements(shapes) {
-        var allShapes = selfAndAllChildren(shapes, true);
+        let allShapes = selfAndAllChildren(shapes, true);
 
-        var allConnections = map(allShapes, function (shape) {
+        let allConnections = map(allShapes, function (shape) {
             return (shape.incoming || []).concat(shape.outgoing || []);
         });
 
@@ -162,15 +162,15 @@ MovePreview.$inject = [
  */
 function removeEdges(elements) {
 
-    var filteredElements = filter(elements, function (element) {
+    let filteredElements = filter(elements, function (element) {
 
         if (!isConnection(element)) {
             return true;
         } else {
 
             return (
-                find(elements, matchPattern({id: element.source.id})) &&
-                find(elements, matchPattern({id: element.target.id}))
+                find(elements, matchPattern({ id: element.source.id })) &&
+                find(elements, matchPattern({ id: element.target.id }))
             );
         }
     });
