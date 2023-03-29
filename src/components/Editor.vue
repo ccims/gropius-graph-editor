@@ -55,7 +55,7 @@ export default defineComponent({
     return {
       showConfirmPopup: false,
       showAddComponent: false,
-      showAddRelation: true,
+      showAddRelation: false,
     };
   },
 
@@ -111,6 +111,7 @@ export default defineComponent({
         let grShape: GropiusShape = {
           grId: "2",
           grType: type.gropiusId,
+          label: "test"
         };
         let grStyle: GropiusShapeStyle = {
           width: 100,
