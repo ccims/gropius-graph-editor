@@ -97,8 +97,8 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     attrs = {};
     //attrs.markerStart = marker("", fill, stroke);
     attrs.markerEnd = marker("", fill, stroke);
-    if ((element.custom && element.custom.label) || true)
-      renderExternalLabel(visuals, element, "test");
+    // if ((element.custom && element.custom.label) || true)
+    //   renderExternalLabel(visuals, element, "test");
     return drawConnectionSegments(visuals, element.waypoints, attrs);
   };
 
