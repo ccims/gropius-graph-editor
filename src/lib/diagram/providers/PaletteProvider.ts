@@ -1,4 +1,4 @@
-import ElementFactory from 'diagram-js/lib/core/ElementFactory';
+import ElementFactory from "diagram-js/lib/core/ElementFactory";
 
 /**
  * A example palette provider.
@@ -19,37 +19,37 @@ export default function PaletteProvider(create: any, elementFactory: ElementFact
 }
 
 PaletteProvider.$inject = [
-  'create',
-  'elementFactory',
-  'lassoTool',
-  'palette'
+  "create",
+  "elementFactory",
+  "lassoTool",
+  "palette"
 ];
 
 
 PaletteProvider.prototype.getPaletteEntries = function () {
-  let create = this._create,
+  var create = this._create,
     elementFactory = this._elementFactory,
     lassoTool = this._lassoTool;
 
   return {
-    'lasso-tool': {
-      group: 'tools',
-      className: 'palette-icon-lasso-tool',
-      title: 'Activate Lasso Tool',
+    "lasso-tool": {
+      group: "tools",
+      className: "palette-icon-lasso-tool",
+      title: "Activate Lasso Tool",
       action: {
         click: function (event: any) {
           lassoTool.activateSelection(event);
         }
       }
     },
-    'tool-separator': {
-      group: 'tools',
+    "tool-separator": {
+      group: "tools",
       separator: true
     },
-    'create-shape': {
-      group: 'create',
-      className: 'palette-icon-create-shape',
-      title: 'Create Shape',
+    "create-shape": {
+      group: "create",
+      className: "palette-icon-create-shape",
+      title: "Create Shape",
       action: {
         click: function () {
           let shape = elementFactory.createShape({
@@ -61,7 +61,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
           create.start(event, shape);
         }
       }
-    },
+    }
     // 'create-frame': {
     //   group: 'create',
     //   className: 'palette-icon-create-frame',

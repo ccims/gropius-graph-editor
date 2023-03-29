@@ -1,48 +1,48 @@
 import {
-    append as svgAppend,
-    attr as svgAttr,
-    classes as svgClasses,
-    create as svgCreate,
-    remove as svgRemove,
-    clear as svgClear
-} from 'tiny-svg';
+  append as svgAppend,
+  attr as svgAttr,
+  classes as svgClasses,
+  create as svgCreate,
+  remove as svgRemove,
+  clear as svgClear
+} from "tiny-svg";
 
 import {
-    isObject
-} from 'min-dash';
+  isObject
+} from "min-dash";
 
 import {
-    getElementLineIntersection,
-    getMid
-    // @ts-ignore
-} from 'diagram-js/lib/layout/LayoutUtil';
+  getElementLineIntersection,
+  getMid
+  // @ts-ignore
+} from "diagram-js/lib/layout/LayoutUtil";
 
 // @ts-ignore
 import {
-    createLine
-    // @ts-ignore
-} from 'diagram-js/lib/util/RenderUtil';
+  createLine
+  // @ts-ignore
+} from "diagram-js/lib/util/RenderUtil";
 
 /**
- * @typedef {import('../../model').Base} Base
- * @typedef {import('../../model').Connection} Connection
- * @typedef {import('../../model').Shape} Shape
+ * @typedef {import("../../model").Base} Base
+ * @typedef {import("../../model").Connection} Connection
+ * @typedef {import("../../model").Shape} Shape
  *
- * @typedef {import('../../util/Types').Point} Point
+ * @typedef {import("../../util/Types").Point} Point
  *
- * @typedef {import('didi').Injector} Injector
+ * @typedef {import("didi").Injector} Injector
  *
- * @typedef {import('../../core/Canvas').default} Canvas
- * @typedef {import('../../core/ElementFactory').default} ElementFactory
- * @typedef {import('../../core/GraphicsFactory').default} GraphicsFactory
+ * @typedef {import("../../core/Canvas").default} Canvas
+ * @typedef {import("../../core/ElementFactory").default} ElementFactory
+ * @typedef {import("../../core/GraphicsFactory").default} GraphicsFactory
  */
 
-let MARKER_CONNECTION_PREVIEW = 'djs-connection-preview';
+let MARKER_CONNECTION_PREVIEW = "djs-connection-preview";
 
 import GraphicsFactory from "diagram-js/lib/core/GraphicsFactory";
 import Canvas from "diagram-js/lib/core/Canvas";
 import ElementFactory from "diagram-js/lib/core/ElementFactory";
-import { Injector } from 'didi';
+import { Injector } from "didi";
 
 /**
  * Draws connection preview. Optionally, this can use layouter and connection docking to draw
@@ -54,30 +54,30 @@ import { Injector } from 'didi';
  * @param {ElementFactory} elementFactory
  */
 export default function ConnectionPreview(
-    injector: Injector,
-    canvas: Canvas,
-    graphicsFactory: GraphicsFactory,
-    elementFactory: ElementFactory,
+  injector: Injector,
+  canvas: Canvas,
+  graphicsFactory: GraphicsFactory,
+  elementFactory: ElementFactory
 ) {
-    // @ts-ignore
-    this._canvas = canvas;
-    // @ts-ignore
-    this._graphicsFactory = graphicsFactory;
-    // @ts-ignore
-    this._elementFactory = elementFactory;
+  // @ts-ignore
+  this._canvas = canvas;
+  // @ts-ignore
+  this._graphicsFactory = graphicsFactory;
+  // @ts-ignore
+  this._elementFactory = elementFactory;
 
-    // optional components
-    // @ts-ignore
-    this._connectionDocking = injector.get('connectionDocking', false);
-    // @ts-ignore
-    this._layouter = injector.get('layouter', false);
+  // optional components
+  // @ts-ignore
+  this._connectionDocking = injector.get("connectionDocking", false);
+  // @ts-ignore
+  this._layouter = injector.get("layouter", false);
 }
 
 ConnectionPreview.$inject = [
-    'injector',
-    'canvas',
-    'graphicsFactory',
-    'elementFactory',
+  "injector",
+  "canvas",
+  "graphicsFactory",
+  "elementFactory"
 ];
 
 /**
@@ -99,71 +99,71 @@ ConnectionPreview.$inject = [
  * @param {boolean} [hints.noNoop] true if simple connection should not be drawn
  */
 ConnectionPreview.prototype.drawPreview = function (context: any, canConnect: boolean, hints: any, clear = true) {
-    hints = hints || {};
+  hints = hints || {};
 
-    let connectionPreviewGfx = context.connectionPreviewGfx,
-        getConnection = context.getConnection,
-        source = hints.source,
-        target = hints.target,
-        waypoints = hints.waypoints,
-        connectionStart = hints.connectionStart,
-        connectionEnd = hints.connectionEnd,
-        noLayout = hints.noLayout,
-        noCropping = hints.noCropping,
-        noNoop = hints.noNoop,
-        connection;
+  let connectionPreviewGfx = context.connectionPreviewGfx,
+    getConnection = context.getConnection,
+    source = hints.source,
+    target = hints.target,
+    waypoints = hints.waypoints,
+    connectionStart = hints.connectionStart,
+    connectionEnd = hints.connectionEnd,
+    noLayout = hints.noLayout,
+    noCropping = hints.noCropping,
+    noNoop = hints.noNoop,
+    connection;
 
-    let self = this;
+  let self = this;
 
-    if (!connectionPreviewGfx) {
-        connectionPreviewGfx = context.connectionPreviewGfx = this.createConnectionPreviewGfx();
-    }
+  if (!connectionPreviewGfx) {
+    connectionPreviewGfx = context.connectionPreviewGfx = this.createConnectionPreviewGfx();
+  }
 
-    if (clear)
-        svgClear(connectionPreviewGfx);
+  if (clear)
+    svgClear(connectionPreviewGfx);
 
-    if (!getConnection) {
-        getConnection = context.getConnection = cacheReturnValues(function (canConnect: boolean, source: any, target: any) {
-            return self.getConnection(canConnect, source, target);
-        });
-    }
+  if (!getConnection) {
+    getConnection = context.getConnection = cacheReturnValues(function (canConnect: boolean, source: any, target: any) {
+      return self.getConnection(canConnect, source, target);
+    });
+  }
 
-    if (canConnect) {
-        connection = getConnection(canConnect, source, target);
-    }
+  if (canConnect) {
+    connection = getConnection(canConnect, source, target);
+  }
 
-    if (!connection) {
-        !noNoop && this.drawNoopPreview(connectionPreviewGfx, hints);
-        return;
-    }
+  if (!connection) {
+    !noNoop && this.drawNoopPreview(connectionPreviewGfx, hints);
+    return;
+  }
 
-    connection.waypoints = waypoints || [];
+  connection.waypoints = waypoints || [];
 
-    // optional layout
-    if (this._layouter && !noLayout) {
-        connection.waypoints = this._layouter.layoutConnection(connection, {
-            source: source,
-            target: target,
-            connectionStart: connectionStart,
-            connectionEnd: connectionEnd,
-            waypoints: hints.waypoints || connection.waypoints
-        });
-    }
+  // optional layout
+  if (this._layouter && !noLayout) {
+    connection.waypoints = this._layouter.layoutConnection(connection, {
+      source: source,
+      target: target,
+      connectionStart: connectionStart,
+      connectionEnd: connectionEnd,
+      waypoints: hints.waypoints || connection.waypoints
+    });
+  }
 
-    // fallback if no waypoints were provided nor created with layouter
-    if (!connection.waypoints || !connection.waypoints.length) {
-        connection.waypoints = [
-            source ? getMid(source) : connectionStart,
-            target ? getMid(target) : connectionEnd
-        ];
-    }
+  // fallback if no waypoints were provided nor created with layouter
+  if (!connection.waypoints || !connection.waypoints.length) {
+    connection.waypoints = [
+      source ? getMid(source) : connectionStart,
+      target ? getMid(target) : connectionEnd
+    ];
+  }
 
-    // optional cropping
-    if (this._connectionDocking && (source || target) && !noCropping) {
-        connection.waypoints = this._connectionDocking.getCroppedWaypoints(connection, source, target);
-    }
+  // optional cropping
+  if (this._connectionDocking && (source || target) && !noCropping) {
+    connection.waypoints = this._connectionDocking.getCroppedWaypoints(connection, source, target);
+  }
 
-    this._graphicsFactory.drawConnection(connectionPreviewGfx, connection);
+  this._graphicsFactory.drawConnection(connectionPreviewGfx, connection);
 };
 
 /**
@@ -177,16 +177,16 @@ ConnectionPreview.prototype.drawPreview = function (context: any, canConnect: bo
  * @param {Point} [hints.connectionEnd] required if target is not provided
  */
 ConnectionPreview.prototype.drawNoopPreview = function (connectionPreviewGfx: any, hints: any) {
-    let source = hints.source,
-        target = hints.target,
-        start = hints.connectionStart || getMid(source),
-        end = hints.connectionEnd || getMid(target);
+  let source = hints.source,
+    target = hints.target,
+    start = hints.connectionStart || getMid(source),
+    end = hints.connectionEnd || getMid(target);
 
-    let waypoints = this.cropWaypoints(start, end, source, target);
+  let waypoints = this.cropWaypoints(start, end, source, target);
 
-    let connection = this.createNoopConnection(waypoints[0], waypoints[1]);
+  let connection = this.createNoopConnection(waypoints[0], waypoints[1]);
 
-    svgAppend(connectionPreviewGfx, connection);
+  svgAppend(connectionPreviewGfx, connection);
 };
 
 /**
@@ -200,15 +200,15 @@ ConnectionPreview.prototype.drawNoopPreview = function (connectionPreviewGfx: an
  * @returns {Point[]}
  */
 ConnectionPreview.prototype.cropWaypoints = function (start: any, end: any, source: any, target: any) {
-    let graphicsFactory = this._graphicsFactory,
-        sourcePath = source && graphicsFactory.getShapePath(source),
-        targetPath = target && graphicsFactory.getShapePath(target),
-        connectionPath = graphicsFactory.getConnectionPath({ waypoints: [start, end] });
+  let graphicsFactory = this._graphicsFactory,
+    sourcePath = source && graphicsFactory.getShapePath(source),
+    targetPath = target && graphicsFactory.getShapePath(target),
+    connectionPath = graphicsFactory.getConnectionPath({ waypoints: [start, end] });
 
-    start = (source && getElementLineIntersection(sourcePath, connectionPath, true)) || start;
-    end = (target && getElementLineIntersection(targetPath, connectionPath, false)) || end;
+  start = (source && getElementLineIntersection(sourcePath, connectionPath, true)) || start;
+  end = (target && getElementLineIntersection(targetPath, connectionPath, false)) || end;
 
-    return [start, end];
+  return [start, end];
 };
 
 /**
@@ -218,9 +218,9 @@ ConnectionPreview.prototype.cropWaypoints = function (start: any, end: any, sour
  * @param {SVGElement} [context.connectionPreviewGfx] preview container
  */
 ConnectionPreview.prototype.cleanUp = function (context: any) {
-    if (context && context.connectionPreviewGfx) {
-        svgRemove(context.connectionPreviewGfx);
-    }
+  if (context && context.connectionPreviewGfx) {
+    svgRemove(context.connectionPreviewGfx);
+  }
 };
 
 /**
@@ -231,9 +231,9 @@ ConnectionPreview.prototype.cleanUp = function (context: any) {
  * @returns {Connection}
  */
 ConnectionPreview.prototype.getConnection = function (canConnect: boolean) {
-    let attrs = ensureConnectionAttrs(canConnect);
+  let attrs = ensureConnectionAttrs(canConnect);
 
-    return this._elementFactory.createConnection(attrs);
+  return this._elementFactory.createConnection(attrs);
 };
 
 
@@ -243,17 +243,17 @@ ConnectionPreview.prototype.getConnection = function (canConnect: boolean) {
  * @returns {SVGElement}
  */
 ConnectionPreview.prototype.createConnectionPreviewGfx = function () {
-    let gfx = svgCreate('g');
+  let gfx = svgCreate("g");
 
-    svgAttr(gfx, {
-        pointerEvents: 'none'
-    });
+  svgAttr(gfx, {
+    pointerEvents: "none"
+  });
 
-    svgClasses(gfx).add(MARKER_CONNECTION_PREVIEW);
+  svgClasses(gfx).add(MARKER_CONNECTION_PREVIEW);
 
-    svgAppend(this._canvas.getActiveLayer(), gfx);
+  svgAppend(this._canvas.getActiveLayer(), gfx);
 
-    return gfx;
+  return gfx;
 };
 
 /**
@@ -265,12 +265,12 @@ ConnectionPreview.prototype.createConnectionPreviewGfx = function () {
  * @returns {SVGElement}
  */
 ConnectionPreview.prototype.createNoopConnection = function (start: any, end: any) {
-    return createLine([start, end], {
-        'stroke': '#333',
-        'strokeDasharray': [1],
-        'strokeWidth': 2,
-        'pointer-events': 'none'
-    });
+  return createLine([start, end], {
+    "stroke": "#333",
+    "strokeDasharray": [1],
+    "strokeWidth": 2,
+    "pointer-events": "none"
+  });
 };
 
 // helpers //////////
@@ -283,26 +283,26 @@ ConnectionPreview.prototype.createNoopConnection = function (start: any, end: an
  * @return {Function}
  */
 function cacheReturnValues(fn: any) {
-    let returnValues = {};
+  let returnValues = {};
 
-    /**
-     * Return cached return value referenced by stringified first argument.
-     *
-     * @returns {*}
-     */
-    return function (firstArgument: any) {
-        let key = JSON.stringify(firstArgument);
+  /**
+   * Return cached return value referenced by stringified first argument.
+   *
+   * @returns {*}
+   */
+  return function (firstArgument: any) {
+    let key = JSON.stringify(firstArgument);
 
-        // @ts-ignore
-        let returnValue = returnValues[key];
+    // @ts-ignore
+    let returnValue = returnValues[key];
 
-        if (!returnValue) {
-            // @ts-ignore
-            returnValue = returnValues[key] = fn.apply(null, arguments);
-        }
+    if (!returnValue) {
+      // @ts-ignore
+      returnValue = returnValues[key] = fn.apply(null, arguments);
+    }
 
-        return returnValue;
-    };
+    return returnValue;
+  };
 }
 
 /**
@@ -313,9 +313,9 @@ function cacheReturnValues(fn: any) {
  * @returns {Object}
  */
 function ensureConnectionAttrs(canConnect: boolean) {
-    if (isObject(canConnect)) {
-        return canConnect;
-    } else {
-        return {};
-    }
+  if (isObject(canConnect)) {
+    return canConnect;
+  } else {
+    return {};
+  }
 }

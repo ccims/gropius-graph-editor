@@ -125,6 +125,7 @@ export default defineComponent({
         let grShape: GropiusShape = {
           grId: "2",
           grType: type.gropiusId,
+          label: "test",
         };
         let grStyle = this.getComponentStyle("");
         diagram?.drawCustomType(type.diagramId, coordinates, grShape, grStyle);
