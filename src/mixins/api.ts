@@ -10,6 +10,17 @@ export default {
         return { /* data */ }
     },
     methods: {
+        // als Rückmeldung, ob Erstellen der Komponente erfolgreich
+        // param evtl. id
+        addComponent(): Boolean {
+            return true;
+        },
+
+        // same
+        addConnection(): Boolean {
+            return true;
+        },
+
         /**
          * 
          * @returns available component choices
