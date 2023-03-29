@@ -124,12 +124,20 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   function renderEllipse(parentGfx, element, attrs) {
     let ellipse = svgCreate("ellipse");
 
+    const cx = element.width / 2;
+    const cy = element.height / 2;
+
+    const rx = (element.width / 2).toString();
+    const ry = (element.height / 2).toString();
+
     attrs = styles.style(attrs);
 
     svgAttr(ellipse, {
       ...attrs,
-      x: 0,
-      y: 0
+      cx: cx,
+      cy: cy,
+      rx: rx,
+      ry: ry
     });
 
     svgAppend(parentGfx, ellipse);

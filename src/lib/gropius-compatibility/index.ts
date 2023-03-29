@@ -143,16 +143,12 @@ export default class GropiusCompatibility {
         shape = {
           x: coordinates.x,
           y: coordinates.y,
-          width: 100,
-          height: 50,
+          width: 200,
+          height: 100,
           type: "ellipse",
           grShape: grShape,
           custom: {
             style: {
-              cx: coordinates.x,
-              cy: coordinates.y,
-              rx: "100",
-              ry: "50",
               fill: "none",
               stroke: "black",
               strokeWidth: "2",
