@@ -1,20 +1,20 @@
 // @ts-ignore
-import InteractionEventsModule from 'diagram-js/lib/features/interaction-events';
+import InteractionEventsModule from "diagram-js/lib/features/interaction-events";
 // @ts-ignore
-import SelectionModule from 'diagram-js/lib/features/selection';
+import SelectionModule from "diagram-js/lib/features/selection";
 // @ts-ignore
-import OutlineModule from 'diagram-js/lib/features/outline';
+import OutlineModule from "diagram-js/lib/features/outline";
 // @ts-ignore
-import RulesModule from 'diagram-js/lib/features/rules';
+import RulesModule from "diagram-js/lib/features/rules";
 // @ts-ignore
-import DraggingModule from 'diagram-js/lib/features/dragging';
+import DraggingModule from "diagram-js/lib/features/dragging";
 // @ts-ignore
-import PreviewSupportModule from 'diagram-js/lib/features/preview-support';
+import PreviewSupportModule from "diagram-js/lib/features/preview-support";
 
 // @ts-ignore
-import MoveModule from './Move';
+import MoveModule from "./Move";
 // @ts-ignore
-import MovePreview from './MovePreview';
+import MovePreview from "./MovePreview";
 
 export default {
   __depends__: [
@@ -26,9 +26,9 @@ export default {
     PreviewSupportModule
   ],
   __init__: [
-    'move',
-    'movePreview'
+    "move",
+    "movePreview"
   ],
-  move: [ 'type', MoveModule ],
-  movePreview: [ 'type', MovePreview ]
+  move: ["type", MoveModule],
+  movePreview: ["type", MovePreview]
 };
