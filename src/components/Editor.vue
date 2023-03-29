@@ -24,17 +24,17 @@
       @onChoiceDone="onComponentSelected"
     ></AddComponent>
 
-    <AddRelation
-      v-if="showAddRelation"
-      @onChoiceDone="onRelationSelected"
-    ></AddRelation>
+    <AddConnection
+      v-if="showAddConnection"
+      @onChoiceDone="onConnectionSelected"
+    ></AddConnection>
   </div>
 </template>
 
 <script lang="ts">
 import Confirm from "./popup/Confirm.vue";
 import AddComponent from "./popup/AddComponent.vue";
-import AddRelation from "./popup/AddRelation.vue";
+import AddConnection from "./popup/AddConnection.vue";
 
 import GropiusCompatibility from "../lib/gropius-compatibility";
 import {
@@ -61,14 +61,14 @@ export default defineComponent({
   components: {
     AddComponent,
     Confirm,
-    AddRelation,
+    AddConnection,
   },
   mixins: [gropiusapi],
   data() {
     return {
       showConfirmPopup: false,
       showAddComponent: false,
-      showAddRelation: false,
+      showAddConnection: false,
       showConnectionNotification: false,
     };
   },
@@ -134,8 +134,8 @@ export default defineComponent({
       this.showAddComponent = false;
     },
 
-    onRelationSelected() {
-      this.showAddRelation = false;
+    onConnectionSelected() {
+      this.showAddConnection = false;
     },
 
     connectionNotification() {
