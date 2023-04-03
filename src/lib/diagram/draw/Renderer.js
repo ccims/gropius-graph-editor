@@ -79,6 +79,21 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       case "ellipse":
         renderEllipse(visuals, element, element.custom.style);
         break;
+      case "octagon":
+        renderOctagon(visuals, element, element.custom.style);
+        break;
+      case "circle":
+        renderCircle(visuals, element, element.custom.style);
+        break;
+      case "triangle":
+        renderTriangle(visuals, element, element.custom.style);
+        break;
+      case "parallelogram":
+        renderParallelogram(visuals, element, element.custom.style);
+        break;
+      case "trapeze":
+        renderTrapeze(visuals, element, element.custom.style);
+        break;
       default:
         renderRectangle(visuals, element, 0, this.SHAPE_STYLE);
     }
@@ -121,6 +136,130 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     return rect;
   }
 
+  function renderParallelogram(parentGfx, element, attrs) {
+    const points = [
+      { x: 0, y: element.height },
+      { x: element.width - 20, y: element.height },
+      { x: element.width, y: 0 },
+      { x: 20, y: 0 },
+
+    ];
+
+    const pointsString = points.map(function (point) {
+      return point.x + ',' + point.y;
+    }).join(' ');
+
+    attrs = styles.style(attrs);
+
+    const polygon = svgCreate('polygon', {
+      ...attrs,
+      points: pointsString
+    });
+
+    svgAppend(parentGfx, polygon);
+
+    return polygon;
+  }
+
+  function renderTrapeze(parentGfx, element, attrs) {
+    const points = [
+      { x: 0, y: element.height },
+      { x: element.width, y: element.height },
+      { x: element.width - 20, y: 0 },
+      { x: 20, y: 0 },
+    ];
+
+    const pointsString = points.map(function (point) {
+      return point.x + ',' + point.y;
+    }).join(' ');
+
+    attrs = styles.style(attrs);
+
+    const polygon = svgCreate('polygon', {
+      ...attrs,
+      points: pointsString
+    });
+
+    svgAppend(parentGfx, polygon);
+
+    return polygon;
+  }
+
+  function renderTriangle(parentGfx, element, attrs) {
+
+    const points = [
+      { x: element.width / 2, y: 0 },
+      { x: 0, y: element.height },
+      { x: element.width, y: element.height },
+    ];
+
+    const pointsString = points.map(function (point) {
+      return point.x + ',' + point.y;
+    }).join(' ');
+
+    attrs = styles.style(attrs);
+
+    const polygon = svgCreate('polygon', {
+      ...attrs,
+      points: pointsString
+    });
+
+    svgAppend(parentGfx, polygon);
+
+    return polygon;
+  }
+
+  function renderCircle(visuals, element, attrs) {
+    let rect = svgCreate("circle");
+
+    const radius = element.width / 2;
+    const c = element.width / 2;
+
+    attrs = styles.style(attrs);
+
+    svgAttr(rect, {
+      cx: c,
+      cy: c,
+      r: radius,
+      ...attrs,
+    });
+
+    svgAppend(visuals, rect);
+
+    return rect;
+  }
+
+  function renderOctagon(parentGfx, element, attrs) {
+    const width = element.width;
+    const height = element.height;
+
+    const points = [
+      { x: 0, y: height / 3 },
+      { x: 20, y: 0 },
+      { x: width - 20, y: 0 },
+      { x: width, y: height / 3 },
+      { x: width, y: (height * 2) / 3 },
+      { x: width - 20, y: height },
+      { x: 20, y: height },
+      { x: 0, y: (height * 2 / 3) },
+    ];
+
+    const pointsString = points.map(function (point) {
+      return point.x + ',' + point.y;
+    }).join(' ');
+
+    attrs = styles.style(attrs);
+
+    const polygon = svgCreate('polygon', {
+      ...attrs,
+      points: pointsString
+    });
+
+    svgAppend(parentGfx, polygon);
+
+    return polygon;
+  }
+
   function renderEllipse(parentGfx, element, attrs) {
     let ellipse = svgCreate("ellipse");
 
@@ -149,18 +288,13 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     const width = element.width;
     const height = element.height;
 
-    const x_2 = width / 2;
-    const y_2_1 = height / 3;
-    const y_2_2 = (height * 2) / 3;
-
-
     const points = [
-      { x: x_2, y: 0 },
-      { x: width, y: y_2_1 },
-      { x: width, y: y_2_2 },
-      { x: x_2, y: height },
-      { x: 0, y: y_2_2 },
-      { x: 0, y: y_2_1 },
+      { x: 0, y: element.height / 2 },
+      { x: 20, y: 0 },
+      { x: width - 20, y: 0 },
+      { x: width, y: height / 2 },
+      { x: width - 20, y: height },
+      { x: 20, y: height },
     ];
 
     const pointsString = points.map(function (point) {

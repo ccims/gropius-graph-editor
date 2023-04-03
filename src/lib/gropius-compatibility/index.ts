@@ -123,7 +123,7 @@ export default class GropiusCompatibility {
         shape = {
           x: coordinates.x,
           y: coordinates.y,
-          width: 100,
+          width: 150,
           height: 100,
           type: "hexagon",
           grShape: grShape,
@@ -143,9 +143,109 @@ export default class GropiusCompatibility {
         shape = {
           x: coordinates.x,
           y: coordinates.y,
-          width: 200,
+          width: 300,
           height: 100,
           type: "ellipse",
+          grShape: grShape,
+          custom: {
+            style: {
+              fill: "none",
+              stroke: "black",
+              strokeWidth: "2",
+              strokeDasharray: "0"
+            },
+            label: grShape.label
+          }
+        }
+        this.createShape(shape)
+        break;
+      case 'shape-gropius-octagon':
+        shape = {
+          x: coordinates.x,
+          y: coordinates.y,
+          width: 100,
+          height: 100,
+          type: "octagon",
+          grShape: grShape,
+          custom: {
+            style: {
+              fill: "none",
+              stroke: "black",
+              strokeWidth: "2",
+              strokeDasharray: "0"
+            },
+            label: grShape.label
+          }
+        }
+        this.createShape(shape)
+        break;
+      case 'shape-gropius-circle':
+        shape = {
+          x: coordinates.x,
+          y: coordinates.y,
+          width: 100,
+          height: 100,
+          type: "circle",
+          grShape: grShape,
+          custom: {
+            style: {
+              fill: "none",
+              stroke: "black",
+              strokeWidth: "2",
+              strokeDasharray: "0"
+            },
+            label: grShape.label
+          }
+        }
+        this.createShape(shape)
+        break;
+      case 'shape-gropius-triangle':
+        shape = {
+          x: coordinates.x,
+          y: coordinates.y,
+          width: 150,
+          height: 100,
+          type: "triangle",
+          grShape: grShape,
+          custom: {
+            style: {
+              fill: "none",
+              stroke: "black",
+              strokeWidth: "2",
+              strokeDasharray: "0"
+            },
+            label: grShape.label
+          }
+        }
+        this.createShape(shape)
+        break;
+      case 'shape-gropius-parallelogram':
+        shape = {
+          x: coordinates.x,
+          y: coordinates.y,
+          width: 150,
+          height: 100,
+          type: "parallelogram",
+          grShape: grShape,
+          custom: {
+            style: {
+              fill: "none",
+              stroke: "black",
+              strokeWidth: "2",
+              strokeDasharray: "0"
+            },
+            label: grShape.label
+          }
+        }
+        this.createShape(shape)
+        break;
+      case 'shape-gropius-trapeze':
+        shape = {
+          x: coordinates.x,
+          y: coordinates.y,
+          width: 150,
+          height: 100,
+          type: "trapeze",
           grShape: grShape,
           custom: {
             style: {

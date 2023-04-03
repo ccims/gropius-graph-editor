@@ -18,6 +18,31 @@ const GropiusDefaultTypes: Map<string, GropiusType> = new Map<string, GropiusTyp
         plainName: "Ellipse",
         gropiusId: "shape-gropius-ellipse",
         isGropiusDefault: true
+    }],
+    ["Octagon", {
+        plainName: "Octagon",
+        gropiusId: "shape-gropius-octagon",
+        isGropiusDefault: true
+    }],
+    ["Circle", {
+        plainName: "Circle",
+        gropiusId: "shape-gropius-circle",
+        isGropiusDefault: true
+    }],
+    ["Triangle", {
+        plainName: "Triangle",
+        gropiusId: "shape-gropius-triangle",
+        isGropiusDefault: true
+    }],
+    ["Parallelogram", {
+        plainName: "Parallelogram",
+        gropiusId: "shape-gropius-parallelogram",
+        isGropiusDefault: true
+    }],
+    ["Trapeze", {
+        plainName: "Trapeze",
+        gropiusId: "shape-gropius-trapeze",
+        isGropiusDefault: true
     }]
 ])
 
