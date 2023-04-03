@@ -49,7 +49,7 @@ const GropiusDefaultTypes: Map<string, GropiusType> = new Map<string, GropiusTyp
 export interface GropiusType {
     plainName: string,
     gropiusId: string,
-    diagramId?: string,
+    shape?: string,
     isGropiusDefault?: boolean,
 }
 

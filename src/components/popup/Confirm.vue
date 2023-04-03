@@ -45,7 +45,7 @@ export default defineComponent({
     componentChoices.push({
       plainName: "My custom type",
       gropiusId: "shape-custom-mytype",
-      diagramId: "rectangle-custom",
+      shape: "rectangle-custom",
     });
   },
   methods: {

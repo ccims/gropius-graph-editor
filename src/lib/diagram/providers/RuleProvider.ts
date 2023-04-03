@@ -32,7 +32,7 @@ CustomRuleProvider.prototype.init = function () {
     const source = context.source,
       target = context.target;
     if (source.grShape && target.grShape)
-      return source.grShape.grType.startsWith("shape-") && target.grShape.grType.startsWith("shape-");
+      return source.id.startsWith("shape") && target.id.startsWith("shape");
     //return source.parent === target.parent;
     return false;
   });
