@@ -158,7 +158,7 @@ export default function MoveEvents(
     }
 
     // TODO: No nesting possible without this. But since we move the shapes right away, this would lead to self-nesting.
-    //context.target = hover;
+    context.target = context.parent; // hover
 
     moveShape(event);
   });
@@ -181,7 +181,6 @@ export default function MoveEvents(
     delta.y = round(delta.y);
 
     if (delta.x === 0 && delta.y === 0) {
-
       // didn't move
       return;
     }
