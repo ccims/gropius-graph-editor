@@ -30,7 +30,7 @@ export default {
             componentChoices.push({
                 plainName: "My custom type",
                 gropiusId: "shape-custom-mytype",
-                diagramId: "diamond",
+                shape: "diamond",
             });
             return componentChoices;
         },
