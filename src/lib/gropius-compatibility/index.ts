@@ -1,8 +1,7 @@
 // @ts-ignore
 import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
-import { GropiusShape, GropiusShapeStyle } from "@/lib/gropius-compatibility/types";
-import GropiusDefaultTypes from "@/lib/gropius-compatibility/gropiusDefaultTypes";
+import { GropiusShape, GropiusShapeStyle, Shape } from "@/lib/gropius-compatibility/types";
 
 // @ts-ignore
 import Diagram from "diagram-js";
@@ -72,203 +71,14 @@ export default class GropiusCompatibility {
 
   }
 
-  public drawGropiusType(coordinates: Coordinates, grShape: GropiusShape) {
-    let shape;
-    switch (grShape.grType) {
-      case "shape-gropius-component":
-        shape = {
-          x: coordinates.x,
-          y: coordinates.y,
-          width: 100,
-          height: 100,
-          type: "rectangle",
-          grShape: grShape,
-          custom: {
-            style: {
-              ry: 0,
-              rx: 0,
-              fill: "none",
-              stroke: "black",
-              strokeWidth: "2",
-              strokeDasharray: "0"
-            },
-            label: grShape.label
-          }
-        };
-        this.createShape(shape);
-        break;
-      case "shape-gropius-library":
-        shape = {
-          x: coordinates.x,
-          y: coordinates.y,
-          width: 100,
-          height: 80,
-          type: "rectangle",
-          grShape: grShape,
-          custom: {
-            style: {
-              rx: 5,
-              ry: 5,
-              fill: "yellow",
-              stroke: "black",
-              strokeWidth: "2",
-              strokeDasharray: "0"
-            },
-            label: grShape.label
-          }
-        };
-        this.createShape(shape);
-        break;
-      case 'shape-gropius-hexagon':
-        shape = {
-          x: coordinates.x,
-          y: coordinates.y,
-          width: 150,
-          height: 100,
-          type: "hexagon",
-          grShape: grShape,
-          custom: {
-            style: {
-              fill: "none",
-              stroke: "black",
-              strokeWidth: "2",
-              strokeDasharray: "0"
-            },
-            label: grShape.label
-          }
-        }
-        this.createShape(shape)
-        break;
-      case 'shape-gropius-ellipse':
-        shape = {
-          x: coordinates.x,
-          y: coordinates.y,
-          width: 300,
-          height: 100,
-          type: "ellipse",
-          grShape: grShape,
-          custom: {
-            style: {
-              fill: "none",
-              stroke: "black",
-              strokeWidth: "2",
-              strokeDasharray: "0"
-            },
-            label: grShape.label
-          }
-        }
-        this.createShape(shape)
-        break;
-      case 'shape-gropius-octagon':
-        shape = {
-          x: coordinates.x,
-          y: coordinates.y,
-          width: 100,
-          height: 100,
-          type: "octagon",
-          grShape: grShape,
-          custom: {
-            style: {
-              fill: "none",
-              stroke: "black",
-              strokeWidth: "2",
-              strokeDasharray: "0"
-            },
-            label: grShape.label
-          }
-        }
-        this.createShape(shape)
-        break;
-      case 'shape-gropius-circle':
-        shape = {
-          x: coordinates.x,
-          y: coordinates.y,
-          width: 100,
-          height: 100,
-          type: "circle",
-          grShape: grShape,
-          custom: {
-            style: {
-              fill: "none",
-              stroke: "black",
-              strokeWidth: "2",
-              strokeDasharray: "0"
-            },
-            label: grShape.label
-          }
-        }
-        this.createShape(shape)
-        break;
-      case 'shape-gropius-triangle':
-        shape = {
-          x: coordinates.x,
-          y: coordinates.y,
-          width: 150,
-          height: 100,
-          type: "triangle",
-          grShape: grShape,
-          custom: {
-            style: {
-              fill: "none",
-              stroke: "black",
-              strokeWidth: "2",
-              strokeDasharray: "0"
-            },
-            label: grShape.label
-          }
-        }
-        this.createShape(shape)
-        break;
-      case 'shape-gropius-parallelogram':
-        shape = {
-          x: coordinates.x,
-          y: coordinates.y,
-          width: 150,
-          height: 100,
-          type: "parallelogram",
-          grShape: grShape,
-          custom: {
-            style: {
-              fill: "none",
-              stroke: "black",
-              strokeWidth: "2",
-              strokeDasharray: "0"
-            },
-            label: grShape.label
-          }
-        }
-        this.createShape(shape)
-        break;
-      case 'shape-gropius-trapeze':
-        shape = {
-          x: coordinates.x,
-          y: coordinates.y,
-          width: 150,
-          height: 100,
-          type: "trapeze",
-          grShape: grShape,
-          custom: {
-            style: {
-              fill: "none",
-              stroke: "black",
-              strokeWidth: "2",
-              strokeDasharray: "0"
-            },
-            label: grShape.label
-          }
-        }
-        this.createShape(shape)
-        break;
-    }
-  }
-
-  public drawCustomType(type: String, coordinates: Coordinates, grShape: GropiusShape, grStyle: GropiusShapeStyle) {
+  public draw(grShape: GropiusShape, coordinates: Coordinates) {
+    const grStyle = grShape.grType.style;
     let shape = {
       x: coordinates.x,
       y: coordinates.y,
       width: grStyle.width,
       height: grStyle.height,
-      type: type,
+      type: grShape.grType.shape,
       grShape: grShape,
       custom: {
         style: {
@@ -279,21 +89,48 @@ export default class GropiusCompatibility {
           strokeWidth: grStyle.strokeWidth,
           strokeDasharray: grStyle.strokeDasharray
         },
-        label: grShape.label
+        label: grShape.name
       }
     };
     this.createShape(shape);
   }
 
   public test() {
-    this.drawGropiusType({ x: 350, y: 100 },
-      { grId: "1", grType: "shape-gropius-component", label: "test" });
+    this.draw({
+      version: "v1",
+      name: "test",
+      grType: {
+        name: "x",
+        shape: Shape.Rectangle,
+        style: {
+          width: 100,
+          height: 50,
+          color: "white",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "",
+          radius: 5
+        }
+      }
+    }, { x: 150, y: 100 });
 
-    this.drawGropiusType({ x: 150, y: 100 },
-      { grId: "2", grType: "shape-gropius-component", label: "ABC" });
-
-    this.drawGropiusType({ x: 250, y: 300 },
-      { grId: "3", grType: "shape-gropius-component", label: "Hello World" });
+    this.draw({
+      version: "v1",
+      name: "Blub",
+      grType: {
+        name: "x",
+        shape: Shape.Diamond,
+        style: {
+          width: 100,
+          height: 100,
+          color: "yellow",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      }
+    }, { x: 350, y: 75 });
 
     // let connection1 = this.elementFactory.createConnection({
     //     waypoints: [
@@ -315,48 +152,6 @@ export default class GropiusCompatibility {
   private createShape(shape: any) {
     const _shape = this.elementFactory.createShape(shape);
     this.canvas.addShape(_shape, this.root);
-  }
-
-  public createCustomRectangle(coordinates: Coordinates, grShape: GropiusShape, grStyle: GropiusShapeStyle) {
-    const shape = {
-      x: coordinates.x,
-      y: coordinates.y,
-      width: grStyle.width,
-      height: grStyle.height,
-      type: "rectangle",
-      custom: {
-        style: {
-          rx: grStyle.radius,
-          ry: grStyle.radius,
-          fill: grStyle.color,
-          stroke: grStyle.stroke,
-          strokeWidth: grStyle.strokeWidth,
-          strokeDasharray: grStyle.strokeDasharray
-        }
-      },
-      grShape: grShape
-    };
-    this.createShape(shape);
-  }
-
-  public createCustomDiamond(coordinates: Coordinates, grShape: GropiusShape, grStyle: GropiusShapeStyle) {
-    const shape = {
-      x: coordinates.x,
-      y: coordinates.y,
-      width: grStyle.width,
-      height: grStyle.height,
-      type: "diamond",
-      custom: {
-        style: {
-          fill: grStyle.color,
-          stroke: grStyle.stroke,
-          strokeWidth: grStyle.strokeWidth,
-          strokeDasharray: grStyle.strokeDasharray
-        }
-      },
-      grShape: grShape
-    };
-    this.createShape(shape);
   }
 
   public createConnection(connection: Connection) {

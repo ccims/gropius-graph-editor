@@ -28,7 +28,7 @@ import visuals from "diagram-js/lib/features/grid-snapping/visuals";
 import { query as domQuery } from "min-dom";
 import Ids from "ids";
 import { vi } from "vuetify/locale";
-import { Shapes } from "@/lib/gropius-compatibility/types";
+import { Shape } from "@/lib/gropius-compatibility/types";
 
 let RENDERER_IDS = new Ids();
 
@@ -69,35 +69,36 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   this.handler = function (visuals, element) {
     let render;
     switch (element.type) {
-      case Shapes.Rectangle:
+      case Shape.Rectangle:
         render = renderRectangle
         break;
-      case Shapes.Diamond:
+      case Shape.Diamond:
         render = renderDiamond
         break;
-      case Shapes.Hexagon:
+      case Shape.Hexagon:
         render = renderHexagon
         break;
-      case Shapes.Ellipse:
+      case Shape.Ellipse:
         render = renderEllipse
         break;
-      case Shapes.Octagon:
+      case Shape.Octagon:
         render = renderOctagon
         break;
-      case Shapes.Circle:
+      case Shape.Circle:
         render = renderCircle
         break;
-      case Shapes.Triangle:
-        renderTriangle
+      case Shape.Triangle:
+        render = renderTriangle
         break;
-      case Shapes.Parallelogram:
-        renderParallelogram
+      case Shape.Parallelogram:
+        render = renderParallelogram
         break;
-      case Shapes.Trapeze:
-        renderTrapeze
+      case Shape.Trapeze:
+        render = renderTrapeze
         break;
       default:
-        render = renderRectangle
+        renderRectangle(visuals, element)
+        return
     }
 
     render(visuals, element, element.custom.style)

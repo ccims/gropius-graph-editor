@@ -9,6 +9,7 @@ import BaseLayouter from "diagram-js/lib/layout/BaseLayouter";
 import {
   repairConnection,
   withoutRedundantPoints,
+// @ts-ignore
 } from "diagram-js/lib/layout/ManhattanLayout";
 
 // @ts-ignore

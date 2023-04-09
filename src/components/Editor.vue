@@ -42,7 +42,7 @@ import {
   GropiusShapeStyle,
 } from "../lib/gropius-compatibility/types";
 import { Coordinates } from "@/types/HelperTypes";
-import { GropiusType } from "@/lib/gropius-compatibility/gropiusDefaultTypes";
+import { GropiusType } from "@/lib/gropius-compatibility/types";
 import { defineComponent } from "vue";
 
 import gropiusapi from "@/mixins/api";
@@ -90,7 +90,6 @@ export default defineComponent({
 
     diagram.onDeleteShape = (element: any) => {
       this.showConfirmPopup = true;
-      console.log(element)
       elementToDelete = element
     };
   },
@@ -113,27 +112,14 @@ export default defineComponent({
     /**
      * Called when the user has selected a component type and version
      */
-    onComponentSelected(type: GropiusType, version: number) {
-      if (type.isGropiusDefault) {
-        //type = this.diagram ? this.diagram?.getGropiusShapeName(type) : "";
-        const grShape = {
-          grId: "000",
-          grType: type.gropiusId,
-          version: version
-        };
-        diagram?.drawGropiusType(coordinates, grShape);
-      } else {
-        // TODO Get styling for custom component
-        if (!type.shape) throw Error("Diagram ID is not defined");
-        const grShape: GropiusShape = {
-          grId: "2",
-          grType: type.gropiusId,
-          version: 42,
-          label: "test",
-        };
-        const grStyle = this.getComponentStyle("");
-        diagram?.drawCustomType(type.shape, coordinates, grShape, grStyle);
+    onComponentSelected(type: GropiusType, version: string) {
+      const grShape: GropiusShape = {
+        name: (Math.floor(Math.random() * 900) + 100).toString(),
+        version: version,
+        grType: type
       }
+
+      diagram.draw(grShape, coordinates)
 
       this.showAddComponent = false;
     },

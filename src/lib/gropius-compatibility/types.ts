@@ -1,8 +1,12 @@
+export interface GropiusType {
+  name: string,
+  shape: Shape,
+  style: GropiusShapeStyle
+}
 export interface GropiusShape {
-  grId: string,
-  grType: string,
+  name: string
   version: string,
-  label?: string
+  grType: GropiusType,
 }
 
 export interface GropiusShapeStyle {
@@ -21,7 +25,7 @@ export interface GropiusConnectionStyle {
   strokeDasharray: string,
 }
 
-export enum Shapes {
+export enum Shape {
   Rectangle,
   Triangle,
   Circle,

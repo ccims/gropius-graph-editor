@@ -35,7 +35,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { GropiusType } from "@/lib/gropius-compatibility/gropiusDefaultTypes";
+import { GropiusType } from "@/lib/gropius-compatibility/types";
 import gropiusapi from "@/mixins/api";
 
 let selectedComponent: GropiusType;
@@ -66,7 +66,7 @@ export default defineComponent({
       let componentChoiceNames: ComponentChoiceNames[] = [];
       componentChoices.forEach((choice) => {
         componentChoiceNames.push({
-          name: choice.plainName,
+          name: choice.name,
           id: choice.gropiusId,
         });
       });
@@ -84,7 +84,7 @@ export default defineComponent({
     wizardCompleted() {
       if (this.selectedGropiusId !== "") {
         selectedComponent = componentChoices.filter((choice) => {
-          return choice.gropiusId === this.selectedGropiusId;
+          return choice.name === this.selectedGropiusId;
         })[0];
       }
 

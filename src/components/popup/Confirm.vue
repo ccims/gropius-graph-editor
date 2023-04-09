@@ -14,12 +14,7 @@ import { defineComponent } from "vue";
 // @ts-ignore
 import Wizard from "form-wizard-vue3";
 import "form-wizard-vue3/dist/form-wizard-vue3.css";
-import GropiusDefaultTypes, {
-  GropiusType,
-} from "@/lib/gropius-compatibility/gropiusDefaultTypes";
 
-let selectedComponent: GropiusType;
-let componentChoices: GropiusType[];
 
 export default defineComponent({
   name: "AddComponent",
@@ -34,19 +29,12 @@ export default defineComponent({
     };
   },
   computed: {
-    hideNextButton(): Boolean {
-      return selectedComponent === null;
-    },
+
   },
   // Data
 
   mounted() {
-    componentChoices = Array.from(GropiusDefaultTypes.values());
-    componentChoices.push({
-      plainName: "My custom type",
-      gropiusId: "shape-custom-mytype",
-      shape: "rectangle-custom",
-    });
+
   },
   methods: {
     onDeny() {

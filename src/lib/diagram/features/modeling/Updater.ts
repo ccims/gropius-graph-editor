@@ -1,3 +1,4 @@
+// @ts-ignore
 import inherits from "inherits";
 
 import CommandInterceptor from "diagram-js/lib/command/CommandInterceptor";
@@ -11,12 +12,13 @@ export default function Updater(
   eventBus: EventBus,
   connectionDocking: any
 ) {
+  // @ts-ignore
   CommandInterceptor.call(this, eventBus);
 
   // connection cropping //////////////////////
 
   // crop connection ends during create/update
-  function cropConnection(e) {
+  function cropConnection(e: any) {
     let context = e.context,
       hints = context.hints || {},
       connection;
@@ -28,9 +30,11 @@ export default function Updater(
     }
   }
 
+  // @ts-ignore
   this.executed(["connection.layout", "connection.create"], cropConnection);
 
-  this.reverted(["connection.layout"], function (e) {
+  // @ts-ignore
+  this.reverted(["connection.layout"], function (e: any) {
     delete e.context.cropped;
   });
 
