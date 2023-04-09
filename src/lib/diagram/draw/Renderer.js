@@ -28,6 +28,7 @@ import visuals from "diagram-js/lib/features/grid-snapping/visuals";
 import { query as domQuery } from "min-dom";
 import Ids from "ids";
 import { vi } from "vuetify/locale";
+import { Shapes } from "@/lib/gropius-compatibility/types";
 
 let RENDERER_IDS = new Ids();
 
@@ -66,37 +67,41 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   let markers = {};
 
   this.handler = function (visuals, element) {
+    let render;
     switch (element.type) {
-      case "rectangle":
-        renderRectangle(visuals, element, element.custom.style);
+      case Shapes.Rectangle:
+        render = renderRectangle
         break;
-      case "diamond":
-        renderDiamond(visuals, element, element.custom.style);
+      case Shapes.Diamond:
+        render = renderDiamond
         break;
-      case "hexagon":
-        renderHexagon(visuals, element, element.custom.style);
+      case Shapes.Hexagon:
+        render = renderHexagon
         break;
-      case "ellipse":
-        renderEllipse(visuals, element, element.custom.style);
+      case Shapes.Ellipse:
+        render = renderEllipse
         break;
-      case "octagon":
-        renderOctagon(visuals, element, element.custom.style);
+      case Shapes.Octagon:
+        render = renderOctagon
         break;
-      case "circle":
-        renderCircle(visuals, element, element.custom.style);
+      case Shapes.Circle:
+        render = renderCircle
         break;
-      case "triangle":
-        renderTriangle(visuals, element, element.custom.style);
+      case Shapes.Triangle:
+        renderTriangle
         break;
-      case "parallelogram":
-        renderParallelogram(visuals, element, element.custom.style);
+      case Shapes.Parallelogram:
+        renderParallelogram
         break;
-      case "trapeze":
-        renderTrapeze(visuals, element, element.custom.style);
+      case Shapes.Trapeze:
+        renderTrapeze
         break;
       default:
-        renderRectangle(visuals, element, 0, this.SHAPE_STYLE);
+        render = renderRectangle
     }
+
+    render(visuals, element, element.custom.style)
+
     if (element.custom && element.custom.label)
       renderEmbeddedLabel(
         visuals,
