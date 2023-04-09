@@ -55,12 +55,15 @@ import ChangeSupportModule from 'diagram-js/lib/features/change-support';
 import SelectionModule from 'diagram-js/lib/features/selection';
 // @ts-ignore
 import RulesModule from 'diagram-js/lib/features/rules';
+// @ts-ignore
+import CroppingConnectionDocking from "diagram-js/lib/layout/CroppingConnectionDocking";
 
 import Modeling from 'diagram-js/lib/features/modeling/Modeling';
+
 //import BaseLayouter from '../../layout/BaseLayouter';
 import Layouter from './Layouter';
 
-
+import Updater from './Updater'
 
 export default {
   __depends__: [
@@ -69,7 +72,9 @@ export default {
     SelectionModule,
     RulesModule
   ],
-  __init__: [ 'modeling' ],
+  __init__: [ 'modeling' , "updater"],
   modeling: [ 'type', Modeling ],
-  layouter: [ 'type', Layouter ]
+  updater: ["type", Updater],
+  layouter: [ 'type', Layouter ],
+  connectionDocking: ["type", CroppingConnectionDocking],
 };
