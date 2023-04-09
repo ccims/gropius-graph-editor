@@ -10,7 +10,8 @@ import CreateModule from "diagram-js/lib/features/create";
 // @ts-ignore
 import LassoToolModule from "diagram-js/lib/features/lasso-tool";
 // @ts-ignore
-import ModelingModule from "diagram-js/lib/features/modeling";
+//import ModelingModule from "diagram-js/lib/features/modeling";
+import ModelingModule from './features/modeling'
 // @ts-ignore
 import MoveCanvasModule from "diagram-js/lib/navigation/movecanvas";
 // @ts-ignore
@@ -34,6 +35,7 @@ import ConnectionPreviewModule from "./features/connection-preview";
 
 // @ts-ignore
 import Move from "./features/move";
+//import Move from "diagram-js/lib/features/move";
 
 // @ts-ignore
 import ProvidersModule from "./providers";
