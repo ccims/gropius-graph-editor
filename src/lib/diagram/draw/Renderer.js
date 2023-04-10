@@ -113,14 +113,23 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   };
 
   this.connectionHandler = function (visuals, element, attrs) {
-    const fill = "black",
-      stroke = "black";
     attrs = {};
     //attrs.markerStart = marker("", fill, stroke);
-    attrs.markerEnd = marker("", fill, stroke);
+    if(element.custom) {
+      attrs = element.custom.style
+      attrs.markerEnd = marker("", element.custom.style.markerFillColor, element.custom.style.markerStrokeColor);
+    }
+    else {
+      attrs = {
+        stroke: "black",
+        strokeWidth: 2,
+        strokeDasharray: "",
+      }
+      attrs.markerEnd = marker("", "black", "black")
+    }
     // if ((element.custom && element.custom.label) || true)
     //   renderExternalLabel(visuals, element, "test");
-    return drawConnectionSegments(visuals, element.waypoints, attrs);
+    return drawConnection(visuals, element.waypoints, attrs);
   };
 
   function renderRectangle(visuals, element, attrs) {
@@ -487,29 +496,24 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
    * @param {SVGElement} parentGfx
    * @param {Point[]} waypoints
    * @param {any} attrs
-   * @param {number} [radius]
    *
    * @return {SVGElement}
    */
-  function drawLine(parentGfx, waypoints, attrs, radius) {
-    attrs = lineStyle(attrs);
+  function drawConnection(parentGfx, waypoints, attrs) {
+    const radius = 5
+    //attrs = lineStyle(attrs);
+    attrs = styles.computeStyle(attrs, ["no-fill"], {
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      stroke: attrs.stroke,
+      strokeWidth: attrs.strokeWidth,
+    });
 
     const line = createLine(waypoints, attrs, radius);
 
     svgAppend(parentGfx, line);
 
     return line;
-  }
-
-  /**
-   * @param {SVGElement} parentGfx
-   * @param {Point[]} waypoints
-   * @param {any} attrs
-   *
-   * @return {SVGElement}
-   */
-  function drawConnectionSegments(parentGfx, waypoints, attrs) {
-    return drawLine(parentGfx, waypoints, attrs, 5);
   }
 
   function drawPath(parentGfx, d, attrs) {

@@ -1,7 +1,7 @@
 // @ts-ignore
 import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
-import { GropiusShape, GropiusShapeStyle, Shape } from "@/lib/gropius-compatibility/types";
+import { GropiusConnectionStyle, GropiusShape, GropiusShapeStyle, Shape } from "@/lib/gropius-compatibility/types";
 
 // @ts-ignore
 import Diagram from "diagram-js";
@@ -66,7 +66,7 @@ export default class GropiusCompatibility {
       if (this.onAddConnection)
         this.onAddConnection(e.element);
 
-      this.createConnection(element);
+      this.createConnection(element, {strokeColor: "blue", strokeWidth: 2, strokeDasharray: "5 5", markerStrokeColor: "blue", markerFillColor: "red"});
     });
 
   }
@@ -154,19 +154,30 @@ export default class GropiusCompatibility {
     this.canvas.addShape(_shape, this.root);
   }
 
-  public createConnection(connection: Connection) {
-    this.createConnectionBasic(connection.source, connection.target, connection.waypoints);
-  }
-
-  public createConnectionBasic(source: any, target: any, waypoints: Array<Coordinates>) {
-    let connection = this.elementFactory.createConnection({
-      waypoints: waypoints,
-      source: source,
-      target: target
-    });
+  public createConnection(connection: Connection, style: GropiusConnectionStyle) {
+    // const source = connectionData.source,
+    //   target = connectionData.target,
+    //   waypoints = connectionData.waypoints;
+    //
+    // let connection = this.elementFactory.createConnection({
+    //   waypoints: waypoints,
+    //   source: source,
+    //   target: target
+    // });
     connection.customRendered = true;
+    connection.custom = {
+      style: {
+        stroke: style.strokeColor,
+        strokeWidth: style.strokeWidth,
+        strokeDasharray: style.strokeDasharray,
+        markerFillColor: style.markerFillColor,
+        markerStrokeColor: style.markerStrokeColor
+      },
+      label: "" // TODO
+    }
 
     this.canvas.addConnection(connection, this.root);
   }
+
 
 }

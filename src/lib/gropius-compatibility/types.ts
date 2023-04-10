@@ -23,6 +23,8 @@ export interface GropiusConnectionStyle {
   strokeColor: string,
   strokeWidth: number,
   strokeDasharray: string,
+  markerStrokeColor: string,
+  markerFillColor: string
 }
 
 export enum Shape {
