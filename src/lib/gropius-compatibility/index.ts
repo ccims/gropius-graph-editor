@@ -1,7 +1,13 @@
 // @ts-ignore
 import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
-import { GropiusConnectionStyle, GropiusShape, GropiusShapeStyle, Shape } from "@/lib/gropius-compatibility/types";
+import {
+  ConnectionMarker,
+  GropiusConnectionStyle,
+  GropiusShape,
+  GropiusShapeStyle,
+  Shape
+} from "@/lib/gropius-compatibility/types";
 
 // @ts-ignore
 import Diagram from "diagram-js";
@@ -66,7 +72,13 @@ export default class GropiusCompatibility {
       if (this.onAddConnection)
         this.onAddConnection(e.element);
 
-      this.createConnection(element, {strokeColor: "blue", strokeWidth: 2, strokeDasharray: "5 5", markerStrokeColor: "blue", markerFillColor: "red"});
+      this.createConnection(element, {
+        strokeColor: "blue",
+        strokeWidth: 3,
+        strokeDasharray: "5 5",
+        sourceMarkerType: ConnectionMarker.Slash,
+        targetMarkerType: ConnectionMarker.OpenArrow
+      });
     });
 
   }
@@ -166,15 +178,9 @@ export default class GropiusCompatibility {
     // });
     connection.customRendered = true;
     connection.custom = {
-      style: {
-        stroke: style.strokeColor,
-        strokeWidth: style.strokeWidth,
-        strokeDasharray: style.strokeDasharray,
-        markerFillColor: style.markerFillColor,
-        markerStrokeColor: style.markerStrokeColor
-      },
+      style: style,
       label: "" // TODO
-    }
+    };
 
     this.canvas.addConnection(connection, this.root);
   }

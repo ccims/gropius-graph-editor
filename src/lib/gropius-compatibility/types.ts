@@ -23,8 +23,8 @@ export interface GropiusConnectionStyle {
   strokeColor: string,
   strokeWidth: number,
   strokeDasharray: string,
-  markerStrokeColor: string,
-  markerFillColor: string
+  sourceMarkerType: ConnectionMarker,
+  targetMarkerType: ConnectionMarker
 }
 
 export enum Shape {
@@ -39,6 +39,12 @@ export enum Shape {
   Trapeze
 }
 
-export enum ConnectionMarkers {
-  Default
+export enum ConnectionMarker {
+  None,
+  Default,
+  Round,
+  LessThan,
+  OpenArrow,
+  Composition,
+  Slash,
 }

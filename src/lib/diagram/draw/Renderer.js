@@ -7,7 +7,7 @@ import { getColor, getFillColor, getStrokeColor } from "./RenderUtil";
 import {
   rotate,
   transform,
-  translate,
+  translate
 } from "diagram-js/lib/util/SvgTransformUtil";
 
 import { componentsToPath, createLine } from "diagram-js/lib/util/RenderUtil";
@@ -17,7 +17,7 @@ import {
   attr as svgAttr,
   create as svgCreate,
   classes as svgClasses,
-  remove as svgRemove,
+  remove as svgRemove
 } from "tiny-svg";
 
 import { assign } from "min-dash";
@@ -28,7 +28,7 @@ import visuals from "diagram-js/lib/features/grid-snapping/visuals";
 import { query as domQuery } from "min-dom";
 import Ids from "ids";
 import { vi } from "vuetify/locale";
-import { Shape } from "@/lib/gropius-compatibility/types";
+import { ConnectionMarker, Shape } from "@/lib/gropius-compatibility/types";
 
 let RENDERER_IDS = new Ids();
 
@@ -53,55 +53,55 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
   this.CONNECTION_STYLE = styles.style(["no-fill"], {
     strokeWidth: 5,
-    stroke: "blue",
+    stroke: "blue"
   });
   this.SHAPE_STYLE = styles.style({
     fill: "white",
     stroke: "black",
     strokeWidth: 2,
-    strokeDasharray: 0,
+    strokeDasharray: 0
   });
 
   let rendererId = RENDERER_IDS.next();
 
   let markers = {};
 
-  this.handler = function (visuals, element) {
+  this.handler = function(visuals, element) {
     let render;
     switch (element.type) {
       case Shape.Rectangle:
-        render = renderRectangle
+        render = renderRectangle;
         break;
       case Shape.Diamond:
-        render = renderDiamond
+        render = renderDiamond;
         break;
       case Shape.Hexagon:
-        render = renderHexagon
+        render = renderHexagon;
         break;
       case Shape.Ellipse:
-        render = renderEllipse
+        render = renderEllipse;
         break;
       case Shape.Octagon:
-        render = renderOctagon
+        render = renderOctagon;
         break;
       case Shape.Circle:
-        render = renderCircle
+        render = renderCircle;
         break;
       case Shape.Triangle:
-        render = renderTriangle
+        render = renderTriangle;
         break;
       case Shape.Parallelogram:
-        render = renderParallelogram
+        render = renderParallelogram;
         break;
       case Shape.Trapeze:
-        render = renderTrapeze
+        render = renderTrapeze;
         break;
       default:
-        renderRectangle(visuals, element)
-        return
+        renderRectangle(visuals, element);
+        return;
     }
 
-    render(visuals, element, element.custom.style)
+    render(visuals, element, element.custom.style);
 
     if (element.custom && element.custom.label)
       renderEmbeddedLabel(
@@ -112,20 +112,28 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       );
   };
 
-  this.connectionHandler = function (visuals, element, attrs) {
+  this.connectionHandler = function(visuals, element, attrs) {
     attrs = {};
     //attrs.markerStart = marker("", fill, stroke);
-    if(element.custom) {
-      attrs = element.custom.style
-      attrs.markerEnd = marker("", element.custom.style.markerFillColor, element.custom.style.markerStrokeColor);
-    }
-    else {
+    if (element.custom) {
+      attrs = {
+        stroke: element.custom.style.strokeColor,
+        strokeWidth: element.custom.style.strokeWidth,
+        strokeDasharray: element.custom.style.strokeDasharray
+      };
+      if(element.custom.style.sourceMarkerType != ConnectionMarker.None)
+        attrs.markerStart = marker(element.custom.style.sourceMarkerType, element.custom.style.strokeColor, element.custom.style.strokeColor);
+      if(element.custom.style.targetMarkerType != ConnectionMarker.None)
+        attrs.markerEnd = marker(element.custom.style.targetMarkerType, element.custom.style.strokeColor, element.custom.style.strokeColor);
+
+      // TODO Label
+    } else {
       attrs = {
         stroke: "black",
         strokeWidth: 2,
-        strokeDasharray: "",
-      }
-      attrs.markerEnd = marker("", "black", "black")
+        strokeDasharray: ""
+      };
+      attrs.markerEnd = marker(ConnectionMarker.Default, "black", "black");
     }
     // if ((element.custom && element.custom.label) || true)
     //   renderExternalLabel(visuals, element, "test");
@@ -143,7 +151,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       width: element.width || 10,
       height: element.height || 10,
       // fill: 'grey', stroke: 'black', strokeWidth: 2,
-      ...attrs,
+      ...attrs
     });
 
     svgAppend(visuals, rect);
@@ -156,17 +164,17 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       { x: 0, y: element.height },
       { x: element.width - 20, y: element.height },
       { x: element.width, y: 0 },
-      { x: 20, y: 0 },
+      { x: 20, y: 0 }
 
     ];
 
-    const pointsString = points.map(function (point) {
-      return point.x + ',' + point.y;
-    }).join(' ');
+    const pointsString = points.map(function(point) {
+      return point.x + "," + point.y;
+    }).join(" ");
 
     attrs = styles.style(attrs);
 
-    const polygon = svgCreate('polygon', {
+    const polygon = svgCreate("polygon", {
       ...attrs,
       points: pointsString
     });
@@ -181,16 +189,16 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       { x: 0, y: element.height },
       { x: element.width, y: element.height },
       { x: element.width - 20, y: 0 },
-      { x: 20, y: 0 },
+      { x: 20, y: 0 }
     ];
 
-    const pointsString = points.map(function (point) {
-      return point.x + ',' + point.y;
-    }).join(' ');
+    const pointsString = points.map(function(point) {
+      return point.x + "," + point.y;
+    }).join(" ");
 
     attrs = styles.style(attrs);
 
-    const polygon = svgCreate('polygon', {
+    const polygon = svgCreate("polygon", {
       ...attrs,
       points: pointsString
     });
@@ -205,16 +213,16 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     const points = [
       { x: element.width / 2, y: 0 },
       { x: 0, y: element.height },
-      { x: element.width, y: element.height },
+      { x: element.width, y: element.height }
     ];
 
-    const pointsString = points.map(function (point) {
-      return point.x + ',' + point.y;
-    }).join(' ');
+    const pointsString = points.map(function(point) {
+      return point.x + "," + point.y;
+    }).join(" ");
 
     attrs = styles.style(attrs);
 
-    const polygon = svgCreate('polygon', {
+    const polygon = svgCreate("polygon", {
       ...attrs,
       points: pointsString
     });
@@ -236,7 +244,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       cx: c,
       cy: c,
       r: radius,
-      ...attrs,
+      ...attrs
     });
 
     svgAppend(visuals, rect);
@@ -256,16 +264,16 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       { x: width, y: (height * 2) / 3 },
       { x: width - 20, y: height },
       { x: 20, y: height },
-      { x: 0, y: (height * 2 / 3) },
+      { x: 0, y: (height * 2 / 3) }
     ];
 
-    const pointsString = points.map(function (point) {
-      return point.x + ',' + point.y;
-    }).join(' ');
+    const pointsString = points.map(function(point) {
+      return point.x + "," + point.y;
+    }).join(" ");
 
     attrs = styles.style(attrs);
 
-    const polygon = svgCreate('polygon', {
+    const polygon = svgCreate("polygon", {
       ...attrs,
       points: pointsString
     });
@@ -309,16 +317,16 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       { x: width - 20, y: 0 },
       { x: width, y: height / 2 },
       { x: width - 20, y: height },
-      { x: 20, y: height },
+      { x: 20, y: height }
     ];
 
-    const pointsString = points.map(function (point) {
-      return point.x + ',' + point.y;
-    }).join(' ');
+    const pointsString = points.map(function(point) {
+      return point.x + "," + point.y;
+    }).join(" ");
 
     attrs = styles.style(attrs);
 
-    const polygon = svgCreate('polygon', {
+    const polygon = svgCreate("polygon", {
       ...attrs,
       points: pointsString
     });
@@ -339,11 +347,11 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       { x: x_2, y: 0 },
       { x: width, y: y_2 },
       { x: x_2, y: height },
-      { x: 0, y: y_2 },
+      { x: 0, y: y_2 }
     ];
 
     const pointsString = points
-      .map(function (point) {
+      .map(function(point) {
         return point.x + "," + point.y;
       })
       .join(" ");
@@ -352,7 +360,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
     const polygon = svgCreate("polygon", {
       ...attrs,
-      points: pointsString,
+      points: pointsString
     });
 
     svgAppend(parentGfx, polygon);
@@ -364,8 +372,8 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     options = assign(
       {
         size: {
-          width: 100,
-        },
+          width: 100
+        }
       },
       options
     );
@@ -386,8 +394,8 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       padding: 5,
       style: {
         fill: "black",
-        fontSize: fontSize || DEFAULT_TEXT_SIZE,
-      },
+        fontSize: fontSize || DEFAULT_TEXT_SIZE
+      }
     });
   }
 
@@ -397,14 +405,14 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       width: 90,
       height: 30,
       x: element.width / 2 + element.x,
-      y: element.height / 2 + element.y,
+      y: element.height / 2 + element.y
     };
     return renderLabel(parentGfx, text, {
       box: box,
       fitbox: true,
       style: assign({}, textRenderer.getExternalStyle(), {
-        fill: "black",
-      }),
+        fill: "black"
+      })
     });
   }
 
@@ -417,7 +425,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       strokeLinecap: "round",
       strokeLinejoin: "round",
       stroke: "black",
-      strokeWidth: 2,
+      strokeWidth: 2
     });
   }
 
@@ -431,7 +439,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       refY: ref.y,
       markerWidth: 20 * scale,
       markerHeight: 20 * scale,
-      orient: "auto",
+      orient: "auto"
     });
 
     svgAppend(marker, element);
@@ -472,24 +480,117 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function createMarker(id, type, fill, stroke) {
-    const associationEnd = svgCreate("path", {
-      d: "M 1 5 L 11 10 L 1 15 Z",
-      ...lineStyle({
-        fill: fill,
-        stroke: stroke,
-        strokeWidth: 1.5,
+    let marker;
+    switch (type) {
+      case ConnectionMarker.Round:
+        marker = svgCreate("circle", {
+          cx: 6,
+          cy: 6,
+          r: 2,
+          ...lineStyle({
+            fill: fill,
+            stroke: stroke,
+            strokeWidth: 1.5,
 
-        // fix for safari / chrome / firefox bug not correctly
-        // resetting stroke dash array
-        strokeDasharray: [10000, 1],
-      }),
-    });
+            // fix for safari / chrome / firefox bug not correctly
+            // resetting stroke dash array
+            strokeDasharray: [10000, 1]
+          })
+        });
+        addMarker(id, {
+          element: marker,
+          ref: { x: 6, y: 6 }
+        });
+        break;
+      case ConnectionMarker.LessThan:
+        marker = svgCreate("path", {
+          d: "M 11 5 L 1 10 L 11 15",
+          ...lineStyle({
+            fill: "none",
+            stroke: stroke,
+            strokeWidth: 1.5,
 
-    addMarker(id, {
-      element: associationEnd,
-      ref: { x: 1, y: 10 },
-      scale: 0.5,
-    });
+            // fix for safari / chrome / firefox bug not correctly
+            // resetting stroke dash array
+            strokeDasharray: [10000, 1]
+          })
+        });
+
+        addMarker(id, {
+          element: marker,
+          ref: { x: 1, y: 10 },
+          scale: 0.5
+        });
+
+      case ConnectionMarker.OpenArrow:
+        marker = svgCreate('path', {
+          d: 'M 1 5 L 11 10 L 1 15',
+          ...lineStyle({
+            fill: 'none',
+            stroke: stroke,
+            strokeWidth: 1.5,
+
+            // fix for safari / chrome / firefox bug not correctly
+            // resetting stroke dash array
+            strokeDasharray: [ 10000, 1 ]
+          })
+        });
+
+        addMarker(id, {
+          element: marker,
+          ref: { x: 11, y: 10 },
+          scale: 0.5
+        });
+
+      case ConnectionMarker.Composition:
+        marker = svgCreate('path', {
+          d: 'M 0 10 L 8 6 L 16 10 L 8 14 Z',
+          ...lineStyle({
+            fill: fill,
+            stroke: stroke
+          })
+        });
+
+        addMarker(id, {
+          element: marker,
+          ref: { x: -1, y: 10 },
+          scale: 0.5
+        });
+
+      case ConnectionMarker.Slash:
+        marker = svgCreate('path', {
+          d: 'M 6 4 L 10 16',
+          ...lineStyle({
+            stroke: stroke
+          })
+        });
+
+        addMarker(id, {
+          element: marker,
+          ref: { x: 0, y: 10 },
+          scale: 0.5
+        });
+
+      default:
+        marker = svgCreate("path", {
+          d: "M 1 5 L 11 10 L 1 15 Z",
+          ...lineStyle({
+            fill: fill,
+            stroke: stroke,
+            strokeWidth: 1.5,
+
+            // fix for safari / chrome / firefox bug not correctly
+            // resetting stroke dash array
+            strokeDasharray: [10000, 1]
+          })
+        });
+        addMarker(id, {
+          element: marker,
+          ref: { x: 1, y: 10 },
+          scale: 0.5
+        });
+        break;
+    }
   }
 
   /**
@@ -500,13 +601,13 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
    * @return {SVGElement}
    */
   function drawConnection(parentGfx, waypoints, attrs) {
-    const radius = 5
+    const radius = 5;
     //attrs = lineStyle(attrs);
     attrs = styles.computeStyle(attrs, ["no-fill"], {
       strokeLinecap: "round",
       strokeLinejoin: "round",
       stroke: attrs.stroke,
-      strokeWidth: attrs.strokeWidth,
+      strokeWidth: attrs.strokeWidth
     });
 
     const line = createLine(waypoints, attrs, radius);
@@ -521,7 +622,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
     const path = svgCreate("path", {
       ...attrs,
-      d,
+      d
     });
 
     svgAppend(parentGfx, path);
@@ -536,7 +637,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
 inherits(Renderer, DefaultRenderer);
 
-Renderer.prototype.canRender = function () {
+Renderer.prototype.canRender = function() {
   return true;
 };
 
@@ -567,7 +668,7 @@ Renderer.prototype.getShapePath = function getShapePath(shape) {
     ["l", width, 0],
     ["l", 0, height],
     ["l", -width, 0],
-    ["z"],
+    ["z"]
   ];
 
   return componentsToPath(shapePath);
@@ -593,9 +694,11 @@ Renderer.prototype.getConnectionPath = function getConnectionPath(connection) {
 
 Renderer.$inject = ["eventBus", "styles", "canvas", "textRenderer"];
 
-DefaultRenderer.prototype.drawShape = function drawShape(visuals, element) { };
+DefaultRenderer.prototype.drawShape = function drawShape(visuals, element) {
+};
 
 DefaultRenderer.prototype.drawConnection = function drawShape(
   visuals,
   element
-) { };
+) {
+};
