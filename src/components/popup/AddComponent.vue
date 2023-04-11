@@ -88,11 +88,16 @@ export default defineComponent({
         })[0];
       }
 
-      this.$emit(
-        "onChoiceDone",
-        selectedComponent,
-        this.selectedComponentVersion
-      );
+      // add component in backend and wait for result
+      if (this.addComponent()) {
+        this.$emit(
+          "onChoiceDone",
+          selectedComponent,
+          this.selectedComponentVersion
+        );
+      } else {
+        // show error message
+      }
     },
 
     /**
