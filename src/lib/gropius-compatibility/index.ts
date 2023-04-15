@@ -108,7 +108,9 @@ export default class GropiusCompatibility {
       // If there are more characters than the max size would allow
 
       // Cut text and add "..." at the end
-      //adjustedText = text.slice(0, maxCharacters).slice(0,-3) + "..."
+      adjustedText = text.slice(0, maxCharacters*2).slice(0,-3) + "..." // Not necessary but speeds things up
+      // Like "pre-cutting". It will probably get shorter in rendering, but to speed the renderer up with pre-cut it.
+
       width = maxWidth
       height = maxHeight
     } else {
@@ -117,13 +119,13 @@ export default class GropiusCompatibility {
       let ratio = height / width;
       let charactersForSize = Math.floor(width / widthPerCharacter) * Math.floor(height / heightPerLine)
 
-      const increaseBy = 10
+      const increaseBy = 5
       while(characters > charactersForSize) {
         // while sizes not big enough
 
         width += increaseBy;
-
         width = width > maxWidth ? maxWidth : width;
+
         height = Math.round(ratio * width)
         height = height > maxHeight ? maxHeight : height;
         // additional loop breaker
@@ -134,7 +136,6 @@ export default class GropiusCompatibility {
         charactersForSize = Math.floor(width / widthPerCharacter) * Math.floor(height / heightPerLine)
       }
     }
-
     return {
       width: width,
       height: height,
@@ -169,6 +170,7 @@ export default class GropiusCompatibility {
   }
 
   public test() {
+    const long = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     this.draw({
       version: "v1",
       name: "Now I write something different than what I did before",
@@ -190,7 +192,7 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      name: long,
       grType: {
         name: "x",
         shape: Shape.Rectangle,
@@ -209,14 +211,14 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "This is a test text and it is very long here",
+      name: long,
       grType: {
         name: "x",
         shape: Shape.Triangle,
         style: {
           minWidth: 100,
           minHeight: 50,
-          maxScale: 5,
+          maxScale: 1,
           color: "yellow",
           stroke: "black",
           strokeWidth: 2,

@@ -15,6 +15,7 @@ import {
 import {
   assignStyle
 } from 'min-dom';
+import { Shape } from "@/lib/diagram/types";
 
 /**
  * @typedef {import('../util/Types').Dimensions} Dimensions
@@ -287,14 +288,36 @@ Text.prototype.layoutText = function(text, options) {
     padding = parsePadding(options.padding !== undefined ? options.padding : this._config.padding),
     fitBox = options.fitBox || false;
 
+  // TODO different, don't access gropius custom stuff!
+  let shape = box.grShape.grType.shape
+  const shapeWidth = box.width,
+    shapeHeight = box.height
+
+  let offset = {
+    x: 0,
+    y: 0
+  }
+  switch(shape) {
+    case Shape.Triangle:
+      box.width /= 2
+      box.height /= 1.5
+      offset.y = box.height / 4
+      break;
+    case Shape.Diamond:
+      box.width /= 1.5;
+      box.height /= 1.5;
+      break;
+  }
+
   var lineHeight = getLineHeight(style);
 
   // we split text by lines and normalize
   // {soft break} + {line break} => { line break }
-  var lines = text.split(/\u00AD?\r?\n/),
+  var lines,
     layouted = [];
 
   var maxWidth = box.width - padding.left - padding.right;
+  //maxWidth /= textWidthFactor
 
   // ensure correct rendering by attaching helper text node to invisible SVG
   var helperText = svgCreate('text');
@@ -311,12 +334,15 @@ Text.prototype.layoutText = function(text, options) {
   }
 
   // Start Text shorting
-  let reduceText = false
+  let breakLoop = false
   do {
-    if(reduce) {
+    if(text.length < 12) {
+      text = "..."
+      breakLoop = true
+    } else {
       text = text.slice(0, -9) + "..."
-      lines = text.split(/\u00AD?\r?\n/)
     }
+    lines = text.split(/\u00AD?\r?\n/)
 
     layouted = []
     while (lines.length) {
@@ -326,9 +352,7 @@ Text.prototype.layoutText = function(text, options) {
     var totalHeight = reduce(layouted, function(sum, line, idx) {
       return sum + (lineHeight || line.height);
     }, 0) + padding.top + padding.bottom;
-
-    reduceText = true
-  } while (totalHeight > box.height - padding.top - padding.bottom) // Added padding
+  } while (totalHeight > box.height - padding.top - padding.bottom && breakLoop == false) // Added padding
   // END text shorting
 
   var maxLineWidth = reduce(layouted, function(sum, line, idx) {
@@ -339,7 +363,8 @@ Text.prototype.layoutText = function(text, options) {
   var y = padding.top;
 
   if (align.vertical === 'middle') {
-    y += (box.height - totalHeight) / 2;
+    y += (shapeHeight - totalHeight) / 2;
+    y += offset.y
   }
 
   // magic number initial offset
@@ -369,10 +394,12 @@ Text.prototype.layoutText = function(text, options) {
         break;
 
       default:
-
         // aka center
         x = Math.max((((fitBox ? maxLineWidth : maxWidth)
           - line.width) / 2 + padding.left), 0);
+
+        x += (shapeWidth - box.width) / 2
+        x += offset.x
     }
 
     var tspan = svgCreate('tspan');
