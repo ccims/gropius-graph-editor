@@ -2,12 +2,15 @@
 import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
 import {
-  ConnectionMarker,
   GropiusConnectionStyle,
   GropiusShape,
   GropiusShapeStyle,
-  Shape
 } from "@/lib/gropius-compatibility/types";
+
+import {
+  ConnectionMarker,
+  Shape
+} from "@/lib/diagram/types";
 
 // @ts-ignore
 import Diagram from "diagram-js";
@@ -214,7 +217,7 @@ export default class GropiusCompatibility {
         style: {
           minWidth: 100,
           minHeight: 50,
-          maxScale: 50,
+          maxScale: 5,
           color: "yellow",
           stroke: "black",
           strokeWidth: 2,
@@ -222,7 +225,45 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 350, y: 75 });
+    }, { x: 400, y: 75 });
+
+    this.draw({
+      version: "v1",
+      name: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      grType: {
+        name: "x",
+        shape: Shape.Parallelogram,
+        style: {
+          minWidth: 150,
+          minHeight: 100,
+          maxScale: 1,
+          color: "yellow",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      }
+    }, { x: 600, y: 75 });
+
+    this.draw({
+      version: "v1",
+      name: "This is a test text and it is very long here",
+      grType: {
+        name: "x",
+        shape: Shape.Diamond,
+        style: {
+          minWidth: 100,
+          minHeight: 100,
+          maxScale: 5,
+          color: "yellow",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      }
+    }, { x: 800, y: 75 });
 
     // let connection1 = this.elementFactory.createConnection({
     //     waypoints: [

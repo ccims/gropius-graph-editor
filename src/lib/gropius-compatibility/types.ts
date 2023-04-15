@@ -1,3 +1,5 @@
+import { ConnectionMarker, Shape } from "@/lib/diagram/types";
+
 export interface GropiusType {
   name: string,
   shape: Shape,
@@ -26,26 +28,4 @@ export interface GropiusConnectionStyle {
   strokeDasharray: string,
   sourceMarkerType: ConnectionMarker,
   targetMarkerType: ConnectionMarker
-}
-
-export enum Shape {
-  Rectangle,
-  Triangle,
-  Circle,
-  Diamond,
-  Hexagon,
-  Octagon,
-  Ellipse,
-  Parallelogram,
-  Trapeze
-}
-
-export enum ConnectionMarker {
-  None,
-  Default,
-  Round,
-  LessThan,
-  OpenArrow,
-  Composition,
-  Slash,
 }

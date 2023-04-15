@@ -28,7 +28,7 @@ import visuals from "diagram-js/lib/features/grid-snapping/visuals";
 import { query as domQuery } from "min-dom";
 import Ids from "ids";
 import { vi } from "vuetify/locale";
-import { ConnectionMarker, Shape } from "@/lib/gropius-compatibility/types";
+import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 
 let RENDERER_IDS = new Ids();
 
@@ -388,7 +388,8 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function renderEmbeddedLabel(parentGfx, element, align, text, fontSize) {
-    return renderLabel(parentGfx, text, {
+
+    const label = renderLabel(parentGfx, text, {
       box: element,
       align: align,
       padding: 5,
@@ -397,6 +398,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         fontSize: fontSize || DEFAULT_TEXT_SIZE
       }
     });
+    return label
   }
 
   function renderExternalLabel(parentGfx, element, text) {

@@ -39,7 +39,6 @@ import AddConnection from "./popup/AddConnection.vue";
 import GropiusCompatibility from "../lib/gropius-compatibility";
 import {
   GropiusShape,
-  GropiusShapeStyle,
 } from "../lib/gropius-compatibility/types";
 import { Coordinates } from "@/types/HelperTypes";
 import { GropiusType } from "@/lib/gropius-compatibility/types";

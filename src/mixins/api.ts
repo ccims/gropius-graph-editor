@@ -1,9 +1,10 @@
 import {
   GropiusType
 } from "@/lib/gropius-compatibility/types";
+
 import {
-  GropiusShapeStyle, Shape
-} from "@/lib/gropius-compatibility/types";
+  Shape
+} from "@/lib/diagram/types";
 
 export default {
   data() {
