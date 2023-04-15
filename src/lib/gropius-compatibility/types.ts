@@ -10,8 +10,9 @@ export interface GropiusShape {
 }
 
 export interface GropiusShapeStyle {
-  width: number,
-  height: number,
+  minWidth: number,
+  minHeight: number,
+  maxScale: number,
   color: string,
   stroke: string,
   strokeWidth: number,

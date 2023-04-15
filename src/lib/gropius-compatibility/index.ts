@@ -12,6 +12,8 @@ import {
 // @ts-ignore
 import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
+import { h } from "vue";
+import { he } from "vuetify/locale";
 
 export default class GropiusCompatibility {
   private diagram: Diagram;
@@ -76,20 +78,77 @@ export default class GropiusCompatibility {
         strokeColor: "blue",
         strokeWidth: 3,
         strokeDasharray: "5 5",
-        sourceMarkerType: ConnectionMarker.Slash,
+        sourceMarkerType: ConnectionMarker.Round,
         targetMarkerType: ConnectionMarker.OpenArrow
       });
     });
 
   }
 
+  public getDimensions(minWidth: number, minHeight: number, maxScale: number, text: string): {width: number, height: number, text: string} {
+
+    const maxWidth = Math.floor(minWidth * maxScale)
+    const maxHeight = Math.floor(minHeight * maxScale)
+
+    let width = minWidth;
+    let height = minHeight;
+    let adjustedText = text;
+
+    const heightPerLine = 25;
+    const widthPerCharacter = 9;
+
+    const characters = text.length;
+
+    // max number of characters based on max size
+    const maxCharacters = Math.floor(maxWidth / widthPerCharacter) * Math.floor(maxHeight / heightPerLine)
+
+    if(characters > maxCharacters) {
+      // If there are more characters than the max size would allow
+
+      // Cut text and add "..." at the end
+      adjustedText = text.slice(0, maxCharacters).slice(0,-3) + "..."
+      width = maxWidth
+      height = maxHeight
+    } else {
+      // There is room to resize
+
+      let ratio = height / width;
+      let charactersForSize = Math.floor(width / widthPerCharacter) * Math.floor(height / heightPerLine)
+
+      const increaseBy = 10
+      while(characters > charactersForSize) {
+        // while sizes not big enough
+
+        width += increaseBy;
+
+        width = width > maxWidth ? maxWidth : width;
+        height = Math.round(ratio * width)
+        height = height > maxHeight ? maxHeight : height;
+        // additional loop breaker
+        if(width == maxWidth && height == maxHeight)
+          break;
+
+        // recalculate the characters that fit in updated size
+        charactersForSize = Math.floor(width / widthPerCharacter) * Math.floor(height / heightPerLine)
+      }
+    }
+
+    return {
+      width: width,
+      height: height,
+      text: adjustedText
+    }
+  }
+
   public draw(grShape: GropiusShape, coordinates: Coordinates) {
     const grStyle = grShape.grType.style;
+
+    let dimensions = this.getDimensions(grStyle.minWidth, grStyle.minHeight, grStyle.maxScale, grShape.name)
     let shape = {
       x: coordinates.x,
       y: coordinates.y,
-      width: grStyle.width,
-      height: grStyle.height,
+      width: dimensions.width,
+      height: dimensions.height,
       type: grShape.grType.shape,
       grShape: grShape,
       custom: {
@@ -101,7 +160,7 @@ export default class GropiusCompatibility {
           strokeWidth: grStyle.strokeWidth,
           strokeDasharray: grStyle.strokeDasharray
         },
-        label: grShape.name
+        label: dimensions.text
       }
     };
     this.createShape(shape);
@@ -110,13 +169,14 @@ export default class GropiusCompatibility {
   public test() {
     this.draw({
       version: "v1",
-      name: "test",
+      name: "Now I write something different than what I did before",
       grType: {
         name: "x",
         shape: Shape.Rectangle,
         style: {
-          width: 100,
-          height: 50,
+          minWidth: 100,
+          minHeight: 50,
+          maxScale: 2,
           color: "white",
           stroke: "black",
           strokeWidth: 2,
@@ -128,13 +188,33 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Blub",
+      name: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
       grType: {
         name: "x",
-        shape: Shape.Diamond,
+        shape: Shape.Rectangle,
         style: {
-          width: 100,
-          height: 100,
+          minWidth: 50,
+          minHeight: 50,
+          maxScale: 5,
+          color: "white",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "",
+          radius: 5
+        }
+      }
+    }, { x: 150, y: 250 });
+
+    this.draw({
+      version: "v1",
+      name: "This is a test text and it is very long here",
+      grType: {
+        name: "x",
+        shape: Shape.Triangle,
+        style: {
+          minWidth: 100,
+          minHeight: 50,
+          maxScale: 50,
           color: "yellow",
           stroke: "black",
           strokeWidth: 2,
