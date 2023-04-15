@@ -88,7 +88,7 @@ export default class GropiusCompatibility {
 
   }
 
-  public getDimensions(minWidth: number, minHeight: number, maxScale: number, text: string): {width: number, height: number, text: string} {
+  public getDimensions(minWidth: number, minHeight: number, maxScale: number, text: string, shape: Shape): {width: number, height: number, text: string} {
 
     const maxWidth = Math.floor(minWidth * maxScale)
     const maxHeight = Math.floor(minHeight * maxScale)
@@ -101,15 +101,14 @@ export default class GropiusCompatibility {
     const widthPerCharacter = 9;
 
     const characters = text.length;
-
     // max number of characters based on max size
-    const maxCharacters = Math.floor(maxWidth / widthPerCharacter) * Math.floor(maxHeight / heightPerLine)
+    let maxCharacters = Math.floor(maxWidth / widthPerCharacter) * Math.floor(maxHeight / heightPerLine)
 
     if(characters > maxCharacters) {
       // If there are more characters than the max size would allow
 
       // Cut text and add "..." at the end
-      adjustedText = text.slice(0, maxCharacters).slice(0,-3) + "..."
+      //adjustedText = text.slice(0, maxCharacters).slice(0,-3) + "..."
       width = maxWidth
       height = maxHeight
     } else {
@@ -146,7 +145,7 @@ export default class GropiusCompatibility {
   public draw(grShape: GropiusShape, coordinates: Coordinates) {
     const grStyle = grShape.grType.style;
 
-    let dimensions = this.getDimensions(grStyle.minWidth, grStyle.minHeight, grStyle.maxScale, grShape.name)
+    let dimensions = this.getDimensions(grStyle.minWidth, grStyle.minHeight, grStyle.maxScale, grShape.name, grShape.grType.shape)
     let shape = {
       x: coordinates.x,
       y: coordinates.y,

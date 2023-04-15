@@ -1,6 +1,7 @@
 import { assign } from "min-dash";
 
-import TextUtil from "diagram-js/lib/util/Text";
+//import TextUtil from "diagram-js/lib/util/Text";
+import TextUtil from "./Text";
 
 const DEFAULT_FONT_SIZE = 16;
 const LINE_HEIGHT_RATIO = 1.2;
