@@ -18,8 +18,8 @@ import { Connection } from "diagram-js/lib/model";
 import { h } from "vue";
 import { he } from "vuetify/locale";
 
-const HEIGHT_PER_LINE = 25;
-const WIDTH_PER_CHARACTER = 9;
+const HEIGHT_PER_LINE = 20;
+const WIDTH_PER_CHARACTER = 8;
 
 export default class GropiusCompatibility {
   private diagram: Diagram;
@@ -105,6 +105,16 @@ export default class GropiusCompatibility {
       case Shape.Triangle:
         factor = 3
         break
+      case Shape.Octagon:
+        factor = 1.25;
+        break;
+      case Shape.Circle:
+      case Shape.Ellipse:
+        factor = 1.5
+        break;
+      case Shape.Hexagon:
+        factor = 1.1
+        break
     }
 
     return this.getCharacterCountForSize(width, height) / factor
@@ -127,12 +137,14 @@ export default class GropiusCompatibility {
       // If there are more characters than the max size would allow
 
       // Cut text and add "..." at the end
-      adjustedText = text.slice(0, maxCharacters*1.5).slice(0,-3) + "..." // Not necessary but speeds things up
-      // Like "pre-cutting". It will probably get shorter in rendering, but to speed the renderer up with pre-cut it.
+      adjustedText = text.slice(0, maxCharacters).slice(0,-3) + "..."
+      // Theoretically not necessary but speeds things up
+      // Like "pre-cutting". It will get shortened in rendering,
+      // but to speed up the renderer we pre-cut it.
 
       width = maxWidth
       height = maxHeight
-      console.log("Max")
+      console.log("Max", adjustedText)
     } else {
       // There is room to resize
 
@@ -162,7 +174,6 @@ export default class GropiusCompatibility {
       height: height,
       text: adjustedText
     }
-    console.log(ret)
     return ret
   }
 
@@ -225,7 +236,7 @@ export default class GropiusCompatibility {
         style: {
           minWidth: 50,
           minHeight: 50,
-          maxScale: 10,
+          maxScale: 5,
           color: "white",
           stroke: "black",
           strokeWidth: 2,
@@ -237,7 +248,7 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Triangle " + m,
+      name: "Triangle " + xl,
       grType: {
         name: "x",
         shape: Shape.Triangle,
@@ -256,7 +267,7 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Parallel " + l,
+      name: "Parallel " + xl,
       grType: {
         name: "x",
         shape: Shape.Parallelogram,
@@ -275,14 +286,14 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Diamond " + s,
+      name: "Diamond " + xl,
       grType: {
         name: "x",
         shape: Shape.Diamond,
         style: {
           minWidth: 100,
           minHeight: 100,
-          maxScale: 1.5,
+          maxScale: 3,
           color: "yellow",
           stroke: "black",
           strokeWidth: 2,
@@ -294,10 +305,29 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Octagon " + s,
+      name: "Octagon " + xl,
       grType: {
         name: "x",
         shape: Shape.Octagon,
+        style: {
+          minWidth: 100,
+          minHeight: 100,
+          maxScale: 1.5,
+          color: "yellow",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      }
+    }, { x: 500, y: 250 });
+
+    this.draw({
+      version: "v1",
+      name: "Circle " + xl,
+      grType: {
+        name: "x",
+        shape: Shape.Circle,
         style: {
           minWidth: 100,
           minHeight: 100,
@@ -309,7 +339,84 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 500, y: 250 });
+    }, { x: 750, y: 250 });
+
+    this.draw({
+      version: "v1",
+      name: "Trapeze " + xl,
+      grType: {
+        name: "x",
+        shape: Shape.Trapeze,
+        style: {
+          minWidth: 100,
+          minHeight: 100,
+          maxScale: 1,
+          color: "yellow",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      }
+    }, { x: 1000, y: 250 });
+
+    this.draw({
+      version: "v1",
+      name: "Hexagon " + xl,
+      grType: {
+        name: "x",
+        shape: Shape.Hexagon,
+        style: {
+          minWidth: 100,
+          minHeight: 100,
+          maxScale: 2,
+          color: "yellow",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      }
+    }, { x: 500, y: 500 });
+
+    this.draw({
+      version: "v1",
+      name: "Ellipse " + xl,
+      grType: {
+        name: "x",
+        shape: Shape.Ellipse,
+        style: {
+          minWidth: 100,
+          minHeight: 50,
+          maxScale: 2,
+          color: "yellow",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      }
+    }, { x: 800, y: 500 });
+
+    this.draw({
+      version: "v1",
+      name: "Ellipse2 " + xl,
+      grType: {
+        name: "x",
+        shape: Shape.Ellipse,
+        style: {
+          minWidth: 50,
+          minHeight: 100,
+          maxScale: 2,
+          color: "yellow",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      }
+    }, { x: 1100, y: 500 });
+
 
     // let connection1 = this.elementFactory.createConnection({
     //     waypoints: [

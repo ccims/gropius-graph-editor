@@ -304,7 +304,7 @@ Text.prototype.layoutText = function(text, options) {
       offset.y = box.height / 4
       break;
     case Shape.Diamond:
-      box.width /= 1.75;
+      box.width /= 1.8;
       box.height /= 1.75;
       break;
     case Shape.Parallelogram:
@@ -312,6 +312,17 @@ Text.prototype.layoutText = function(text, options) {
       break
     case Shape.Octagon:
       box.width /= 1.2
+      break;
+    case Shape.Circle:
+    case Shape.Ellipse:
+      box.width /= 1.25;
+      box.height /= 1.25
+      break;
+    case Shape.Hexagon:
+      box.width /= 1.25
+      break
+    case Shape.Trapeze:
+      box.width /= 1.25
       break;
   }
 
