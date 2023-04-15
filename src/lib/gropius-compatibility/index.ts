@@ -18,6 +18,9 @@ import { Connection } from "diagram-js/lib/model";
 import { h } from "vue";
 import { he } from "vuetify/locale";
 
+const HEIGHT_PER_LINE = 25;
+const WIDTH_PER_CHARACTER = 9;
+
 export default class GropiusCompatibility {
   private diagram: Diagram;
   private canvas: any;
@@ -88,6 +91,25 @@ export default class GropiusCompatibility {
 
   }
 
+  private getCharacterCountForSize(width: number, height: number) {
+    return Math.floor((width / WIDTH_PER_CHARACTER) * (height / HEIGHT_PER_LINE))
+  }
+
+  private getCharacterCountForSizeByType(width: number, height: number, shape: Shape) {
+    let factor = 1
+
+    switch(shape) {
+      case Shape.Diamond:
+        factor = 3
+        break
+      case Shape.Triangle:
+        factor = 3
+        break
+    }
+
+    return this.getCharacterCountForSize(width, height) / factor
+  }
+
   public getDimensions(minWidth: number, minHeight: number, maxScale: number, text: string, shape: Shape): {width: number, height: number, text: string} {
 
     const maxWidth = Math.floor(minWidth * maxScale)
@@ -97,27 +119,25 @@ export default class GropiusCompatibility {
     let height = minHeight;
     let adjustedText = text;
 
-    const heightPerLine = 25;
-    const widthPerCharacter = 9;
-
     const characters = text.length;
     // max number of characters based on max size
-    let maxCharacters = Math.floor(maxWidth / widthPerCharacter) * Math.floor(maxHeight / heightPerLine)
+    let maxCharacters = this.getCharacterCountForSizeByType(maxWidth, maxHeight, shape)
 
     if(characters > maxCharacters) {
       // If there are more characters than the max size would allow
 
       // Cut text and add "..." at the end
-      adjustedText = text.slice(0, maxCharacters*2).slice(0,-3) + "..." // Not necessary but speeds things up
+      adjustedText = text.slice(0, maxCharacters*1.5).slice(0,-3) + "..." // Not necessary but speeds things up
       // Like "pre-cutting". It will probably get shorter in rendering, but to speed the renderer up with pre-cut it.
 
       width = maxWidth
       height = maxHeight
+      console.log("Max")
     } else {
       // There is room to resize
 
       let ratio = height / width;
-      let charactersForSize = Math.floor(width / widthPerCharacter) * Math.floor(height / heightPerLine)
+      let charactersForSize = this.getCharacterCountForSizeByType(width, height, shape)
 
       const increaseBy = 5
       while(characters > charactersForSize) {
@@ -133,14 +153,17 @@ export default class GropiusCompatibility {
           break;
 
         // recalculate the characters that fit in updated size
-        charactersForSize = Math.floor(width / widthPerCharacter) * Math.floor(height / heightPerLine)
+        charactersForSize = this.getCharacterCountForSizeByType(width, height, shape)
       }
     }
-    return {
+
+    const ret = {
       width: width,
       height: height,
       text: adjustedText
     }
+    console.log(ret)
+    return ret
   }
 
   public draw(grShape: GropiusShape, coordinates: Coordinates) {
@@ -170,17 +193,20 @@ export default class GropiusCompatibility {
   }
 
   public test() {
-    const long = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst."
+    const m = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     this.draw({
       version: "v1",
-      name: "Now I write something different than what I did before",
+      name: "rect1 " + m,
       grType: {
         name: "x",
         shape: Shape.Rectangle,
         style: {
           minWidth: 100,
           minHeight: 50,
-          maxScale: 2,
+          maxScale: 10,
           color: "white",
           stroke: "black",
           strokeWidth: 2,
@@ -192,14 +218,14 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: long,
+      name: "rect2 " + xl,
       grType: {
         name: "x",
         shape: Shape.Rectangle,
         style: {
           minWidth: 50,
           minHeight: 50,
-          maxScale: 5,
+          maxScale: 10,
           color: "white",
           stroke: "black",
           strokeWidth: 2,
@@ -211,14 +237,14 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: long,
+      name: "Triangle " + m,
       grType: {
         name: "x",
         shape: Shape.Triangle,
         style: {
           minWidth: 100,
           minHeight: 50,
-          maxScale: 1,
+          maxScale: 2,
           color: "yellow",
           stroke: "black",
           strokeWidth: 2,
@@ -226,11 +252,11 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 400, y: 75 });
+    }, { x: 500, y: 75 });
 
     this.draw({
       version: "v1",
-      name: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      name: "Parallel " + l,
       grType: {
         name: "x",
         shape: Shape.Parallelogram,
@@ -245,18 +271,18 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 600, y: 75 });
+    }, { x: 800, y: 75 });
 
     this.draw({
       version: "v1",
-      name: "This is a test text and it is very long here",
+      name: "Diamond " + s,
       grType: {
         name: "x",
         shape: Shape.Diamond,
         style: {
           minWidth: 100,
           minHeight: 100,
-          maxScale: 5,
+          maxScale: 1.5,
           color: "yellow",
           stroke: "black",
           strokeWidth: 2,
@@ -264,7 +290,26 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 800, y: 75 });
+    }, { x: 1000, y: 75 });
+
+    this.draw({
+      version: "v1",
+      name: "Octagon " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Octagon,
+        style: {
+          minWidth: 100,
+          minHeight: 100,
+          maxScale: 2,
+          color: "yellow",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      }
+    }, { x: 500, y: 250 });
 
     // let connection1 = this.elementFactory.createConnection({
     //     waypoints: [

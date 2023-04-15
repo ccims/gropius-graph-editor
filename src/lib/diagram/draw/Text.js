@@ -304,8 +304,14 @@ Text.prototype.layoutText = function(text, options) {
       offset.y = box.height / 4
       break;
     case Shape.Diamond:
-      box.width /= 1.5;
-      box.height /= 1.5;
+      box.width /= 1.75;
+      box.height /= 1.75;
+      break;
+    case Shape.Parallelogram:
+      box.width /= 1.2
+      break
+    case Shape.Octagon:
+      box.width /= 1.2
       break;
   }
 
@@ -330,17 +336,18 @@ Text.prototype.layoutText = function(text, options) {
 
 
   if (align.vertical === 'middle') {
-    padding.top = padding.bottom = 5;
+    padding.top = padding.bottom = 2;
   }
 
   // Start Text shorting
   let breakLoop = false
+  let reduceText = false
   do {
     if(text.length < 12) {
       text = "..."
       breakLoop = true
-    } else {
-      text = text.slice(0, -9) + "..."
+    } else if(reduceText) {
+      text = text.slice(0, -6) + "..."
     }
     lines = text.split(/\u00AD?\r?\n/)
 
@@ -352,6 +359,8 @@ Text.prototype.layoutText = function(text, options) {
     var totalHeight = reduce(layouted, function(sum, line, idx) {
       return sum + (lineHeight || line.height);
     }, 0) + padding.top + padding.bottom;
+
+    reduceText = true
   } while (totalHeight > box.height - padding.top - padding.bottom && breakLoop == false) // Added padding
   // END text shorting
 
