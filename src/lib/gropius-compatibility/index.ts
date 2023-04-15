@@ -144,7 +144,6 @@ export default class GropiusCompatibility {
 
       width = maxWidth
       height = maxHeight
-      console.log("Max", adjustedText)
     } else {
       // There is room to resize
 
