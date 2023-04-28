@@ -192,9 +192,9 @@ export default class GropiusCompatibility {
       y: coordinates.y,
       width: dimensions.width,
       height: dimensions.height,
-      shape: grShape.grType.shape,
       grShape: grShape,
       custom: {
+        shape: grShape.grType.shape,
         style: {
           rx: grStyle.radius,
           ry: grStyle.radius,
@@ -216,9 +216,9 @@ export default class GropiusCompatibility {
       y: componentShape.y + componentShape.height - 25,
       width: 60,
       height: 60,
-      shape: Shape.Diamond,
       grShape: undefined,
       custom: {
+        shape: Shape.Diamond,
         style: {
           rx: 0,
           ry: 0,

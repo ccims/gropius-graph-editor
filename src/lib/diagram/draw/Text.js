@@ -288,9 +288,7 @@ Text.prototype.layoutText = function(text, options) {
     padding = parsePadding(options.padding !== undefined ? options.padding : this._config.padding),
     fitBox = options.fitBox || false;
 
-  // TODO different, don't access gropius custom stuff!
-  //let shape = box.grShape.grType.shape;
-  let shape = box.shape;
+  let shape = box.custom.shape;
   const shapeWidth = box.width,
     shapeHeight = box.height;
 

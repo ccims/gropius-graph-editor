@@ -171,6 +171,8 @@ export default function MoveEvents(
       isAttach = canExecute === "attach",
       shapes = context.shapes;
 
+    console.log(shapes)
+
     if (canExecute === false) {
       return false;
     }
