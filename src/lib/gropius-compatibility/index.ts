@@ -179,8 +179,8 @@ export default class GropiusCompatibility {
   }
 
   public draw(grShape: GropiusShape, coordinates: Coordinates) {
-    const shape = this.drawComponent(grShape, coordinates)
-    this.drawVersion(shape)
+    const componentObject = this.drawComponent(grShape, coordinates)
+    componentObject.custom.versionObject = this.drawVersion(componentObject)
   }
 
   private drawComponent(grShape: GropiusShape, coordinates: Coordinates) {
@@ -203,11 +203,11 @@ export default class GropiusCompatibility {
           strokeWidth: grStyle.strokeWidth,
           strokeDasharray: grStyle.strokeDasharray
         },
-        label: dimensions.text
+        label: dimensions.text,
+        versionObject: undefined
       }
     };
-    this.createShape(shape);
-    return shape
+    return this.createShape(shape)
   }
 
   private drawVersion(componentShape: any) {
@@ -230,7 +230,7 @@ export default class GropiusCompatibility {
         label: componentShape.grShape.version
       }
     };
-    this.createShape(shape);
+    return this.createShape(shape);
   }
 
   public test() {
@@ -487,6 +487,7 @@ export default class GropiusCompatibility {
   private createShape(shape: any) {
     const _shape = this.elementFactory.createShape(shape);
     this.canvas.addShape(_shape, this.root);
+    return _shape
   }
 
   public createConnection(connection: Connection, style: GropiusConnectionStyle) {

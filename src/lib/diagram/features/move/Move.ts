@@ -139,6 +139,8 @@ export default function MoveEvents(
       canExecute,
       lastPosition = context.lastPosition;
 
+
+
     if (lastPosition) {
       delta.x = position.x - lastPosition.x;
       delta.y = position.y - lastPosition.y;
@@ -170,8 +172,6 @@ export default function MoveEvents(
       canExecute = context.canExecute,
       isAttach = canExecute === "attach",
       shapes = context.shapes;
-
-    console.log(shapes)
 
     if (canExecute === false) {
       return false;

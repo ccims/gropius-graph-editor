@@ -68,38 +68,42 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
   this.handler = function(visuals, element) {
     let render;
-    switch (element.custom.shape) {
-      case Shape.Rectangle:
-        render = renderRectangle;
-        break;
-      case Shape.Diamond:
-        render = renderDiamond;
-        break;
-      case Shape.Hexagon:
-        render = renderHexagon;
-        break;
-      case Shape.Ellipse:
-        render = renderEllipse;
-        break;
-      case Shape.Octagon:
-        render = renderOctagon;
-        break;
-      case Shape.Circle:
-        render = renderCircle;
-        break;
-      case Shape.Triangle:
-        render = renderTriangle;
-        break;
-      case Shape.Parallelogram:
-        render = renderParallelogram;
-        break;
-      case Shape.Trapeze:
-        render = renderTrapeze;
-        break;
-      default:
-        renderRectangle(visuals, element);
-        return;
-    }
+    if(!element.custom) {
+      renderRectangle(visuals, element);
+      return
+    } else
+      switch (element.custom.shape) {
+        case Shape.Rectangle:
+          render = renderRectangle;
+          break;
+        case Shape.Diamond:
+          render = renderDiamond;
+          break;
+        case Shape.Hexagon:
+          render = renderHexagon;
+          break;
+        case Shape.Ellipse:
+          render = renderEllipse;
+          break;
+        case Shape.Octagon:
+          render = renderOctagon;
+          break;
+        case Shape.Circle:
+          render = renderCircle;
+          break;
+        case Shape.Triangle:
+          render = renderTriangle;
+          break;
+        case Shape.Parallelogram:
+          render = renderParallelogram;
+          break;
+        case Shape.Trapeze:
+          render = renderTrapeze;
+          break;
+        default:
+          renderRectangle(visuals, element);
+          return;
+      }
 
     render(visuals, element, element.custom.style);
 
