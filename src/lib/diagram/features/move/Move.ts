@@ -171,7 +171,24 @@ export default function MoveEvents(
     let delta = context.delta,
       canExecute = context.canExecute,
       isAttach = canExecute === "attach",
-      shapes = context.shapes;
+      shapes = Array<any>();
+
+    console.log("A", context.shapes)
+    // Remove all not-component and not-connections
+    context.shapes.forEach(shape => {
+      if(shape.id.startsWith("shape") && shape.grShape != "version"
+        || shape.id.startsWith("connection"))
+        shapes.push(shape)
+    })
+
+    console.log("B", shapes)
+    // Add all component versions
+    context.shapes.forEach(shape => {
+      if(shape.id.startsWith("shape") && shape.grShape != "version") {
+        shapes.push(shape.custom.versionObject)
+      }
+    })
+    console.log("C", shapes)
 
     if (canExecute === false) {
       return false;

@@ -216,7 +216,7 @@ export default class GropiusCompatibility {
       y: componentShape.y + componentShape.height - 25,
       width: 60,
       height: 60,
-      grShape: undefined,
+      grShape: "version",
       custom: {
         shape: Shape.Diamond,
         style: {
