@@ -214,15 +214,15 @@ export default class GropiusCompatibility {
     let shape = {
       x: componentShape.x + componentShape.width - 25,
       y: componentShape.y + componentShape.height - 25,
-      width: 60,
-      height: 60,
+      width: 80,
+      height: 50,
       grShape: "version",
       custom: {
-        shape: Shape.Diamond,
+        shape: Shape.Octagon,
         style: {
           rx: 0,
           ry: 0,
-          fill: "#6666ff",
+          fill: "#aaaaff",
           stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: ""
@@ -277,7 +277,7 @@ export default class GropiusCompatibility {
     }, { x: 150, y: 250 });
 
     this.draw({
-      version: "v1",
+      version: "v1.10.5",
       name: "rect3 little text, big shape",
       grType: {
         name: "x",
@@ -293,7 +293,7 @@ export default class GropiusCompatibility {
           radius: 5
         }
       }
-    }, { x: 150, y: 400 });
+    }, { x: 150, y: 450 });
 
     this.draw({
       version: "v1",
