@@ -179,6 +179,11 @@ export default class GropiusCompatibility {
   }
 
   public draw(grShape: GropiusShape, coordinates: Coordinates) {
+    const shape = this.drawComponent(grShape, coordinates)
+    this.drawVersion(shape)
+  }
+
+  private drawComponent(grShape: GropiusShape, coordinates: Coordinates) {
     const grStyle = grShape.grType.style;
 
     let dimensions = this.getDimensions(grStyle.minWidth, grStyle.minHeight, grStyle.maxScale, grShape.name, grShape.grType.shape)
@@ -187,7 +192,7 @@ export default class GropiusCompatibility {
       y: coordinates.y,
       width: dimensions.width,
       height: dimensions.height,
-      type: grShape.grType.shape,
+      shape: grShape.grType.shape,
       grShape: grShape,
       custom: {
         style: {
@@ -199,6 +204,30 @@ export default class GropiusCompatibility {
           strokeDasharray: grStyle.strokeDasharray
         },
         label: dimensions.text
+      }
+    };
+    this.createShape(shape);
+    return shape
+  }
+
+  private drawVersion(componentShape: any) {
+    let shape = {
+      x: componentShape.x + componentShape.width - 25,
+      y: componentShape.y + componentShape.height - 25,
+      width: 60,
+      height: 60,
+      shape: Shape.Diamond,
+      grShape: undefined,
+      custom: {
+        style: {
+          rx: 0,
+          ry: 0,
+          fill: "#6666ff",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: ""
+        },
+        label: componentShape.grShape.version
       }
     };
     this.createShape(shape);

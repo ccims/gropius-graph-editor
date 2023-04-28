@@ -289,7 +289,8 @@ Text.prototype.layoutText = function(text, options) {
     fitBox = options.fitBox || false;
 
   // TODO different, don't access gropius custom stuff!
-  let shape = box.grShape.grType.shape;
+  //let shape = box.grShape.grType.shape;
+  let shape = box.shape;
   const shapeWidth = box.width,
     shapeHeight = box.height;
 
@@ -355,7 +356,6 @@ Text.prototype.layoutText = function(text, options) {
   let reduceText = false;
   do {
     if (reduceText) {
-      console.log("Text.js", "Reduce")
       if (text.length <= 4) {
         text = "..."
         breakLoop = true

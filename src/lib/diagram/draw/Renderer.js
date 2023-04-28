@@ -68,7 +68,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
   this.handler = function(visuals, element) {
     let render;
-    switch (element.type) {
+    switch (element.shape) {
       case Shape.Rectangle:
         render = renderRectangle;
         break;
