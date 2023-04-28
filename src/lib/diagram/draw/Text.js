@@ -3,22 +3,22 @@ import {
   assign,
   forEach,
   reduce
-} from 'min-dash';
+} from "min-dash";
 
 import {
   append as svgAppend,
   attr as svgAttr,
   create as svgCreate,
   remove as svgRemove
-} from 'tiny-svg';
+} from "tiny-svg";
 
 import {
   assignStyle
-} from 'min-dom';
+} from "min-dom";
 import { Shape } from "@/lib/diagram/types";
 
 /**
- * @typedef {import('../util/Types').Dimensions} Dimensions
+ * @typedef {import("../util/Types").Dimensions} Dimensions
  */
 
 var DEFAULT_BOX_PADDING = 0;
@@ -31,11 +31,11 @@ var DEFAULT_LABEL_SIZE = {
 
 function parseAlign(align) {
 
-  var parts = align.split('-');
+  var parts = align.split("-");
 
   return {
-    horizontal: parts[0] || 'center',
-    vertical: parts[1] || 'top'
+    horizontal: parts[0] || "center",
+    vertical: parts[1] || "top"
   };
 }
 
@@ -61,11 +61,11 @@ function getTextBBox(text, fakeText) {
 
   try {
     var bbox,
-      emptyLine = text === '';
+      emptyLine = text === "";
 
     // add dummy text, when line is empty to
     // determine correct height
-    fakeText.textContent = emptyLine ? 'dummy' : text;
+    fakeText.textContent = emptyLine ? "dummy" : text;
 
     textBBox = fakeText.getBBox();
 
@@ -105,13 +105,13 @@ function layoutNext(lines, maxWidth, fakeText) {
 
   var textBBox;
 
-  for (;;) {
+  for (; ;) {
     textBBox = getTextBBox(fitLine, fakeText);
 
     textBBox.width = fitLine ? textBBox.width : 0;
 
     // try to fit
-    if (fitLine === ' ' || fitLine === '' || textBBox.width < Math.round(maxWidth) || fitLine.length < 2) {
+    if (fitLine === " " || fitLine === "" || textBBox.width < Math.round(maxWidth) || fitLine.length < 2) {
       return fit(lines, fitLine, originalLine, textBBox);
     }
 
@@ -133,7 +133,7 @@ function fit(lines, fitLine, originalLine, textBBox) {
   };
 }
 
-var SOFT_BREAK = '\u00AD';
+var SOFT_BREAK = "\u00AD";
 
 
 /**
@@ -162,7 +162,7 @@ function semanticShorten(line, maxLength) {
       } else {
 
         // remove previous part, too if hyphen does not fit anymore
-        if (part === '-' || part === SOFT_BREAK) {
+        if (part === "-" || part === SOFT_BREAK) {
           shortenedParts.pop();
         }
 
@@ -175,10 +175,10 @@ function semanticShorten(line, maxLength) {
 
   // translate trailing soft break to actual hyphen
   if (last && last === SOFT_BREAK) {
-    shortenedParts[shortenedParts.length - 1] = '-';
+    shortenedParts[shortenedParts.length - 1] = "-";
   }
 
-  return shortenedParts.join('');
+  return shortenedParts.join("");
 }
 
 
@@ -199,18 +199,18 @@ function shortenLine(line, width, maxWidth) {
 
 
 function getHelperSvg() {
-  var helperSvg = document.getElementById('helper-svg');
+  var helperSvg = document.getElementById("helper-svg");
 
   if (!helperSvg) {
-    helperSvg = svgCreate('svg');
+    helperSvg = svgCreate("svg");
 
     svgAttr(helperSvg, {
-      id: 'helper-svg'
+      id: "helper-svg"
     });
 
     assignStyle(helperSvg, {
-      visibility: 'hidden',
-      position: 'fixed',
+      visibility: "hidden",
+      position: "fixed",
       width: 0,
       height: 0
     });
@@ -237,7 +237,7 @@ export default function Text(config) {
     size: DEFAULT_LABEL_SIZE,
     padding: DEFAULT_BOX_PADDING,
     style: {},
-    align: 'center-top'
+    align: "center-top"
   }, config || {});
 }
 
@@ -289,40 +289,40 @@ Text.prototype.layoutText = function(text, options) {
     fitBox = options.fitBox || false;
 
   // TODO different, don't access gropius custom stuff!
-  let shape = box.grShape.grType.shape
+  let shape = box.grShape.grType.shape;
   const shapeWidth = box.width,
-    shapeHeight = box.height
+    shapeHeight = box.height;
 
   let offset = {
     x: 0,
     y: 0
-  }
-  switch(shape) {
+  };
+  switch (shape) {
     case Shape.Triangle:
-      box.width /= 2
-      box.height /= 1.5
-      offset.y = box.height / 4
+      box.width /= 2;
+      box.height /= 1.5;
+      offset.y = box.height / 4;
       break;
     case Shape.Diamond:
       box.width /= 1.8;
       box.height /= 1.75;
       break;
     case Shape.Parallelogram:
-      box.width /= 1.2
-      break
+      box.width /= 1.2;
+      break;
     case Shape.Octagon:
-      box.width /= 1.2
+      box.width /= 1.2;
       break;
     case Shape.Circle:
     case Shape.Ellipse:
       box.width /= 1.25;
-      box.height /= 1.25
+      box.height /= 1.25;
       break;
     case Shape.Hexagon:
-      box.width /= 1.25
-      break
+      box.width /= 1.25;
+      break;
     case Shape.Trapeze:
-      box.width /= 1.25
+      box.width /= 1.25;
       break;
   }
 
@@ -337,7 +337,7 @@ Text.prototype.layoutText = function(text, options) {
   //maxWidth /= textWidthFactor
 
   // ensure correct rendering by attaching helper text node to invisible SVG
-  var helperText = svgCreate('text');
+  var helperText = svgCreate("text");
   svgAttr(helperText, { x: 0, y: 0 });
   svgAttr(helperText, style);
 
@@ -346,23 +346,28 @@ Text.prototype.layoutText = function(text, options) {
   svgAppend(helperSvg, helperText);
 
 
-  if (align.vertical === 'middle') {
+  if (align.vertical === "middle") {
     padding.top = padding.bottom = 2;
   }
 
   // Start Text shorting
-  let breakLoop = false
-  let reduceText = false
+  let breakLoop = false;
+  let reduceText = false;
   do {
-    if(text.length < 12) {
-      text = "..."
-      breakLoop = true
-    } else if(reduceText) {
-      text = text.slice(0, -6) + "..."
+    if (reduceText) {
+      console.log("Text.js", "Reduce")
+      if (text.length <= 4) {
+        text = "..."
+        breakLoop = true
+      } else
+      {
+        text = text.slice(0, -4) + "...";
+      }
     }
-    lines = text.split(/\u00AD?\r?\n/)
 
-    layouted = []
+    lines = text.split(/\u00AD?\r?\n/);
+
+    layouted = [];
     while (lines.length) {
       layouted.push(layoutNext(lines, maxWidth, helperText));
     }
@@ -371,8 +376,9 @@ Text.prototype.layoutText = function(text, options) {
       return sum + (lineHeight || line.height);
     }, 0) + padding.top + padding.bottom;
 
-    reduceText = true
-  } while (totalHeight > box.height - padding.top - padding.bottom && breakLoop == false) // Added padding
+    // Reduce text in next loop iteration
+    reduceText = true;
+  } while (totalHeight > box.height - padding.top - padding.bottom && breakLoop == false); // Added padding
   // END text shorting
 
   var maxLineWidth = reduce(layouted, function(sum, line, idx) {
@@ -382,16 +388,16 @@ Text.prototype.layoutText = function(text, options) {
   // the y position of the next line
   var y = padding.top;
 
-  if (align.vertical === 'middle') {
+  if (align.vertical === "middle") {
     y += (shapeHeight - totalHeight) / 2;
-    y += offset.y
+    y += offset.y;
   }
 
   // magic number initial offset
   y -= (lineHeight || layouted[0].height) / 4;
 
 
-  var textElement = svgCreate('text');
+  var textElement = svgCreate("text");
 
   svgAttr(textElement, style);
 
@@ -404,11 +410,11 @@ Text.prototype.layoutText = function(text, options) {
     y += (lineHeight || line.height);
 
     switch (align.horizontal) {
-      case 'left':
+      case "left":
         x = padding.left;
         break;
 
-      case 'right':
+      case "right":
         x = ((fitBox ? maxLineWidth : maxWidth)
           - padding.right - line.width);
         break;
@@ -418,11 +424,11 @@ Text.prototype.layoutText = function(text, options) {
         x = Math.max((((fitBox ? maxLineWidth : maxWidth)
           - line.width) / 2 + padding.left), 0);
 
-        x += (shapeWidth - box.width) / 2
-        x += offset.x
+        x += (shapeWidth - box.width) / 2;
+        x += offset.x;
     }
 
-    var tspan = svgCreate('tspan');
+    var tspan = svgCreate("tspan");
     svgAttr(tspan, { x: x, y: y });
 
     tspan.textContent = line.text;
@@ -445,7 +451,7 @@ Text.prototype.layoutText = function(text, options) {
 
 
 function getLineHeight(style) {
-  if ('fontSize' in style && 'lineHeight' in style) {
+  if ("fontSize" in style && "lineHeight" in style) {
     return style.lineHeight * parseInt(style.fontSize, 10);
   }
 }

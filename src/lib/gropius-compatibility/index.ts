@@ -19,7 +19,8 @@ import { h } from "vue";
 import { he } from "vuetify/locale";
 
 const HEIGHT_PER_LINE = 20;
-const WIDTH_PER_CHARACTER = 8;
+const WIDTH_PER_CHARACTER = 10;
+const PADDING = 10;
 
 export default class GropiusCompatibility {
   private diagram: Diagram;
@@ -92,7 +93,7 @@ export default class GropiusCompatibility {
   }
 
   private getCharacterCountForSize(width: number, height: number) {
-    return Math.floor((width / WIDTH_PER_CHARACTER) * (height / HEIGHT_PER_LINE))
+    return Math.floor(((width - PADDING) / WIDTH_PER_CHARACTER) * ((height - PADDING) / HEIGHT_PER_LINE))
   }
 
   private getCharacterCountForSizeByType(width: number, height: number, shape: Shape) {
@@ -131,16 +132,18 @@ export default class GropiusCompatibility {
 
     const characters = text.length;
     // max number of characters based on max size
-    let maxCharacters = this.getCharacterCountForSizeByType(maxWidth, maxHeight, shape)
+    let estimatedMaxCharacters = this.getCharacterCountForSizeByType(maxWidth, maxHeight, shape)
 
-    if(characters > maxCharacters) {
+    if(characters > estimatedMaxCharacters) {
       // If there are more characters than the max size would allow
-
       // Cut text and add "..." at the end
-      adjustedText = text.slice(0, maxCharacters).slice(0,-3) + "..."
       // Theoretically not necessary but speeds things up
       // Like "pre-cutting". It will get shortened in rendering,
       // but to speed up the renderer we pre-cut it.
+      // Disabled to avoid cutting too much. Is fine unless there is big text on small shape
+
+
+      // adjustedText = text.slice(0, maxCharacters).slice(0,-3) + "..."
 
       width = maxWidth
       height = maxHeight
@@ -150,10 +153,9 @@ export default class GropiusCompatibility {
       let ratio = height / width;
       let charactersForSize = this.getCharacterCountForSizeByType(width, height, shape)
 
-      const increaseBy = 5
+      const increaseBy = 10
       while(characters > charactersForSize) {
         // while sizes not big enough
-
         width += increaseBy;
         width = width > maxWidth ? maxWidth : width;
 
@@ -209,14 +211,14 @@ export default class GropiusCompatibility {
     const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     this.draw({
       version: "v1",
-      name: "rect1 " + m,
+      name: "rect1 My Library",
       grType: {
         name: "x",
         shape: Shape.Rectangle,
         style: {
-          minWidth: 100,
-          minHeight: 50,
-          maxScale: 10,
+          minWidth: 40,
+          minHeight: 40,
+          maxScale: 1.5,
           color: "white",
           stroke: "black",
           strokeWidth: 2,
@@ -228,7 +230,7 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "rect2 " + xl,
+      name: "rect2 " + s,
       grType: {
         name: "x",
         shape: Shape.Rectangle,
@@ -247,7 +249,26 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Triangle " + xl,
+      name: "rect3 little text, big shape",
+      grType: {
+        name: "x",
+        shape: Shape.Rectangle,
+        style: {
+          minWidth: 250,
+          minHeight: 200,
+          maxScale: 1,
+          color: "white",
+          stroke: "black",
+          strokeWidth: 2,
+          strokeDasharray: "",
+          radius: 5
+        }
+      }
+    }, { x: 150, y: 400 });
+
+    this.draw({
+      version: "v1",
+      name: "Triangle " + s,
       grType: {
         name: "x",
         shape: Shape.Triangle,
@@ -266,7 +287,7 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Parallel " + xl,
+      name: "Parallel " + s,
       grType: {
         name: "x",
         shape: Shape.Parallelogram,
@@ -285,14 +306,14 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Diamond " + xl,
+      name: "Diamond " + s,
       grType: {
         name: "x",
         shape: Shape.Diamond,
         style: {
           minWidth: 100,
           minHeight: 100,
-          maxScale: 3,
+          maxScale: 1.5,
           color: "yellow",
           stroke: "black",
           strokeWidth: 2,
@@ -304,7 +325,7 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Octagon " + xl,
+      name: "Octagon " + s,
       grType: {
         name: "x",
         shape: Shape.Octagon,
@@ -323,7 +344,7 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Circle " + xl,
+      name: "Circle " + s,
       grType: {
         name: "x",
         shape: Shape.Circle,
@@ -342,7 +363,7 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Trapeze " + xl,
+      name: "Trapeze " + s,
       grType: {
         name: "x",
         shape: Shape.Trapeze,
@@ -357,11 +378,11 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 1000, y: 250 });
+    }, { x: 1050, y: 300 });
 
     this.draw({
       version: "v1",
-      name: "Hexagon " + xl,
+      name: "Hexagon " + s,
       grType: {
         name: "x",
         shape: Shape.Hexagon,
@@ -380,7 +401,7 @@ export default class GropiusCompatibility {
 
     this.draw({
       version: "v1",
-      name: "Ellipse " + xl,
+      name: "Ellipse " + s,
       grType: {
         name: "x",
         shape: Shape.Ellipse,
@@ -395,11 +416,11 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 800, y: 500 });
+    }, { x: 750, y: 500 });
 
     this.draw({
       version: "v1",
-      name: "Ellipse2 " + xl,
+      name: "Ellipse2 " + s,
       grType: {
         name: "x",
         shape: Shape.Ellipse,
@@ -414,7 +435,7 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 1100, y: 500 });
+    }, { x: 1050, y: 500 });
 
 
     // let connection1 = this.elementFactory.createConnection({
@@ -440,16 +461,9 @@ export default class GropiusCompatibility {
   }
 
   public createConnection(connection: Connection, style: GropiusConnectionStyle) {
-    // const source = connectionData.source,
-    //   target = connectionData.target,
-    //   waypoints = connectionData.waypoints;
-    //
-    // let connection = this.elementFactory.createConnection({
-    //   waypoints: waypoints,
-    //   source: source,
-    //   target: target
-    // });
+    // @ts-ignore
     connection.customRendered = true;
+    // @ts-ignore
     connection.custom = {
       style: style,
       label: "" // TODO
