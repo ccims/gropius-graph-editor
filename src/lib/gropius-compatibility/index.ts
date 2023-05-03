@@ -16,7 +16,7 @@ import {
 import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
 import { h } from "vue";
-import { he } from "vuetify/locale";
+import { el, he } from "vuetify/locale";
 
 const HEIGHT_PER_LINE = 20;
 const WIDTH_PER_CHARACTER = 10;
@@ -483,8 +483,16 @@ export default class GropiusCompatibility {
 
   }
 
-  public deleteShape(element: any) {
-    this.modeling.removeElements([element]);
+  public deleteShape(element: any): boolean {
+
+    if(!element.custom || !element.custom.versionObject)
+      return false
+
+    this.modeling.removeElements([element]); // Delete main shape
+    if(element.custom && element.custom.versionObject)
+      this.modeling.removeElements([element.custom.versionObject]) // Delete attached version
+
+    return true
   }
 
   private createShape(shape: any) {
