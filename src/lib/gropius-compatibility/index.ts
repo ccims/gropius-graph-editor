@@ -211,9 +211,12 @@ export default class GropiusCompatibility {
   }
 
   private drawVersion(componentShape: any) {
+    const offsetX = 15,
+      offsetY = 15
+
     let shape = {
-      x: componentShape.x + componentShape.width - 25,
-      y: componentShape.y + componentShape.height - 25,
+      x: componentShape.x + componentShape.width - offsetX,
+      y: componentShape.y + componentShape.height - offsetY,
       width: 80,
       height: 50,
       grShape: "version",
@@ -240,7 +243,7 @@ export default class GropiusCompatibility {
     const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     this.draw({
       version: "v1",
-      name: "rect1 My Library",
+      name: "rect1 An apple a day",
       grType: {
         name: "x",
         shape: Shape.Rectangle,
@@ -350,7 +353,7 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 1000, y: 75 });
+    }, { x: 1100, y: 75 });
 
     this.draw({
       version: "v1",
@@ -388,7 +391,7 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 750, y: 250 });
+    }, { x: 800, y: 250 });
 
     this.draw({
       version: "v1",
@@ -407,7 +410,7 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 1050, y: 300 });
+    }, { x: 1100, y: 300 });
 
     this.draw({
       version: "v1",
@@ -445,7 +448,7 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 750, y: 500 });
+    }, { x: 800, y: 500 });
 
     this.draw({
       version: "v1",
@@ -464,7 +467,7 @@ export default class GropiusCompatibility {
           radius: 0
         }
       }
-    }, { x: 1050, y: 500 });
+    }, { x: 1100, y: 500 });
 
 
     // let connection1 = this.elementFactory.createConnection({
