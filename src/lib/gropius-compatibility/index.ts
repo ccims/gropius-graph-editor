@@ -243,14 +243,14 @@ export default class GropiusCompatibility {
     const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     this.draw({
       version: "v1",
-      name: "rect1 An apple a day",
+      name: "rect1",
       grType: {
         name: "x",
         shape: Shape.Rectangle,
         style: {
           minWidth: 40,
           minHeight: 40,
-          maxScale: 1.5,
+          maxScale: 10,
           color: "white",
           stroke: "black",
           strokeWidth: 2,

@@ -2,7 +2,15 @@ import inherits from "inherits-browser";
 
 import BaseRenderer from "diagram-js/lib/draw/BaseRenderer";
 import DefaultRenderer from "diagram-js/lib/draw/DefaultRenderer";
-import { getColor, getFillColor, getStrokeColor } from "./RenderUtil";
+import {
+  getCirclePath,
+  getColor,
+  getDiamondPath, getEllipsePath,
+  getFillColor, getHexagonPath, getOctagonPath,
+  getParallelogramPath,
+  getRectPath,
+  getStrokeColor, getTrapezePath, getTrianglePath
+} from "./RenderUtil";
 
 import {
   rotate,
@@ -47,6 +55,8 @@ const DEFAULT_TEXT_SIZE = 16;
  *
  * @param {EventBus} eventBus
  * @param {Styles} styles
+ * @param {import("diagram-js/lib/core/Canvas").default} canvas
+ * @param {import("./TextRenderer").default} textRenderer
  */
 export default function Renderer(eventBus, styles, canvas, textRenderer) {
   DefaultRenderer.call(this, eventBus, styles);
@@ -68,9 +78,9 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
   this.handler = function(visuals, element) {
     let render;
-    if(!element.custom) {
+    if (!element.custom) {
       renderRectangle(visuals, element);
-      return
+      return;
     } else
       switch (element.custom.shape) {
         case Shape.Rectangle:
@@ -125,9 +135,9 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         strokeWidth: element.custom.style.strokeWidth,
         strokeDasharray: element.custom.style.strokeDasharray
       };
-      if(element.custom.style.sourceMarkerType != ConnectionMarker.None)
+      if (element.custom.style.sourceMarkerType != ConnectionMarker.None)
         attrs.markerStart = marker(element.custom.style.sourceMarkerType, element.custom.style.strokeColor, element.custom.style.strokeColor);
-      if(element.custom.style.targetMarkerType != ConnectionMarker.None)
+      if (element.custom.style.targetMarkerType != ConnectionMarker.None)
         attrs.markerEnd = marker(element.custom.style.targetMarkerType, element.custom.style.strokeColor, element.custom.style.strokeColor);
 
       // TODO Label
@@ -402,7 +412,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         fontSize: fontSize || DEFAULT_TEXT_SIZE
       }
     });
-    return label
+    return label;
   }
 
   function renderExternalLabel(parentGfx, element, text) {
@@ -529,16 +539,16 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         });
 
       case ConnectionMarker.OpenArrow:
-        marker = svgCreate('path', {
-          d: 'M 1 5 L 11 10 L 1 15',
+        marker = svgCreate("path", {
+          d: "M 1 5 L 11 10 L 1 15",
           ...lineStyle({
-            fill: 'none',
+            fill: "none",
             stroke: stroke,
             strokeWidth: 1.5,
 
             // fix for safari / chrome / firefox bug not correctly
             // resetting stroke dash array
-            strokeDasharray: [ 10000, 1 ]
+            strokeDasharray: [10000, 1]
           })
         });
 
@@ -549,8 +559,8 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         });
 
       case ConnectionMarker.Composition:
-        marker = svgCreate('path', {
-          d: 'M 0 10 L 8 6 L 16 10 L 8 14 Z',
+        marker = svgCreate("path", {
+          d: "M 0 10 L 8 6 L 16 10 L 8 14 Z",
           ...lineStyle({
             fill: fill,
             stroke: stroke
@@ -564,8 +574,8 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         });
 
       case ConnectionMarker.Slash:
-        marker = svgCreate('path', {
-          d: 'M 6 4 L 10 16',
+        marker = svgCreate("path", {
+          d: "M 6 4 L 10 16",
           ...lineStyle({
             stroke: stroke
           })
@@ -663,21 +673,34 @@ Renderer.prototype.drawShape = function drawShape(visuals, element) {
   this.handler(visuals, element);
 };
 
-Renderer.prototype.getShapePath = function getShapePath(shape) {
-  const x = shape.x,
-    y = shape.y,
-    width = shape.width,
-    height = shape.height;
+// Note: Using Renderer.prototype.getShapePath doesn't work.
+DefaultRenderer.prototype.getShapePath = function(shape) {
 
-  const shapePath = [
-    ["M", x, y],
-    ["l", width, 0],
-    ["l", 0, height],
-    ["l", -width, 0],
-    ["z"]
-  ];
+  if (!shape.custom || !shape.custom.shape) {
+    console.error("Missing shape");
+    return getRectPath(shape);
+  }
 
-  return componentsToPath(shapePath);
+  switch (shape.custom.shape) {
+    case Shape.Diamond:
+      return getDiamondPath(shape);
+    case Shape.Parallelogram:
+      return getParallelogramPath(shape);
+    case Shape.Circle:
+      return getCirclePath(shape);
+    case Shape.Octagon:
+      return getOctagonPath(shape);
+    case Shape.Triangle:
+      return getTrianglePath(shape);
+    case Shape.Hexagon:
+      return getHexagonPath(shape);
+    case Shape.Trapeze:
+      return getTrapezePath(shape)
+    case Shape.Ellipse:
+      return getEllipsePath(shape)
+    default:
+      return getRectPath(shape);
+  }
 };
 
 Renderer.prototype.getConnectionPath = function getConnectionPath(connection) {
