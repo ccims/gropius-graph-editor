@@ -677,7 +677,6 @@ Renderer.prototype.drawShape = function drawShape(visuals, element) {
 DefaultRenderer.prototype.getShapePath = function(shape) {
 
   if (!shape.custom || !shape.custom.shape) {
-    console.error("Missing shape");
     return getRectPath(shape);
   }
 
