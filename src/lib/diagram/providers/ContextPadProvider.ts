@@ -23,7 +23,7 @@ ContextPadProvider.$inject = [
 ];
 
 
-ContextPadProvider.prototype.getContextPadEntries = function (element: any) {
+ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
   const connect = this._connect,
     modeling = this._modeling;
 
@@ -36,24 +36,36 @@ ContextPadProvider.prototype.getContextPadEntries = function (element: any) {
     connect.start(event, element, autoActivate);
   }
 
-  return {
-    "delete": {
-      group: "edit",
-      className: "context-pad-icon-remove",
-      title: "Remove",
-      action: {
-        click: removeElement,
-        dragstart: removeElement
-      }
-    },
-    "connect": {
-      group: "connect",
-      className: "context-pad-icon-connect",
-      title: "Connect",
-      action: {
-        click: startConnect,
-        dragstart: startConnect
-      }
+  const deleteIcon = {
+    group: "edit",
+    className: "context-pad-icon-remove",
+    title: "Remove",
+    action: {
+      click: removeElement,
+      dragstart: removeElement
     }
   };
+
+  const connectIcon = {
+    group: "connect",
+    className: "context-pad-icon-connect",
+    title: "Connect",
+    action: {
+      click: startConnect,
+      dragstart: startConnect
+    }
+  }
+  console.log(element)
+  if(element.businessObject && element.businessObject.id)
+    return {
+      "delete": deleteIcon,
+      "connect": connectIcon
+    }
+  else if(element.id.startsWith("connection"))
+    return {
+      "delete": deleteIcon
+    }
+  else
+    return {}
+
 };
