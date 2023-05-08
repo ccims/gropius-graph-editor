@@ -1,13 +1,14 @@
 // @ts-ignore
 import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
-import { GropiusConnectionStyle, GropiusShape } from "@/lib/gropius-compatibility/types";
+import { GropiusConnectionStyle, GropiusShape, SerializedDiagram } from "@/lib/gropius-compatibility/types";
 
 import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 
 // @ts-ignore
 import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
+import { el } from "vuetify/locale";
 
 const HEIGHT_PER_LINE = 20;
 const WIDTH_PER_CHARACTER = 10;
@@ -17,6 +18,7 @@ export default class GropiusCompatibility {
   private diagram: Diagram;
   private canvas: any;
   private elementFactory: any;
+  private elementRegistry: any;
   private modeling: any;
   private root: any;
   private gropiusShapeNameMap = new Map<string, string>([
@@ -36,6 +38,7 @@ export default class GropiusCompatibility {
 
     this.canvas = this.diagram.get("canvas");
     this.elementFactory = this.diagram.get("elementFactory");
+    this.elementRegistry = this.diagram.get("elementRegistry")
     this.modeling = this.diagram.get("modeling");
 
     this.root = this.elementFactory.createRoot();
@@ -234,8 +237,9 @@ export default class GropiusCompatibility {
     const m = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     let a = this.draw({
-      version: "v1",
+      id: "1",
       name: "rect1",
+      version: "v1",
       grType: {
         name: "x",
         shape: Shape.Rectangle,
@@ -253,6 +257,7 @@ export default class GropiusCompatibility {
     }, { x: 150, y: 100 });
 
     let b = this.draw({
+      id: "2",
       version: "v1",
       name: "rect2 " + s,
       grType: {
@@ -288,6 +293,7 @@ export default class GropiusCompatibility {
     })
 
     this.draw({
+      id: "3",
       version: "v1.10.5",
       name: "rect3 little text, big shape",
       grType: {
@@ -307,6 +313,7 @@ export default class GropiusCompatibility {
     }, { x: 150, y: 450 });
 
     this.draw({
+      id: "4",
       version: "v1",
       name: "Triangle " + s,
       grType: {
@@ -326,6 +333,7 @@ export default class GropiusCompatibility {
     }, { x: 500, y: 75 });
 
     this.draw({
+      id: "5",
       version: "v1",
       name: "Parallel " + s,
       grType: {
@@ -345,6 +353,7 @@ export default class GropiusCompatibility {
     }, { x: 800, y: 75 });
 
     this.draw({
+      id: "6",
       version: "v1",
       name: "Diamond " + s,
       grType: {
@@ -364,6 +373,7 @@ export default class GropiusCompatibility {
     }, { x: 1100, y: 75 });
 
     this.draw({
+      id: "7",
       version: "v1",
       name: "Octagon " + s,
       grType: {
@@ -383,6 +393,7 @@ export default class GropiusCompatibility {
     }, { x: 500, y: 250 });
 
     this.draw({
+      id: "8",
       version: "v1",
       name: "Circle " + s,
       grType: {
@@ -402,6 +413,7 @@ export default class GropiusCompatibility {
     }, { x: 800, y: 250 });
 
     this.draw({
+      id: "9",
       version: "v1",
       name: "Trapeze " + s,
       grType: {
@@ -421,6 +433,7 @@ export default class GropiusCompatibility {
     }, { x: 1100, y: 300 });
 
     this.draw({
+      id: "10",
       version: "v1",
       name: "Hexagon " + s,
       grType: {
@@ -440,6 +453,7 @@ export default class GropiusCompatibility {
     }, { x: 500, y: 500 });
 
     this.draw({
+      id: "11",
       version: "v1",
       name: "Ellipse " + s,
       grType: {
@@ -459,6 +473,7 @@ export default class GropiusCompatibility {
     }, { x: 800, y: 500 });
 
     this.draw({
+      id: "12",
       version: "v1",
       name: "Ellipse2 " + s,
       grType: {
@@ -510,8 +525,6 @@ export default class GropiusCompatibility {
   }
 
   public createConnection(connection: Connection, style: GropiusConnectionStyle) {
-    console.log(connection)
-
     // @ts-ignore
     connection.customRendered = true;
     // @ts-ignore
@@ -524,18 +537,64 @@ export default class GropiusCompatibility {
   }
 
   public exportDiagram(): string {
-    const elements = this.diagram.get("elementRegistry")._elements
+    const elements = this.elementRegistry._elements
 
-    let rawElements = Object.values(elements).map((object: any) => object.element)
-    //rawElements = rawElements.slice(1)
-    rawElements = rawElements.filter(element => !element.id.startsWith("root"))
+    let diagram: SerializedDiagram = {
+      shapes: [],
+      connections: []
+    }
 
+    Object.values(elements).forEach((element: any) => {
+      element = element.element
+      if(element.id.startsWith("shape")) {
+        if(element.grShape == "version")
+          return
 
-    console.log(rawElements)
-    const elementsAsText = JSON.stringify(rawElements)
-    console.log(elementsAsText)
+        diagram.shapes.push({
+          grShape: element.grShape,
+          x: element.x,
+          y: element.y
+        })
+      } else if(element.id.startsWith("connection")) {
+        diagram.connections.push({
+          sourceId: element.source.grShape.id,
+          targetId: element.target.grShape.id,
+          waypoints: element.waypoints,
+          style: element.custom.style
+        })
+      }
+    })
 
-    return elementsAsText
+    const diagramAsText = JSON.stringify(diagram)
+    console.log(diagramAsText)
+    return diagramAsText
+  }
+
+  public importDiagramString(diagram: string) {
+    this.importDiagram(JSON.parse(diagram))
+  }
+
+  public importDiagram(diagram: SerializedDiagram) {
+    diagram.shapes.forEach(shape => {
+      this.draw(shape.grShape, {x: shape.x, y: shape.y})
+    })
+
+    diagram.connections.forEach(connection => {
+      const source = this.elementRegistry.find((element: any) =>  element.grShape && element.grShape.id == connection.sourceId)
+      let target = this.elementRegistry.find((element: any) => element.grShape && element.grShape.id == connection.targetId)
+
+      if(!source || !target) {
+        console.error("Unknown source or target for connection:", connection)
+        return
+      }
+
+      const con = this.elementFactory.createConnection({
+        source: source,
+        target: target,
+        waypoints: connection.waypoints
+      })
+      this.createConnection(con, connection.style)
+    })
   }
 
 }

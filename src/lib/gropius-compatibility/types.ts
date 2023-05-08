@@ -1,4 +1,5 @@
 import { ConnectionMarker, Shape } from "@/lib/diagram/types";
+import { Coordinates } from "@/types/HelperTypes";
 
 export interface GropiusType {
   name: string,
@@ -6,7 +7,8 @@ export interface GropiusType {
   style: GropiusShapeStyle
 }
 export interface GropiusShape {
-  name: string
+  id: string,
+  name: string,
   version: string,
   grType: GropiusType,
 }
@@ -28,4 +30,22 @@ export interface GropiusConnectionStyle {
   strokeDasharray: string,
   sourceMarkerType: ConnectionMarker,
   targetMarkerType: ConnectionMarker
+}
+
+export interface SerializedShape {
+  grShape: GropiusShape,
+  x: number,
+  y: number
+}
+
+export  interface SerializedConnection {
+  waypoints: Array<Coordinates>,
+  sourceId: string,
+  targetId: string,
+  style: GropiusConnectionStyle
+}
+
+export interface SerializedDiagram {
+  shapes: Array<SerializedShape>,
+  connections: Array<SerializedConnection>
 }
