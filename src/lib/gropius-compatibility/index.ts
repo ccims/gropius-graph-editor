@@ -249,7 +249,7 @@ export default class GropiusCompatibility {
           minHeight: 40,
           maxScale: 10,
           color: "white",
-          stroke: "black",
+          stroke: "#ff55aa",
           strokeWidth: 2,
           strokeDasharray: "",
           radius: 5
@@ -604,7 +604,8 @@ export default class GropiusCompatibility {
     Object.values(this.elementRegistry._elements).forEach((element: any) => {
       element = element.element
       if (element.id.startsWith("shape")) {
-        element.custom.style.stroke = enabled ? "#ff0000" : "#000"
+        let defaultColor = element.businessObject && element.businessObject.grType ? element.businessObject.grType.style.stroke : "#000"
+        element.custom.style.stroke = enabled ? "#ff0000" : defaultColor
         this.canvas._eventBus.fire('element.changed', { element: element })
       }
     })
