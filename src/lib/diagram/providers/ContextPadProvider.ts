@@ -55,7 +55,7 @@ ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
       dragstart: startConnect
     }
   }
-  console.log(element)
+
   if(element.businessObject && element.businessObject.id)
     return {
       "delete": deleteIcon,
