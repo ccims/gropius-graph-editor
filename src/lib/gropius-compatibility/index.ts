@@ -15,6 +15,7 @@ const WIDTH_PER_CHARACTER = 10;
 const PADDING = 10;
 
 export default class GropiusCompatibility {
+  private container: any;
   private diagram: Diagram;
   private canvas: any;
   private elementFactory: any;
@@ -32,7 +33,7 @@ export default class GropiusCompatibility {
 
 
   public init(container: Element) {
-
+    this.container = container
     // @ts-ignore
     this.diagram = new EditorLib(container);
 
@@ -255,6 +256,7 @@ export default class GropiusCompatibility {
         }
       }
     }, { x: 150, y: 100 });
+    console.log(a)
 
     let b = this.draw({
       id: "2",
@@ -504,7 +506,6 @@ export default class GropiusCompatibility {
     //
     // this.canvas.addConnection(connection1, this.root);
 
-    this.exportDiagram()
   }
 
   public deleteShape(element: any): boolean {
@@ -596,6 +597,16 @@ export default class GropiusCompatibility {
         waypoints: connection.waypoints
       })
       this.createConnection(con, connection.style)
+    })
+  }
+
+  public setDarkMode(enabled: boolean): void {
+    Object.values(this.elementRegistry._elements).forEach((element: any) => {
+      element = element.element
+      if (element.id.startsWith("shape")) {
+        element.custom.style.stroke = enabled ? "#ff0000" : "#000"
+        this.canvas._eventBus.fire('element.changed', { element: element })
+      }
     })
   }
 

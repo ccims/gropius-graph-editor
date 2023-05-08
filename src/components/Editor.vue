@@ -17,7 +17,9 @@
       @onDeny="onDenyDelete"
     ></Confirm>
     <!-- ref anstelle -->
-    <div id="container"></div>
+    <button @click=handleThemeChange>Theme Switch</button>
+
+    <div id="container" :style="{ backgroundColor: darkMode ? '#333' : '#fff'}"></div>
 
     <AddComponent
       v-if="showAddComponent"
@@ -70,6 +72,7 @@ export default defineComponent({
       showAddComponent: false,
       showAddConnection: false,
       showConnectionNotification: false,
+      darkMode: false
     };
   },
 
@@ -93,6 +96,12 @@ export default defineComponent({
     };
   },
   methods: {
+
+    handleThemeChange() {
+      this.darkMode = !this.darkMode
+      diagram.setDarkMode(this.darkMode)
+    },
+
     /**
      * Called when user confirms the popup that the component is to be deleted
      */
@@ -163,8 +172,9 @@ export default defineComponent({
 
 #container,
 #container > div {
-  height: 90vh;
+  height: 100vh;
   margin: 0;
+  /*background-color: #333;*/
 }
 
 .palette-icon-lasso-tool {
