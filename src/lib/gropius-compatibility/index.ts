@@ -1,22 +1,13 @@
 // @ts-ignore
 import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
-import {
-  GropiusConnectionStyle,
-  GropiusShape,
-  GropiusShapeStyle,
-} from "@/lib/gropius-compatibility/types";
+import { GropiusConnectionStyle, GropiusShape } from "@/lib/gropius-compatibility/types";
 
-import {
-  ConnectionMarker,
-  Shape
-} from "@/lib/diagram/types";
+import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 
 // @ts-ignore
 import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
-import { h } from "vue";
-import { el, he } from "vuetify/locale";
 
 const HEIGHT_PER_LINE = 20;
 const WIDTH_PER_CHARACTER = 10;
@@ -181,6 +172,7 @@ export default class GropiusCompatibility {
   public draw(grShape: GropiusShape, coordinates: Coordinates) {
     const componentObject = this.drawComponent(grShape, coordinates)
     componentObject.custom.versionObject = this.drawVersion(componentObject)
+    return componentObject
   }
 
   private drawComponent(grShape: GropiusShape, coordinates: Coordinates) {
@@ -241,7 +233,7 @@ export default class GropiusCompatibility {
     const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst."
     const m = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-    this.draw({
+    let a = this.draw({
       version: "v1",
       name: "rect1",
       grType: {
@@ -260,7 +252,7 @@ export default class GropiusCompatibility {
       }
     }, { x: 150, y: 100 });
 
-    this.draw({
+    let b = this.draw({
       version: "v1",
       name: "rect2 " + s,
       grType: {
@@ -278,6 +270,22 @@ export default class GropiusCompatibility {
         }
       }
     }, { x: 150, y: 250 });
+
+    let connection1 = this.elementFactory.createConnection({
+        waypoints: [
+            {x: a.x, y: a.y},
+            {x: b.x, y: b.y},
+        ],
+        source: a,
+        target: b,
+    });
+    this.createConnection(connection1, {
+      strokeColor: "red",
+      strokeWidth: 2,
+      strokeDasharray: "",
+      sourceMarkerType: ConnectionMarker.Round,
+      targetMarkerType: ConnectionMarker.Default
+    })
 
     this.draw({
       version: "v1.10.5",
@@ -502,6 +510,8 @@ export default class GropiusCompatibility {
   }
 
   public createConnection(connection: Connection, style: GropiusConnectionStyle) {
+    console.log(connection)
+
     // @ts-ignore
     connection.customRendered = true;
     // @ts-ignore
@@ -513,5 +523,19 @@ export default class GropiusCompatibility {
     this.canvas.addConnection(connection, this.root);
   }
 
+  public exportDiagram(): string {
+    const elements = this.diagram.get("elementRegistry")._elements
+
+    let rawElements = Object.values(elements).map((object: any) => object.element)
+    //rawElements = rawElements.slice(1)
+    rawElements = rawElements.filter(element => !element.id.startsWith("root"))
+
+
+    console.log(rawElements)
+    const elementsAsText = JSON.stringify(rawElements)
+    console.log(elementsAsText)
+
+    return elementsAsText
+  }
 
 }

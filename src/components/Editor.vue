@@ -78,6 +78,7 @@ export default defineComponent({
     diagram.init(document.querySelector("#container"));
     // this.diagram.getGropiusShapeNames()
     diagram.test();
+    diagram.exportDiagram()
 
     diagram.onAddShape = (coordinatesAdded: Coordinates) => {
       this.showAddComponent = true;
