@@ -187,7 +187,7 @@ export default class GropiusCompatibility {
       y: coordinates.y,
       width: dimensions.width,
       height: dimensions.height,
-      grShape: grShape,
+      businessObject: grShape,
       custom: {
         shape: grShape.grType.shape,
         style: {
@@ -214,7 +214,7 @@ export default class GropiusCompatibility {
       y: componentShape.y + componentShape.height - offsetY,
       width: 80,
       height: 50,
-      grShape: "version",
+      businessObject: "version",
       custom: {
         shape: Shape.Octagon,
         style: {
@@ -225,7 +225,7 @@ export default class GropiusCompatibility {
           strokeWidth: 2,
           strokeDasharray: ""
         },
-        label: componentShape.grShape.version
+        label: componentShape.businessObject.version
       }
     };
     return this.createShape(shape);
@@ -504,6 +504,7 @@ export default class GropiusCompatibility {
     //
     // this.canvas.addConnection(connection1, this.root);
 
+    this.exportDiagram()
   }
 
   public deleteShape(element: any): boolean {
@@ -538,6 +539,7 @@ export default class GropiusCompatibility {
 
   public exportDiagram(): string {
     const elements = this.elementRegistry._elements
+    console.log(elements)
 
     let diagram: SerializedDiagram = {
       shapes: [],
@@ -547,18 +549,18 @@ export default class GropiusCompatibility {
     Object.values(elements).forEach((element: any) => {
       element = element.element
       if(element.id.startsWith("shape")) {
-        if(element.grShape == "version")
+        if(element.businessObject == "version")
           return
 
         diagram.shapes.push({
-          grShape: element.grShape,
+          grShape: element.businessObject,
           x: element.x,
           y: element.y
         })
       } else if(element.id.startsWith("connection")) {
         diagram.connections.push({
-          sourceId: element.source.grShape.id,
-          targetId: element.target.grShape.id,
+          sourceId: element.source.businessObject.id,
+          targetId: element.target.businessObject.id,
           waypoints: element.waypoints,
           style: element.custom.style
         })
@@ -580,8 +582,8 @@ export default class GropiusCompatibility {
     })
 
     diagram.connections.forEach(connection => {
-      const source = this.elementRegistry.find((element: any) =>  element.grShape && element.grShape.id == connection.sourceId)
-      let target = this.elementRegistry.find((element: any) => element.grShape && element.grShape.id == connection.targetId)
+      const source = this.elementRegistry.find((element: any) =>  element.businessObject && element.businessObject.id == connection.sourceId)
+      let target = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.id == connection.targetId)
 
       if(!source || !target) {
         console.error("Unknown source or target for connection:", connection)

@@ -31,8 +31,8 @@ CustomRuleProvider.prototype.init = function () {
   this.addRule("connection.create", function (context: any) {
     const source = context.source,
       target = context.target;
-    if (source.grShape && target.grShape)
-      return source.id.startsWith("shape") && source.grShape != "version" && target.id.startsWith("shape") && target.grShape != "version";
+    if (source.businessObject && target.businessObject)
+      return source.id.startsWith("shape") && source.businessObject != "version" && target.id.startsWith("shape") && target.businessObject != "version";
     //return source.parent === target.parent;
     return false;
   });

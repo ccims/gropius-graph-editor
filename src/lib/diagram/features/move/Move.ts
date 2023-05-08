@@ -175,14 +175,14 @@ export default function MoveEvents(
 
     // Remove all not-component and not-connections
     context.shapes.forEach((shape: any) => {
-      if(shape.id.startsWith("shape") && shape.grShape != "version"
+      if(shape.id.startsWith("shape") && shape.businessObject != "version"
         || shape.id.startsWith("connection"))
         shapes.push(shape)
     })
 
     // Add all component versions
     context.shapes.forEach((shape: any) => {
-      if (shape.id.startsWith("shape") && shape.grShape != "version") {
+      if (shape.id.startsWith("shape") && shape.businessObject != "version") {
         shapes.push(shape.custom.versionObject);
       }
     })
