@@ -33,13 +33,13 @@ export default class GropiusCompatibility {
 
 
   public init(container: Element) {
-    this.container = container
+    this.container = container;
     // @ts-ignore
     this.diagram = new EditorLib(container);
 
     this.canvas = this.diagram.get("canvas");
     this.elementFactory = this.diagram.get("elementFactory");
-    this.elementRegistry = this.diagram.get("elementRegistry")
+    this.elementRegistry = this.diagram.get("elementRegistry");
     this.modeling = this.diagram.get("modeling");
 
     this.root = this.elementFactory.createRoot();
@@ -88,38 +88,38 @@ export default class GropiusCompatibility {
   }
 
   private getCharacterCountForSize(width: number, height: number) {
-    return Math.floor(((width - PADDING) / WIDTH_PER_CHARACTER) * ((height - PADDING) / HEIGHT_PER_LINE))
+    return Math.floor(((width - PADDING) / WIDTH_PER_CHARACTER) * ((height - PADDING) / HEIGHT_PER_LINE));
   }
 
   private getCharacterCountForSizeByType(width: number, height: number, shape: Shape) {
-    let factor = 1
+    let factor = 1;
 
-    switch(shape) {
+    switch (shape) {
       case Shape.Diamond:
-        factor = 3
-        break
+        factor = 3;
+        break;
       case Shape.Triangle:
-        factor = 3
-        break
+        factor = 3;
+        break;
       case Shape.Octagon:
         factor = 1.25;
         break;
       case Shape.Circle:
       case Shape.Ellipse:
-        factor = 1.5
+        factor = 1.5;
         break;
       case Shape.Hexagon:
-        factor = 1.1
-        break
+        factor = 1.1;
+        break;
     }
 
-    return this.getCharacterCountForSize(width, height) / factor
+    return this.getCharacterCountForSize(width, height) / factor;
   }
 
-  public getDimensions(minWidth: number, minHeight: number, maxScale: number, text: string, shape: Shape): {width: number, height: number, text: string} {
+  public getDimensions(minWidth: number, minHeight: number, maxScale: number, text: string, shape: Shape): { width: number, height: number, text: string } {
 
-    const maxWidth = Math.floor(minWidth * maxScale)
-    const maxHeight = Math.floor(minHeight * maxScale)
+    const maxWidth = Math.floor(minWidth * maxScale);
+    const maxHeight = Math.floor(minHeight * maxScale);
 
     let width = minWidth;
     let height = minHeight;
@@ -127,9 +127,9 @@ export default class GropiusCompatibility {
 
     const characters = text.length;
     // max number of characters based on max size
-    let estimatedMaxCharacters = this.getCharacterCountForSizeByType(maxWidth, maxHeight, shape)
+    let estimatedMaxCharacters = this.getCharacterCountForSizeByType(maxWidth, maxHeight, shape);
 
-    if(characters > estimatedMaxCharacters) {
+    if (characters > estimatedMaxCharacters) {
       // If there are more characters than the max size would allow
       // Cut text and add "..." at the end
       // Theoretically not necessary but speeds things up
@@ -140,28 +140,28 @@ export default class GropiusCompatibility {
 
       // adjustedText = text.slice(0, maxCharacters).slice(0,-3) + "..."
 
-      width = maxWidth
-      height = maxHeight
+      width = maxWidth;
+      height = maxHeight;
     } else {
       // There is room to resize
 
       let ratio = height / width;
-      let charactersForSize = this.getCharacterCountForSizeByType(width, height, shape)
+      let charactersForSize = this.getCharacterCountForSizeByType(width, height, shape);
 
-      const increaseBy = 10
-      while(characters > charactersForSize) {
+      const increaseBy = 10;
+      while (characters > charactersForSize) {
         // while sizes not big enough
         width += increaseBy;
         width = width > maxWidth ? maxWidth : width;
 
-        height = Math.round(ratio * width)
+        height = Math.round(ratio * width);
         height = height > maxHeight ? maxHeight : height;
         // additional loop breaker
-        if(width == maxWidth && height == maxHeight)
+        if (width == maxWidth && height == maxHeight)
           break;
 
         // recalculate the characters that fit in updated size
-        charactersForSize = this.getCharacterCountForSizeByType(width, height, shape)
+        charactersForSize = this.getCharacterCountForSizeByType(width, height, shape);
       }
     }
 
@@ -169,20 +169,20 @@ export default class GropiusCompatibility {
       width: width,
       height: height,
       text: adjustedText
-    }
-    return ret
+    };
+    return ret;
   }
 
   public draw(grShape: GropiusShape, coordinates: Coordinates) {
-    const componentObject = this.drawComponent(grShape, coordinates)
-    componentObject.custom.versionObject = this.drawVersion(componentObject)
-    return componentObject
+    const componentObject = this.drawComponent(grShape, coordinates);
+    componentObject.custom.versionObject = this.drawVersion(componentObject);
+    return componentObject;
   }
 
   private drawComponent(grShape: GropiusShape, coordinates: Coordinates) {
     const grStyle = grShape.grType.style;
 
-    let dimensions = this.getDimensions(grStyle.minWidth, grStyle.minHeight, grStyle.maxScale, grShape.name, grShape.grType.shape)
+    let dimensions = this.getDimensions(grStyle.minWidth, grStyle.minHeight, grStyle.maxScale, grShape.name, grShape.grType.shape);
     let shape = {
       x: coordinates.x,
       y: coordinates.y,
@@ -203,12 +203,12 @@ export default class GropiusCompatibility {
         versionObject: undefined
       }
     };
-    return this.createShape(shape)
+    return this.createShape(shape);
   }
 
   private drawVersion(componentShape: any) {
     const offsetX = 15,
-      offsetY = 15
+      offsetY = 15;
 
     let shape = {
       x: componentShape.x + componentShape.width - offsetX,
@@ -233,10 +233,10 @@ export default class GropiusCompatibility {
   }
 
   public test() {
-    const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-    const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst."
-    const m = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+    const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst.";
+    const m = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+    const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
     let a = this.draw({
       id: "1",
       name: "rect1",
@@ -248,7 +248,7 @@ export default class GropiusCompatibility {
           minWidth: 40,
           minHeight: 40,
           maxScale: 10,
-          color: "white",
+          color: "#ffffff",
           stroke: "#ff55aa",
           strokeWidth: 2,
           strokeDasharray: "",
@@ -256,7 +256,7 @@ export default class GropiusCompatibility {
         }
       }
     }, { x: 150, y: 100 });
-    console.log(a)
+    console.log(a);
 
     let b = this.draw({
       id: "2",
@@ -269,8 +269,8 @@ export default class GropiusCompatibility {
           minWidth: 50,
           minHeight: 50,
           maxScale: 5,
-          color: "white",
-          stroke: "black",
+          color: "#ffffff",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "",
           radius: 5
@@ -279,12 +279,12 @@ export default class GropiusCompatibility {
     }, { x: 150, y: 250 });
 
     let connection1 = this.elementFactory.createConnection({
-        waypoints: [
-            {x: a.x, y: a.y},
-            {x: b.x, y: b.y},
-        ],
-        source: a,
-        target: b,
+      waypoints: [
+        { x: a.x, y: a.y },
+        { x: b.x, y: b.y }
+      ],
+      source: a,
+      target: b
     });
     this.createConnection(connection1, {
       strokeColor: "red",
@@ -292,7 +292,7 @@ export default class GropiusCompatibility {
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.Round,
       targetMarkerType: ConnectionMarker.Default
-    })
+    });
 
     this.draw({
       id: "3",
@@ -305,8 +305,8 @@ export default class GropiusCompatibility {
           minWidth: 250,
           minHeight: 200,
           maxScale: 1,
-          color: "white",
-          stroke: "black",
+          color: "#ffffff",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "",
           radius: 5
@@ -326,7 +326,7 @@ export default class GropiusCompatibility {
           minHeight: 50,
           maxScale: 2,
           color: "yellow",
-          stroke: "black",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "5 2",
           radius: 0
@@ -346,7 +346,7 @@ export default class GropiusCompatibility {
           minHeight: 100,
           maxScale: 1,
           color: "yellow",
-          stroke: "black",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "5 2",
           radius: 0
@@ -366,7 +366,7 @@ export default class GropiusCompatibility {
           minHeight: 100,
           maxScale: 1.5,
           color: "yellow",
-          stroke: "black",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "5 2",
           radius: 0
@@ -386,7 +386,7 @@ export default class GropiusCompatibility {
           minHeight: 100,
           maxScale: 1.5,
           color: "yellow",
-          stroke: "black",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "5 2",
           radius: 0
@@ -406,7 +406,7 @@ export default class GropiusCompatibility {
           minHeight: 100,
           maxScale: 2,
           color: "yellow",
-          stroke: "black",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "5 2",
           radius: 0
@@ -426,7 +426,7 @@ export default class GropiusCompatibility {
           minHeight: 100,
           maxScale: 1,
           color: "yellow",
-          stroke: "black",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "5 2",
           radius: 0
@@ -446,7 +446,7 @@ export default class GropiusCompatibility {
           minHeight: 100,
           maxScale: 2,
           color: "yellow",
-          stroke: "black",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "5 2",
           radius: 0
@@ -466,7 +466,7 @@ export default class GropiusCompatibility {
           minHeight: 50,
           maxScale: 2,
           color: "yellow",
-          stroke: "black",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "5 2",
           radius: 0
@@ -485,8 +485,8 @@ export default class GropiusCompatibility {
           minWidth: 50,
           minHeight: 100,
           maxScale: 2,
-          color: "yellow",
-          stroke: "black",
+          color: "violet",
+          stroke: "#000000",
           strokeWidth: 2,
           strokeDasharray: "5 2",
           radius: 0
@@ -510,20 +510,20 @@ export default class GropiusCompatibility {
 
   public deleteShape(element: any): boolean {
 
-    if(!element.custom || !element.custom.versionObject)
-      return false
+    if (!element.custom || !element.custom.versionObject)
+      return false;
 
     this.modeling.removeElements([element]); // Delete main shape
-    if(element.custom && element.custom.versionObject)
-      this.modeling.removeElements([element.custom.versionObject]) // Delete attached version
+    if (element.custom && element.custom.versionObject)
+      this.modeling.removeElements([element.custom.versionObject]); // Delete attached version
 
-    return true
+    return true;
   }
 
   private createShape(shape: any) {
     const _shape = this.elementFactory.createShape(shape);
     this.canvas.addShape(_shape, this.root);
-    return _shape
+    return _shape;
   }
 
   public createConnection(connection: Connection, style: GropiusConnectionStyle) {
@@ -539,76 +539,93 @@ export default class GropiusCompatibility {
   }
 
   public exportDiagram(): string {
-    const elements = this.elementRegistry._elements
-    console.log(elements)
+    const elements = this.elementRegistry._elements;
+    console.log(elements);
 
     let diagram: SerializedDiagram = {
       shapes: [],
       connections: []
-    }
+    };
 
     Object.values(elements).forEach((element: any) => {
-      element = element.element
-      if(element.id.startsWith("shape")) {
-        if(element.businessObject == "version")
-          return
+      element = element.element;
+      if (element.id.startsWith("shape")) {
+        if (element.businessObject == "version")
+          return;
 
         diagram.shapes.push({
           grShape: element.businessObject,
           x: element.x,
           y: element.y
-        })
-      } else if(element.id.startsWith("connection")) {
+        });
+      } else if (element.id.startsWith("connection")) {
         diagram.connections.push({
           sourceId: element.source.businessObject.id,
           targetId: element.target.businessObject.id,
           waypoints: element.waypoints,
           style: element.custom.style
-        })
+        });
       }
-    })
+    });
 
-    const diagramAsText = JSON.stringify(diagram)
-    console.log(diagramAsText)
-    return diagramAsText
+    const diagramAsText = JSON.stringify(diagram);
+    console.log(diagramAsText);
+    return diagramAsText;
   }
 
   public importDiagramString(diagram: string) {
-    this.importDiagram(JSON.parse(diagram))
+    this.importDiagram(JSON.parse(diagram));
   }
 
   public importDiagram(diagram: SerializedDiagram) {
     diagram.shapes.forEach(shape => {
-      this.draw(shape.grShape, {x: shape.x, y: shape.y})
-    })
+      this.draw(shape.grShape, { x: shape.x, y: shape.y });
+    });
 
     diagram.connections.forEach(connection => {
-      const source = this.elementRegistry.find((element: any) =>  element.businessObject && element.businessObject.id == connection.sourceId)
-      let target = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.id == connection.targetId)
+      const source = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.id == connection.sourceId);
+      let target = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.id == connection.targetId);
 
-      if(!source || !target) {
-        console.error("Unknown source or target for connection:", connection)
-        return
+      if (!source || !target) {
+        console.error("Unknown source or target for connection:", connection);
+        return;
       }
 
       const con = this.elementFactory.createConnection({
         source: source,
         target: target,
         waypoints: connection.waypoints
-      })
-      this.createConnection(con, connection.style)
-    })
+      });
+      this.createConnection(con, connection.style);
+    });
   }
 
   public setDarkMode(enabled: boolean): void {
     Object.values(this.elementRegistry._elements).forEach((element: any) => {
-      element = element.element
-      if (element.id.startsWith("shape")) {
-        let defaultColor = element.businessObject && element.businessObject.grType ? element.businessObject.grType.style.stroke : "#000"
-        element.custom.style.stroke = enabled ? "#ff0000" : defaultColor
-        this.canvas._eventBus.fire('element.changed', { element: element })
+      element = element.element;
+      if (!element.id.startsWith("shape")) {
+        return;
       }
-    })
+
+      const white = "#ffffff";
+      const black = "#000000";
+      const defaultStrokeColor = element.businessObject && element.businessObject.grType ? element.businessObject.grType.style.stroke : black;
+      const defaultFillColor = element.businessObject && element.businessObject.grType ? element.businessObject.grType.color : white;
+
+      let stroke = defaultStrokeColor,
+      fill = defaultFillColor;
+
+      if(enabled && element.custom.style.stroke == black)
+        stroke = white
+
+      if(enabled && element.custom.style.color == white)
+        fill = black
+
+
+      element.custom.style.stroke = stroke
+      element.custom.style.color = "#ff0000"
+      this.canvas._eventBus.fire("element.changed", { element: element });
+    });
   }
 
 }
