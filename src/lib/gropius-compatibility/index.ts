@@ -76,12 +76,13 @@ export default class GropiusCompatibility {
       if (this.onAddConnection)
         this.onAddConnection(e.element);
 
+      // TODO: This is for dev purpose! If should get called by the frontend
       this.createConnection(element, {
         strokeColor: "blue",
         strokeWidth: 3,
         strokeDasharray: "5 5",
         sourceMarkerType: ConnectionMarker.Round,
-        targetMarkerType: ConnectionMarker.OpenArrow
+        targetMarkerType: ConnectionMarker.Round
       });
     });
 

@@ -138,9 +138,9 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         strokeDasharray: element.custom.style.strokeDasharray
       };
       if (element.custom.style.sourceMarkerType != ConnectionMarker.None)
-        attrs.markerStart = marker(element.custom.style.sourceMarkerType, element.custom.style.strokeColor, element.custom.style.strokeColor);
+        attrs.markerStart = marker(element.custom.style.sourceMarkerType, element.custom.style.strokeColor, element.custom.style.strokeColor, true);
       if (element.custom.style.targetMarkerType != ConnectionMarker.None)
-        attrs.markerEnd = marker(element.custom.style.targetMarkerType, element.custom.style.strokeColor, element.custom.style.strokeColor);
+        attrs.markerEnd = marker(element.custom.style.targetMarkerType, element.custom.style.strokeColor, element.custom.style.strokeColor, false);
 
       // TODO Label
     } else {
@@ -149,7 +149,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         strokeWidth: 2,
         strokeDasharray: ""
       };
-      attrs.markerEnd = marker(ConnectionMarker.Default, "black", "black");
+      attrs.markerEnd = marker(ConnectionMarker.Default, "black", "black", false);
     }
     // if ((element.custom && element.custom.label) || true)
     //   renderExternalLabel(visuals, element, "test");
@@ -479,7 +479,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     return str.replace(/[^0-9a-zA-z]+/g, "_");
   }
 
-  function marker(type, fill, stroke) {
+  function marker(type, fill, stroke, isStart) {
     const id =
       type +
       "-" +
@@ -487,16 +487,17 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       "-" +
       colorEscape(stroke) +
       "-" +
-      rendererId;
+      rendererId +
+      isStart;
 
     if (!markers[id]) {
-      createMarker(id, type, fill, stroke);
+      createMarker(id, type, fill, stroke, isStart);
     }
 
     return "url(#" + id + ")";
   }
 
-  function createMarker(id, type, fill, stroke) {
+  function createMarker(id, type, fill, stroke, isStart = false) {
     let marker;
     switch (type) {
       case ConnectionMarker.Round:
@@ -516,7 +517,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         });
         addMarker(id, {
           element: marker,
-          ref: { x: 6, y: 6 }
+          ref: { x: (isStart ? 4 : 8), y: 6 }
         });
         break;
       case ConnectionMarker.LessThan:
