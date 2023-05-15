@@ -1,6 +1,17 @@
 import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 import { Coordinates } from "@/types/HelperTypes";
 
+
+export interface BusinessObject {
+  type: ObjectType,
+  data?: any
+}
+
+export enum ObjectType {
+  Gropius,
+  Version,
+}
+
 export interface GropiusType {
   name: string,
   shape: Shape,

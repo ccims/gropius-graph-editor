@@ -1,7 +1,7 @@
 // @ts-ignore
 import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
-import { GropiusConnectionStyle, GropiusShape, SerializedDiagram } from "@/lib/gropius-compatibility/types";
+import { GropiusConnectionStyle, GropiusShape, ObjectType, SerializedDiagram } from "@/lib/gropius-compatibility/types";
 
 import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 
@@ -188,7 +188,10 @@ export default class GropiusCompatibility {
       y: coordinates.y,
       width: dimensions.width,
       height: dimensions.height,
-      businessObject: grShape,
+      businessObject: {
+        type: ObjectType.Gropius, data:
+        grShape
+      },
       custom: {
         shape: grShape.grType.shape,
         style: {
@@ -215,7 +218,7 @@ export default class GropiusCompatibility {
       y: componentShape.y + componentShape.height - offsetY,
       width: 80,
       height: 50,
-      businessObject: "version",
+      businessObject: { type: ObjectType.Version },
       custom: {
         shape: Shape.Octagon,
         style: {
@@ -226,7 +229,7 @@ export default class GropiusCompatibility {
           strokeWidth: 2,
           strokeDasharray: ""
         },
-        label: componentShape.businessObject.version
+        label: componentShape.businessObject.data.version
       }
     };
     return this.createShape(shape);
@@ -550,18 +553,18 @@ export default class GropiusCompatibility {
     Object.values(elements).forEach((element: any) => {
       element = element.element;
       if (element.id.startsWith("shape")) {
-        if (element.businessObject == "version")
+        if (element.businessObject.type == ObjectType.Version)
           return;
 
         diagram.shapes.push({
-          grShape: element.businessObject,
+          grShape: element.businessObject.data,
           x: element.x,
           y: element.y
         });
       } else if (element.id.startsWith("connection")) {
         diagram.connections.push({
-          sourceId: element.source.businessObject.id,
-          targetId: element.target.businessObject.id,
+          sourceId: element.source.businessObject.data.id,
+          targetId: element.target.businessObject.data.id,
           waypoints: element.waypoints,
           style: element.custom.style
         });
@@ -583,8 +586,8 @@ export default class GropiusCompatibility {
     });
 
     diagram.connections.forEach(connection => {
-      const source = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.id == connection.sourceId);
-      let target = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.id == connection.targetId);
+      const source = this.elementRegistry.find((element: any) => element.businessObject.type == ObjectType.Gropius && element.businessObject.data.id == connection.sourceId);
+      let target = this.elementRegistry.find((element: any) => element.businessObject.type == ObjectType.Gropius && element.businessObject.data.id == connection.targetId);
 
       if (!source || !target) {
         console.error("Unknown source or target for connection:", connection);
@@ -606,24 +609,24 @@ export default class GropiusCompatibility {
       if (!element.id.startsWith("shape")) {
         return;
       }
+      console.log(element);
 
       const white = "#ffffff";
       const black = "#000000";
-      const defaultStrokeColor = element.businessObject && element.businessObject.grType ? element.businessObject.grType.style.stroke : black;
-      const defaultFillColor = element.businessObject && element.businessObject.grType ? element.businessObject.grType.color : white;
+      const defaultStrokeColor = (element.businessObject && element.businessObject.grType) ? element.businessObject.grType.style.stroke : black;
+      const defaultFillColor = (element.businessObject && element.businessObject.grType) ? element.businessObject.grType.style.color : white;
 
       let stroke = defaultStrokeColor,
-      fill = defaultFillColor;
+        fill = defaultFillColor;
 
-      if(enabled && element.custom.style.stroke == black)
-        stroke = white
+      if (enabled && element.custom.style.stroke === black)
+        stroke = white;
 
-      if(enabled && element.custom.style.color == white)
-        fill = black
+      if (enabled && element.custom.style.fill === white)
+        fill = black;
 
-
-      element.custom.style.stroke = stroke
-      element.custom.style.color = "#ff0000"
+      element.custom.style.stroke = stroke;
+      element.custom.style.fill = fill;
       this.canvas._eventBus.fire("element.changed", { element: element });
     });
   }

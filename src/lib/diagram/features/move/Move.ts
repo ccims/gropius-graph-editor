@@ -35,6 +35,7 @@ import {
 import EventBus from "diagram-js/lib/core/EventBus";
 import Modeling from "diagram-js/lib/features/modeling/Modeling";
 import { Base } from "diagram-js/lib/model";
+import { ObjectType } from "@/lib/gropius-compatibility/types";
 
 const round = Math.round;
 
@@ -175,14 +176,14 @@ export default function MoveEvents(
 
     // Remove all not-component and not-connections
     context.shapes.forEach((shape: any) => {
-      if(shape.id.startsWith("shape") && shape.businessObject != "version"
+      if(shape.id.startsWith("shape") && shape.businessObject.type != ObjectType.Version
         || shape.id.startsWith("connection"))
         shapes.push(shape)
     })
 
     // Add all component versions
     context.shapes.forEach((shape: any) => {
-      if (shape.id.startsWith("shape") && shape.businessObject != "version") {
+      if (shape.id.startsWith("shape") && shape.businessObject.type != ObjectType.Version) {
         shapes.push(shape.custom.versionObject);
       }
     })

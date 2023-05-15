@@ -8,6 +8,7 @@ import RuleProvider from "diagram-js/lib/features/rules/RuleProvider";
 
 // @ts-ignore
 import { isFrameElement } from "diagram-js/lib/util/Elements";
+import { ObjectType } from "@/lib/gropius-compatibility/types";
 
 
 export default function CustomRuleProvider(eventBus: EventBus) {
@@ -32,7 +33,7 @@ CustomRuleProvider.prototype.init = function () {
     const source = context.source,
       target = context.target;
     if (source.businessObject && target.businessObject)
-      return source.id.startsWith("shape") && source.businessObject != "version" && target.id.startsWith("shape") && target.businessObject != "version";
+      return source.id.startsWith("shape") && source.businessObject.type != ObjectType.Version && target.id.startsWith("shape") && target.businessObject.type != ObjectType.Version;
     //return source.parent === target.parent;
     return false;
   });
