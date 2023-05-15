@@ -612,6 +612,7 @@ export default class GropiusCompatibility {
 
       const white = "#ffffff";
       const black = "#000000";
+      const dark = "#444444"
       let stroke = black,
         fill = white;
 
@@ -625,7 +626,7 @@ export default class GropiusCompatibility {
             stroke = element.custom.style.stroke;
 
           if(element.custom.style.fill == white) {
-            fill = black;
+            fill = dark;
             element.custom.style.whiteText = true
           }
           else
