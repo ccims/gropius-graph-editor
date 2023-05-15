@@ -81,8 +81,8 @@ export default class GropiusCompatibility {
         strokeColor: "blue",
         strokeWidth: 3,
         strokeDasharray: "5 5",
-        sourceMarkerType: ConnectionMarker.None,
-        targetMarkerType: ConnectionMarker.None
+        sourceMarkerType: ConnectionMarker.Round,
+        targetMarkerType: ConnectionMarker.Right
       });
     });
 
@@ -210,13 +210,38 @@ export default class GropiusCompatibility {
     return this.createShape(shape);
   }
 
+  private getVersionOffsetFromShape(componentShape: any): Coordinates {
+    const shape = componentShape.custom.shape;
+    const w = componentShape.width,
+      h = componentShape.height,
+      vh = 50, // version width
+      vw = 80  // version height
+
+    switch (shape) {
+      case Shape.Diamond:
+      case Shape.Parallelogram:
+      case Shape.Circle:
+      case Shape.Octagon:
+      case Shape.Triangle:
+      case Shape.Hexagon:
+      case Shape.Trapeze:
+      case Shape.Ellipse:
+      case Shape.Rectangle:
+      //default:
+        return { x: w / 2 - vw / 2, y: h };
+    }
+
+    return { x: 0, y: 0 };
+  }
+
   private drawVersion(componentShape: any) {
-    const offsetX = 15,
-      offsetY = 15;
+    const offsets = this.getVersionOffsetFromShape(componentShape);
+    const offsetX = offsets.x,
+      offsetY = offsets.y;
 
     let shape = {
-      x: componentShape.x + componentShape.width - offsetX,
-      y: componentShape.y + componentShape.height - offsetY,
+      x: componentShape.x + offsetX,
+      y: componentShape.y + offsetY,
       width: 80,
       height: 50,
       businessObject: { type: ObjectType.Version },
@@ -260,7 +285,6 @@ export default class GropiusCompatibility {
         }
       }
     }, { x: 150, y: 100 });
-    console.log(a);
 
     let b = this.draw({
       id: "2",
@@ -541,7 +565,7 @@ export default class GropiusCompatibility {
 
     connection.businessObject = {
       type: ObjectType.Connection
-    }
+    };
 
     this.canvas.addConnection(connection, this.root);
   }
@@ -617,40 +641,38 @@ export default class GropiusCompatibility {
 
       const white = "#ffffff";
       const black = "#000000";
-      const dark = "#444444"
+      const dark = "#444444";
       let stroke = black,
         fill = white;
 
-      if(element.businessObject.type ==  ObjectType.Gropius) { // Main ropius Component
-        element.custom.style.whiteText = false
+      if (element.businessObject.type == ObjectType.Gropius) { // Main ropius Component
+        element.custom.style.whiteText = false;
 
-        if(enabled) {
-          if(element.custom.style.stroke == black)
-            stroke = white
+        if (enabled) {
+          if (element.custom.style.stroke == black)
+            stroke = white;
           else
             stroke = element.custom.style.stroke;
 
-          if(element.custom.style.fill == white) {
+          if (element.custom.style.fill == white) {
             fill = dark;
-            element.custom.style.whiteText = true
-          }
-          else
-            fill = element.custom.style.fill
+            element.custom.style.whiteText = true;
+          } else
+            fill = element.custom.style.fill;
         } else {
-          stroke = element.businessObject.data.grType.style.stroke
-          fill = element.businessObject.data.grType.style.color
+          stroke = element.businessObject.data.grType.style.stroke;
+          fill = element.businessObject.data.grType.style.color;
         }
-      }
-      else if(element.businessObject.type == ObjectType.Version) { // Version Object
-        element.custom.style.whiteText = false
+      } else if (element.businessObject.type == ObjectType.Version) { // Version Object
+        element.custom.style.whiteText = false;
 
-        if(enabled) {
-          stroke = white
-          fill = "#444499"
-          element.custom.style.whiteText = true
+        if (enabled) {
+          stroke = white;
+          fill = "#444499";
+          element.custom.style.whiteText = true;
         } else {
-          stroke = black
-          fill = "#aaaaff"
+          stroke = black;
+          fill = "#aaaaff";
         }
       }
 
