@@ -418,7 +418,6 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function renderExternalLabel(parentGfx, element, text) {
-    console.log(element);
     const box = {
       width: 90,
       height: 30,

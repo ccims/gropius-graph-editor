@@ -289,6 +289,7 @@ export default class GropiusCompatibility {
       source: a,
       target: b
     });
+
     this.createConnection(connection1, {
       strokeColor: "red",
       strokeWidth: 2,
@@ -497,7 +498,6 @@ export default class GropiusCompatibility {
       }
     }, { x: 1100, y: 500 });
 
-
     // let connection1 = this.elementFactory.createConnection({
     //     waypoints: [
     //         {x: shape1.x, y: shape1.y},
@@ -537,6 +537,10 @@ export default class GropiusCompatibility {
       style: style,
       label: "" // TODO
     };
+
+    connection.businessObject = {
+      type: ObjectType.Connection
+    }
 
     this.canvas.addConnection(connection, this.root);
   }
@@ -586,8 +590,8 @@ export default class GropiusCompatibility {
     });
 
     diagram.connections.forEach(connection => {
-      const source = this.elementRegistry.find((element: any) => element.businessObject.type == ObjectType.Gropius && element.businessObject.data.id == connection.sourceId);
-      let target = this.elementRegistry.find((element: any) => element.businessObject.type == ObjectType.Gropius && element.businessObject.data.id == connection.targetId);
+      const source = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.type == ObjectType.Gropius && element.businessObject.data.id == connection.sourceId);
+      let target = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.type == ObjectType.Gropius && element.businessObject.data.id == connection.targetId);
 
       if (!source || !target) {
         console.error("Unknown source or target for connection:", connection);

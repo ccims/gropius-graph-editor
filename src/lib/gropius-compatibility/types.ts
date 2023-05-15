@@ -10,6 +10,7 @@ export interface BusinessObject {
 export enum ObjectType {
   Gropius,
   Version,
+  Connection
 }
 
 export interface GropiusType {

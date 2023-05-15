@@ -1,5 +1,6 @@
 import EventBus from "diagram-js/lib/core/EventBus";
 import Modeling from "diagram-js/lib/features/modeling/Modeling";
+import { ObjectType } from "@/lib/gropius-compatibility/types";
 
 /**
  * A example context pad provider.
@@ -56,7 +57,7 @@ ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
     }
   }
 
-  if(element.businessObject && element.businessObject.id)
+  if(element.businessObject.type == ObjectType.Gropius)
     return {
       "delete": deleteIcon,
       "connect": connectIcon
