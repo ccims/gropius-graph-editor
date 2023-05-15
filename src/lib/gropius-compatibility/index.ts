@@ -81,8 +81,8 @@ export default class GropiusCompatibility {
         strokeColor: "blue",
         strokeWidth: 3,
         strokeDasharray: "5 5",
-        sourceMarkerType: ConnectionMarker.Round,
-        targetMarkerType: ConnectionMarker.Round
+        sourceMarkerType: ConnectionMarker.None,
+        targetMarkerType: ConnectionMarker.None
       });
     });
 
@@ -296,7 +296,7 @@ export default class GropiusCompatibility {
       strokeWidth: 2,
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.Round,
-      targetMarkerType: ConnectionMarker.Default
+      targetMarkerType: ConnectionMarker.Right
     });
 
     this.draw({

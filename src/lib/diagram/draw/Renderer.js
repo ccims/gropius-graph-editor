@@ -149,7 +149,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         strokeWidth: 2,
         strokeDasharray: ""
       };
-      attrs.markerEnd = marker(ConnectionMarker.Default, "black", "black", false);
+      attrs.markerEnd = marker(ConnectionMarker.Right, "black", "black", false);
     }
     // if ((element.custom && element.custom.label) || true)
     //   renderExternalLabel(visuals, element, "test");
@@ -517,10 +517,10 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         });
         addMarker(id, {
           element: marker,
-          ref: { x: (isStart ? 4 : 8), y: 6 }
+          ref: { x: (isStart ? 3 : 9), y: 6 }
         });
         break;
-      case ConnectionMarker.LessThan:
+      case ConnectionMarker.ArrowLeft:
         marker = svgCreate("path", {
           d: "M 11 5 L 1 10 L 11 15",
           ...lineStyle({
@@ -536,11 +536,11 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
         addMarker(id, {
           element: marker,
-          ref: { x: 1, y: 10 },
+          ref: { x: (isStart ? 0 : 12), y: 10 },
           scale: 0.5
         });
 
-      case ConnectionMarker.OpenArrow:
+      case ConnectionMarker.ArrowRight:
         marker = svgCreate("path", {
           d: "M 1 5 L 11 10 L 1 15",
           ...lineStyle({
@@ -556,7 +556,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
         addMarker(id, {
           element: marker,
-          ref: { x: 11, y: 10 },
+          ref: { x: (isStart ? 1 : 11), y: 10 },
           scale: 0.5
         });
 
@@ -571,7 +571,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
         addMarker(id, {
           element: marker,
-          ref: { x: -1, y: 10 },
+          ref: { x: (isStart ? -2 : 18), y: 10 },
           scale: 0.5
         });
 
@@ -585,11 +585,11 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
         addMarker(id, {
           element: marker,
-          ref: { x: 0, y: 10 },
+          ref: { x: (isStart ? 0 : 16), y: 10 },
           scale: 0.5
         });
 
-      default:
+      case ConnectionMarker.Right:
         marker = svgCreate("path", {
           d: "M 1 5 L 11 10 L 1 15 Z",
           ...lineStyle({
@@ -604,7 +604,27 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         });
         addMarker(id, {
           element: marker,
-          ref: { x: 1, y: 10 },
+          ref: { x: (isStart ? 1 : 12), y: 10 },
+          scale: 0.5
+        });
+        break;
+
+      case ConnectionMarker.Left:
+        marker = svgCreate("path", {
+          d: "M 11 5 L 1 10 L 11 15 Z",
+          ...lineStyle({
+            fill: fill,
+            stroke: stroke,
+            strokeWidth: 1.5,
+
+            // fix for safari / chrome / firefox bug not correctly
+            // resetting stroke dash array
+            strokeDasharray: [10000, 1]
+          })
+        });
+        addMarker(id, {
+          element: marker,
+          ref: { x: (isStart ? 0 : 12), y: 10 },
           scale: 0.5
         });
         break;

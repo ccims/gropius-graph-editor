@@ -12,10 +12,11 @@ export enum Shape {
 
 export enum ConnectionMarker {
   None,
-  Default,
+  Right,
+  Left,
   Round,
-  LessThan,
-  OpenArrow,
+  ArrowLeft,
+  ArrowRight,
   Composition,
   Slash,
 }
