@@ -122,7 +122,9 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         visuals,
         element,
         "center-middle",
-        element.custom.label
+        element.custom.label,
+        DEFAULT_TEXT_SIZE,
+        element.custom.style.whiteText ? "white" : "black"
       );
   };
 
@@ -401,15 +403,15 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     return text;
   }
 
-  function renderEmbeddedLabel(parentGfx, element, align, text, fontSize) {
+  function renderEmbeddedLabel(parentGfx, element, align, text, fontSize = DEFAULT_TEXT_SIZE, color = "black") {
 
     const label = renderLabel(parentGfx, text, {
       box: element,
       align: align,
       padding: 5,
       style: {
-        fill: "black",
-        fontSize: fontSize || DEFAULT_TEXT_SIZE
+        fill: color,
+        fontSize: fontSize
       }
     });
     return label;

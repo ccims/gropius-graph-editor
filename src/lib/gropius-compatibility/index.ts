@@ -8,7 +8,7 @@ import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 // @ts-ignore
 import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
-import { el } from "vuetify/locale";
+import { el, en } from "vuetify/locale";
 
 const HEIGHT_PER_LINE = 20;
 const WIDTH_PER_CHARACTER = 10;
@@ -489,7 +489,7 @@ export default class GropiusCompatibility {
           minHeight: 100,
           maxScale: 2,
           color: "violet",
-          stroke: "#000000",
+          stroke: "#0000ff",
           strokeWidth: 2,
           strokeDasharray: "5 2",
           radius: 0
@@ -612,17 +612,41 @@ export default class GropiusCompatibility {
 
       const white = "#ffffff";
       const black = "#000000";
-      const defaultStrokeColor = (element.businessObject && element.businessObject.grType) ? element.businessObject.grType.style.stroke : black;
-      const defaultFillColor = (element.businessObject && element.businessObject.grType) ? element.businessObject.grType.style.color : white;
+      let stroke = black,
+        fill = white;
 
-      let stroke = defaultStrokeColor,
-        fill = defaultFillColor;
+      if(element.businessObject.type ==  ObjectType.Gropius) { // Main ropius Component
+        element.custom.style.whiteText = false
 
-      if (enabled && element.custom.style.stroke === black)
-        stroke = white;
+        if(enabled) {
+          if(element.custom.style.stroke == black)
+            stroke = white
+          else
+            stroke = element.custom.style.stroke;
 
-      if (enabled && element.custom.style.fill === white)
-        fill = black;
+          if(element.custom.style.fill == white) {
+            fill = black;
+            element.custom.style.whiteText = true
+          }
+          else
+            fill = element.custom.style.fill
+        } else {
+          stroke = element.businessObject.data.grType.style.stroke
+          fill = element.businessObject.data.grType.style.color
+        }
+      }
+      else if(element.businessObject.type == ObjectType.Version) { // Version Object
+        element.custom.style.whiteText = false
+
+        if(enabled) {
+          stroke = white
+          fill = "#444499"
+          element.custom.style.whiteText = true
+        } else {
+          stroke = black
+          fill = "#aaaaff"
+        }
+      }
 
       element.custom.style.stroke = stroke;
       element.custom.style.fill = fill;

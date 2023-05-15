@@ -396,6 +396,7 @@ Text.prototype.layoutText = function(text, options) {
 
 
   var textElement = svgCreate("text");
+  console.log(textElement)
 
   svgAttr(textElement, style);
 
