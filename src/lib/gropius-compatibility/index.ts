@@ -609,7 +609,6 @@ export default class GropiusCompatibility {
       if (!element.id.startsWith("shape")) {
         return;
       }
-      console.log(element);
 
       const white = "#ffffff";
       const black = "#000000";
