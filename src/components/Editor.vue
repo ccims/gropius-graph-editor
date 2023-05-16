@@ -127,7 +127,7 @@ export default defineComponent({
         grType: type
       }
 
-      diagram.draw(grShape, coordinates)
+      diagram.createComponent(grShape, coordinates)
 
       this.showAddComponent = false;
     },

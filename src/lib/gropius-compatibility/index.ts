@@ -8,7 +8,6 @@ import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 // @ts-ignore
 import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
-import { el, en } from "vuetify/locale";
 
 const HEIGHT_PER_LINE = 20;
 const WIDTH_PER_CHARACTER = 10;
@@ -77,7 +76,7 @@ export default class GropiusCompatibility {
         this.onAddConnection(e.element);
 
       // TODO: This is for dev purpose! If should get called by the frontend
-      this.createConnection(element, {
+      this.createConnectionBase(element, {
         strokeColor: "blue",
         strokeWidth: 3,
         strokeDasharray: "5 5",
@@ -174,7 +173,7 @@ export default class GropiusCompatibility {
     return ret;
   }
 
-  public draw(grShape: GropiusShape, coordinates: Coordinates) {
+  public createComponent(grShape: GropiusShape, coordinates: Coordinates) {
     const componentObject = this.drawComponent(grShape, coordinates);
     componentObject.custom.versionObject = this.drawVersion(componentObject);
     return componentObject;
@@ -204,7 +203,8 @@ export default class GropiusCompatibility {
           strokeDasharray: grStyle.strokeDasharray
         },
         label: dimensions.text,
-        versionObject: undefined
+        versionObject: undefined,
+        interfaces: []
       }
     };
     return this.createShape(shape);
@@ -215,7 +215,7 @@ export default class GropiusCompatibility {
     const w = componentShape.width,
       h = componentShape.height,
       vh = 50, // version width
-      vw = 80  // version height
+      vw = 80;  // version height
 
     switch (shape) {
       case Shape.Diamond:
@@ -227,7 +227,7 @@ export default class GropiusCompatibility {
       case Shape.Trapeze:
       case Shape.Ellipse:
       case Shape.Rectangle:
-      //default:
+        //default:
         return { x: w / 2 - vw / 2, y: h };
     }
 
@@ -261,12 +261,51 @@ export default class GropiusCompatibility {
     return this.createShape(shape);
   }
 
+  public createInterface(gropiusId: string, name: string, provide = true) {
+    let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data.id == gropiusId);
+    const businessObject = diagramParentObject.businessObject.data;
+
+    let shape = {
+      x: diagramParentObject.x + 80,
+      y: diagramParentObject.y,
+      width: 50,
+      height: 50,
+      businessObject: { type: provide ? ObjectType.InterfaceProvide : ObjectType.InterfaceRequire },
+      custom: {
+        shape: provide ? Shape.InterfaceProvide : Shape.InterfaceRequire,
+        style: {
+          rx: businessObject.grType.style.radius,
+          ry: businessObject.grType.style.radius,
+          fill: businessObject.grType.style.color,
+          stroke: businessObject.grType.style.stroke,
+          strokeWidth: businessObject.grType.style.strokeWidth,
+          strokeDasharray: businessObject.grType.style.strokeDasharray
+        },
+        label: name
+      }
+    };
+    let diagramInterfaceObject = this.createShape(shape);
+
+    diagramParentObject.custom.interfaces.push(diagramInterfaceObject);
+
+    this.createConnection(diagramParentObject, diagramInterfaceObject, [
+      {x: diagramParentObject.x + diagramParentObject.width, y: diagramParentObject.y + diagramParentObject.height / 2},
+      {x: diagramInterfaceObject.x, y: diagramInterfaceObject.y + diagramInterfaceObject.height / 2}
+    ], {
+      strokeColor: businessObject.grType.style.stroke,
+      strokeWidth: 2,
+      strokeDasharray: "",
+      sourceMarkerType: ConnectionMarker.None,
+      targetMarkerType: ConnectionMarker.ArrowRight
+    });
+  }
+
   public test() {
     const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst.";
     const m = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
     const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
-    let a = this.draw({
+    let a = this.createComponent({
       id: "1",
       name: "rect1",
       version: "v1",
@@ -285,8 +324,9 @@ export default class GropiusCompatibility {
         }
       }
     }, { x: 150, y: 100 });
+    this.createInterface("1", "My Interface", true);
 
-    let b = this.draw({
+    let b = this.createComponent({
       id: "2",
       version: "v1",
       name: "rect2 " + s,
@@ -306,16 +346,10 @@ export default class GropiusCompatibility {
       }
     }, { x: 150, y: 250 });
 
-    let connection1 = this.elementFactory.createConnection({
-      waypoints: [
-        { x: a.x, y: a.y },
-        { x: b.x, y: b.y }
-      ],
-      source: a,
-      target: b
-    });
-
-    this.createConnection(connection1, {
+    this.createConnection(a, b, [
+      { x: a.x, y: a.y },
+      { x: b.x, y: b.y }
+    ], {
       strokeColor: "red",
       strokeWidth: 2,
       strokeDasharray: "",
@@ -323,7 +357,7 @@ export default class GropiusCompatibility {
       targetMarkerType: ConnectionMarker.Right
     });
 
-    this.draw({
+    this.createComponent({
       id: "3",
       version: "v1.10.5",
       name: "rect3 little text, big shape",
@@ -343,7 +377,7 @@ export default class GropiusCompatibility {
       }
     }, { x: 150, y: 450 });
 
-    this.draw({
+    this.createComponent({
       id: "4",
       version: "v1",
       name: "Triangle " + s,
@@ -363,7 +397,7 @@ export default class GropiusCompatibility {
       }
     }, { x: 500, y: 75 });
 
-    this.draw({
+    this.createComponent({
       id: "5",
       version: "v1",
       name: "Parallel " + s,
@@ -383,7 +417,7 @@ export default class GropiusCompatibility {
       }
     }, { x: 800, y: 75 });
 
-    this.draw({
+    this.createComponent({
       id: "6",
       version: "v1",
       name: "Diamond " + s,
@@ -403,7 +437,7 @@ export default class GropiusCompatibility {
       }
     }, { x: 1100, y: 75 });
 
-    this.draw({
+    this.createComponent({
       id: "7",
       version: "v1",
       name: "Octagon " + s,
@@ -423,7 +457,7 @@ export default class GropiusCompatibility {
       }
     }, { x: 500, y: 250 });
 
-    this.draw({
+    this.createComponent({
       id: "8",
       version: "v1",
       name: "Circle " + s,
@@ -443,7 +477,7 @@ export default class GropiusCompatibility {
       }
     }, { x: 800, y: 250 });
 
-    this.draw({
+    this.createComponent({
       id: "9",
       version: "v1",
       name: "Trapeze " + s,
@@ -463,7 +497,7 @@ export default class GropiusCompatibility {
       }
     }, { x: 1100, y: 300 });
 
-    this.draw({
+    this.createComponent({
       id: "10",
       version: "v1",
       name: "Hexagon " + s,
@@ -483,7 +517,7 @@ export default class GropiusCompatibility {
       }
     }, { x: 500, y: 500 });
 
-    this.draw({
+    this.createComponent({
       id: "11",
       version: "v1",
       name: "Ellipse " + s,
@@ -503,7 +537,7 @@ export default class GropiusCompatibility {
       }
     }, { x: 800, y: 500 });
 
-    this.draw({
+    this.createComponent({
       id: "12",
       version: "v1",
       name: "Ellipse2 " + s,
@@ -554,7 +588,7 @@ export default class GropiusCompatibility {
     return _shape;
   }
 
-  public createConnection(connection: Connection, style: GropiusConnectionStyle) {
+  private createConnectionBase(connection: Connection, style: GropiusConnectionStyle) {
     // @ts-ignore
     connection.customRendered = true;
     // @ts-ignore
@@ -568,6 +602,16 @@ export default class GropiusCompatibility {
     };
 
     this.canvas.addConnection(connection, this.root);
+  }
+
+  public createConnection(source: any, target: any, waypoints: Array<Coordinates>, style: GropiusConnectionStyle) {
+    let connection = this.elementFactory.createConnection({
+      waypoints: waypoints,
+      source: source,
+      target: target
+    });
+
+   this.createConnectionBase(connection, style)
   }
 
   public exportDiagram(): string {
@@ -611,7 +655,7 @@ export default class GropiusCompatibility {
 
   public importDiagram(diagram: SerializedDiagram) {
     diagram.shapes.forEach(shape => {
-      this.draw(shape.grShape, { x: shape.x, y: shape.y });
+      this.createComponent(shape.grShape, { x: shape.x, y: shape.y });
     });
 
     diagram.connections.forEach(connection => {
@@ -623,12 +667,7 @@ export default class GropiusCompatibility {
         return;
       }
 
-      const con = this.elementFactory.createConnection({
-        source: source,
-        target: target,
-        waypoints: connection.waypoints
-      });
-      this.createConnection(con, connection.style);
+      this.createConnection(source, target, connection.waypoints, connection.style);
     });
   }
 

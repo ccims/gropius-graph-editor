@@ -6,7 +6,7 @@ import {
   getCirclePath,
   getColor,
   getDiamondPath, getEllipsePath,
-  getFillColor, getHexagonPath, getOctagonPath,
+  getFillColor, getHexagonPath, getInterfaceProvidePath, getInterfaceRequirePath, getOctagonPath,
   getParallelogramPath,
   getRectPath,
   getStrokeColor, getTrapezePath, getTrianglePath
@@ -37,6 +37,7 @@ import { query as domQuery } from "min-dom";
 import Ids from "ids";
 import { vi } from "vuetify/locale";
 import { ConnectionMarker, Shape } from "@/lib/diagram/types";
+import { ObjectType } from "@/lib/gropius-compatibility/types";
 
 let RENDERER_IDS = new Ids();
 
@@ -110,22 +111,41 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         case Shape.Trapeze:
           render = renderTrapeze;
           break;
+        case Shape.InterfaceProvide:
+          render = renderInterfaceProvide;
+          break
+        case Shape.InterfaceRequire:
+          render = renderInterfaceRequire;
+          break
         default:
-          renderRectangle(visuals, element);
+          render = renderRectangle;
           return;
       }
 
     render(visuals, element, element.custom.style);
 
-    if (element.custom && element.custom.label)
-      renderEmbeddedLabel(
-        visuals,
-        element,
-        "center-middle",
-        element.custom.label,
-        DEFAULT_TEXT_SIZE,
-        element.custom.style.whiteText ? "white" : "black"
-      );
+    if(element.custom && element.custom.label) {
+      if (element.businessObject.type === ObjectType.Gropius || element.businessObject.type === ObjectType.Version) {
+        renderEmbeddedLabel(
+          visuals,
+          element,
+          "center-middle",
+          element.custom.label,
+          DEFAULT_TEXT_SIZE,
+          element.custom.style.whiteText ? "white" : "black"
+        );
+      }
+      else {
+        // renderExternalLabel(
+        //   visuals,
+        //   element,
+        //   "center-middle",
+        //   element.custom.label,
+        //   DEFAULT_TEXT_SIZE,
+        //   element.custom.style.whiteText ? "white" : "black"
+        // );
+      }
+    }
   };
 
   this.connectionHandler = function(visuals, element, attrs) {
@@ -383,6 +403,41 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
     return polygon;
   }
+
+  function renderInterfaceProvide(visuals, element, attrs) {
+    let rect = svgCreate("circle");
+
+    const radius = element.width / 2;
+    const c = element.width / 2;
+
+    attrs = styles.style(attrs);
+
+    svgAttr(rect, {
+      cx: c,
+      cy: c,
+      r: radius,
+      ...attrs
+    });
+
+    svgAppend(visuals, rect);
+
+    return rect;
+  }
+
+  function renderInterfaceRequire(parentGfx, element, attrs) {
+
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   function renderLabel(parentGfx, label, options) {
     options = assign(
@@ -719,6 +774,10 @@ DefaultRenderer.prototype.getShapePath = function(shape) {
       return getTrapezePath(shape)
     case Shape.Ellipse:
       return getEllipsePath(shape)
+    case Shape.InterfaceProvide:
+      return getInterfaceProvidePath(shape)
+    case Shape.InterfaceRequire:
+      return getInterfaceRequirePath(shape)
     default:
       return getRectPath(shape);
   }

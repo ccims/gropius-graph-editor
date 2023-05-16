@@ -7,7 +7,9 @@ export enum Shape {
   Octagon,
   Ellipse,
   Parallelogram,
-  Trapeze
+  Trapeze,
+  InterfaceProvide,
+  InterfaceRequire
 }
 
 export enum ConnectionMarker {

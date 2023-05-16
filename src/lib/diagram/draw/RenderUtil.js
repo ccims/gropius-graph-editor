@@ -168,6 +168,14 @@ export function getEllipsePath(shape) {
     return getRectPath(shape)
 }
 
+export function getInterfaceProvidePath(shape) {
+    return getCirclePath(shape)
+}
+
+export function getInterfaceRequirePath(shape) {
+    return getDiamondPath(shape)
+}
+
 // helpers //////////
 
 export function getColor(element) {

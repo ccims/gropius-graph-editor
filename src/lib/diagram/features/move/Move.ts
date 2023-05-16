@@ -174,19 +174,27 @@ export default function MoveEvents(
       isAttach = canExecute === "attach",
       shapes = Array<any>();
 
-    // Remove all not-component and not-connections
-    context.shapes.forEach((shape: any) => {
-      if(shape.id.startsWith("shape") && shape.businessObject.type != ObjectType.Version
-        || shape.id.startsWith("connection"))
-        shapes.push(shape)
-    })
+    if(context.shapes.length == 1 && (context.shapes[0].businessObject.type == ObjectType.InterfaceProvide || context.shapes[0].businessObject.type == ObjectType.InterfaceRequire)) {
+      // Only one interface shall be moved
+      shapes = context.shapes
+    } else {
+      // Multiple elements or a non-interface shall be moved
 
-    // Add all component versions
-    context.shapes.forEach((shape: any) => {
-      if (shape.id.startsWith("shape") && shape.businessObject.type != ObjectType.Version) {
-        shapes.push(shape.custom.versionObject);
-      }
-    })
+      // Add all not-versions and connections
+      context.shapes.forEach((shape: any) => {
+        if (shape.id.startsWith("shape") && shape.businessObject.type == ObjectType.Gropius
+          || shape.id.startsWith("connection"))
+          shapes.push(shape)
+      })
+
+      // Add all sub-components (versions, interfaces, etc)
+      context.shapes.forEach((shape: any) => {
+        if (shape.id.startsWith("shape") && shape.businessObject.type == ObjectType.Gropius) {
+          shapes.push(shape.custom.versionObject);
+          shape.custom.interfaces.forEach((i: any) => shapes.push(i))
+        }
+      })
+    }
 
     if (canExecute === false) {
       return false;
