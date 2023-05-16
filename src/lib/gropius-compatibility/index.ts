@@ -507,10 +507,12 @@ export default class GropiusCompatibility {
       let stroke = black,
         fill = white;
 
-      if (element.businessObject.type == ObjectType.Gropius) { // Main ropius Component
+      if (element.businessObject.type == ObjectType.Gropius) { // Main Gropius Component
         element.custom.style.whiteText = false;
 
         if (enabled) {
+          // When enabled only change shapes with default color
+
           if (element.custom.style.stroke == black)
             stroke = white;
           else
@@ -522,6 +524,7 @@ export default class GropiusCompatibility {
           } else
             fill = element.custom.style.fill;
         } else {
+          // Original color
           stroke = element.businessObject.data.grType.style.stroke;
           fill = element.businessObject.data.grType.style.color;
         }
@@ -535,6 +538,17 @@ export default class GropiusCompatibility {
         } else {
           stroke = black;
           fill = "#aaaaff";
+        }
+      } else if(element.businessObject.type == ObjectType.InterfaceProvide) { // Interface-provide Object
+        element.custom.style.whiteText = false;
+
+        if (enabled) {
+          stroke = white;
+          fill = dark;
+          element.custom.style.whiteText = true;
+        } else {
+          stroke = black;
+          fill = white;
         }
       }
 
