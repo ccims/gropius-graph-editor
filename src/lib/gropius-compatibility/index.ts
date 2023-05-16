@@ -497,9 +497,9 @@ export default class GropiusCompatibility {
   public setDarkMode(enabled: boolean): void {
     Object.values(this.elementRegistry._elements).forEach((element: any) => {
       element = element.element;
-      if (!element.id.startsWith("shape")) {
-        return;
-      }
+
+      if(!element.businessObject)
+        return
 
       const white = "#ffffff";
       const black = "#000000";
@@ -528,6 +528,9 @@ export default class GropiusCompatibility {
           stroke = element.businessObject.data.grType.style.stroke;
           fill = element.businessObject.data.grType.style.color;
         }
+
+        element.custom.style.stroke = stroke;
+        element.custom.style.fill = fill;
       } else if (element.businessObject.type == ObjectType.Version) { // Version Object
         element.custom.style.whiteText = false;
 
@@ -539,6 +542,9 @@ export default class GropiusCompatibility {
           stroke = black;
           fill = "#aaaaff";
         }
+
+        element.custom.style.stroke = stroke;
+        element.custom.style.fill = fill;
       } else if(element.businessObject.type == ObjectType.InterfaceProvide) { // Interface-provide Object
         element.custom.style.whiteText = false;
 
@@ -550,10 +556,21 @@ export default class GropiusCompatibility {
           stroke = black;
           fill = white;
         }
-      }
 
-      element.custom.style.stroke = stroke;
-      element.custom.style.fill = fill;
+        element.custom.style.stroke = stroke;
+        element.custom.style.fill = fill;
+      } else if(element.businessObject.type == ObjectType.Connection) {
+
+        if(enabled && element.custom.style.strokeColor == black)
+            stroke = white;
+        else if(!enabled && element.custom.style.strokeColor == white) {
+            stroke = black;
+          }
+        else
+          return
+
+        element.custom.style.strokeColor = stroke
+      }
       this.canvas._eventBus.fire("element.changed", { element: element });
     });
   }
