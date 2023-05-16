@@ -25,6 +25,13 @@ export interface GropiusShape {
   name: string,
   version: string,
   grType: GropiusType,
+  interfaces: Array<GropiusInterface>
+}
+
+export interface GropiusInterface {
+  id: string,
+  name: string
+  provide: boolean
 }
 
 export interface GropiusShapeStyle {
@@ -49,7 +56,14 @@ export interface GropiusConnectionStyle {
 export interface SerializedShape {
   grShape: GropiusShape,
   x: number,
-  y: number
+  y: number,
+  interfaces: Array<SerializedInterface>
+}
+
+export interface SerializedInterface {
+  id: string,
+  coordinates: Coordinates,
+  waypoints: Array<Coordinates>
 }
 
 export  interface SerializedConnection {

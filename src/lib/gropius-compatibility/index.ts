@@ -1,7 +1,12 @@
 // @ts-ignore
 import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
-import { GropiusConnectionStyle, GropiusShape, ObjectType, SerializedDiagram } from "@/lib/gropius-compatibility/types";
+import {
+  GropiusConnectionStyle, GropiusInterface,
+  GropiusShape,
+  ObjectType,
+  SerializedDiagram, SerializedInterface
+} from "@/lib/gropius-compatibility/types";
 
 import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 
@@ -207,6 +212,7 @@ export default class GropiusCompatibility {
         interfaces: []
       }
     };
+
     return this.createShape(shape);
   }
 
@@ -261,323 +267,75 @@ export default class GropiusCompatibility {
     return this.createShape(shape);
   }
 
-  public createInterface(gropiusId: string, name: string, provide = true, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
-    let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == gropiusId);
-    const businessObject = diagramParentObject.businessObject.data;
-
-    if(!coordinates)
-      coordinates = {
-        x: diagramParentObject.x + diagramParentObject.width + 40,
-        y: diagramParentObject.y + diagramParentObject.height / 2 - 20
-      }
+  private drawInterface(parentShape: any, interf: GropiusInterface, coordinates: Coordinates, waypoints?: Array<Coordinates>) {
+    const parentBusinessObject = parentShape.businessObject.data;
 
     let shape = {
       x: coordinates.x,
       y: coordinates.y,
       width: 40,
       height: 40,
-      businessObject: { type: provide ? ObjectType.InterfaceProvide : ObjectType.InterfaceRequire },
+      businessObject: {
+        type: interf.provide ? ObjectType.InterfaceProvide : ObjectType.InterfaceRequire,
+        data: interf
+      },
       custom: {
-        shape: provide ? Shape.InterfaceProvide : Shape.InterfaceRequire,
+        shape: interf.provide ? Shape.InterfaceProvide : Shape.InterfaceRequire,
         style: {
-          rx: businessObject.grType.style.radius,
-          ry: businessObject.grType.style.radius,
-          fill: businessObject.grType.style.color,
-          stroke: businessObject.grType.style.stroke,
-          strokeWidth: businessObject.grType.style.strokeWidth,
-          strokeDasharray: businessObject.grType.style.strokeDasharray
+          rx: parentBusinessObject.grType.style.radius,
+          ry: parentBusinessObject.grType.style.radius,
+          fill: parentBusinessObject.grType.style.color,
+          stroke: parentBusinessObject.grType.style.stroke,
+          strokeWidth: parentBusinessObject.grType.style.strokeWidth,
+          strokeDasharray: parentBusinessObject.grType.style.strokeDasharray
         },
-        label: name
+        label: interf.name
       }
     };
-    let diagramInterfaceObject = this.createShape(shape);
 
-    diagramParentObject.custom.interfaces.push(diagramInterfaceObject);
+    const diagramInterfaceObject = this.createShape(shape);
+    parentShape.custom.interfaces.push(diagramInterfaceObject); // Rendering details
 
-    if(!waypoints)
+    // Set waypoints if not given
+    if (!waypoints)
       waypoints = [
-        {x: diagramParentObject.x + diagramParentObject.width, y: diagramParentObject.y + diagramParentObject.height / 2},
-        {x: diagramInterfaceObject.x, y: diagramInterfaceObject.y + diagramInterfaceObject.height / 2}
-      ]
+        { x: parentShape.x + parentShape.width, y: parentShape.y + parentShape.height / 2 },
+        { x: diagramInterfaceObject.x, y: diagramInterfaceObject.y + diagramInterfaceObject.height / 2 }
+      ];
 
-    this.createConnection(diagramParentObject, diagramInterfaceObject, waypoints, {
-      strokeColor: businessObject.grType.style.stroke,
+    this.createConnection(parentShape, diagramInterfaceObject, waypoints, {
+      strokeColor: parentBusinessObject.grType.style.stroke,
       strokeWidth: 2,
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.None,
       targetMarkerType: ConnectionMarker.ArrowRight
     });
+
+    return diagramInterfaceObject;
   }
 
-  public test() {
-    const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-    const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst.";
-    const m = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-    const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
-    let a = this.createComponent({
-      id: "1",
-      name: "rect1",
-      version: "v1",
-      grType: {
-        name: "x",
-        shape: Shape.Rectangle,
-        style: {
-          minWidth: 40,
-          minHeight: 40,
-          maxScale: 10,
-          color: "#ffffff",
-          stroke: "#ff55aa",
-          strokeWidth: 2,
-          strokeDasharray: "",
-          radius: 5
-        }
-      }
-    }, { x: 150, y: 100 });
+  public createInterface(gropiusId: string, name: string, provide = true, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
+    let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == gropiusId);
+    const parentBusinessObject = diagramParentObject.businessObject.data;
+    const interfaceId = parentBusinessObject.id + "-" + name + "-" + provide;
 
-    let b = this.createComponent({
-      id: "2",
-      version: "v1",
-      name: "rect2 " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Rectangle,
-        style: {
-          minWidth: 50,
-          minHeight: 50,
-          maxScale: 5,
-          color: "#ffffff",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "",
-          radius: 5
-        }
-      }
-    }, { x: 150, y: 250 });
+    // Set coordinates if not given. Default is middle-right of parent
+    if (!coordinates)
+      coordinates = {
+        x: diagramParentObject.x + diagramParentObject.width + 40,
+        y: diagramParentObject.y + diagramParentObject.height / 2 - 20
+      };
 
-    this.createConnection(a, b, [
-      { x: a.x, y: a.y },
-      { x: b.x, y: b.y }
-    ], {
-      strokeColor: "red",
-      strokeWidth: 2,
-      strokeDasharray: "",
-      sourceMarkerType: ConnectionMarker.Round,
-      targetMarkerType: ConnectionMarker.Right
-    });
+    const interfaceObject: GropiusInterface = {
+      id: interfaceId,
+      name: name,
+      provide: provide
+    };
 
-    this.createInterface("2", "My Interface", true);
+    const diagramInterfaceObject = this.drawInterface(diagramParentObject, interfaceObject, coordinates, waypoints);
 
-    this.createComponent({
-      id: "3",
-      version: "v1.10.5",
-      name: "rect3 little text, big shape",
-      grType: {
-        name: "x",
-        shape: Shape.Rectangle,
-        style: {
-          minWidth: 250,
-          minHeight: 200,
-          maxScale: 1,
-          color: "#ffffff",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "",
-          radius: 5
-        }
-      }
-    }, { x: 150, y: 450 });
-
-    this.createComponent({
-      id: "4",
-      version: "v1",
-      name: "Triangle " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Triangle,
-        style: {
-          minWidth: 100,
-          minHeight: 50,
-          maxScale: 2,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      }
-    }, { x: 500, y: 75 });
-
-    this.createComponent({
-      id: "5",
-      version: "v1",
-      name: "Parallel " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Parallelogram,
-        style: {
-          minWidth: 150,
-          minHeight: 100,
-          maxScale: 1,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      }
-    }, { x: 800, y: 75 });
-
-    this.createComponent({
-      id: "6",
-      version: "v1",
-      name: "Diamond " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Diamond,
-        style: {
-          minWidth: 100,
-          minHeight: 100,
-          maxScale: 1.5,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      }
-    }, { x: 1100, y: 75 });
-
-    this.createComponent({
-      id: "7",
-      version: "v1",
-      name: "Octagon " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Octagon,
-        style: {
-          minWidth: 100,
-          minHeight: 100,
-          maxScale: 1.5,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      }
-    }, { x: 500, y: 250 });
-
-    this.createComponent({
-      id: "8",
-      version: "v1",
-      name: "Circle " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Circle,
-        style: {
-          minWidth: 100,
-          minHeight: 100,
-          maxScale: 2,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      }
-    }, { x: 800, y: 250 });
-
-    this.createComponent({
-      id: "9",
-      version: "v1",
-      name: "Trapeze " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Trapeze,
-        style: {
-          minWidth: 100,
-          minHeight: 100,
-          maxScale: 1,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      }
-    }, { x: 1100, y: 300 });
-
-    this.createComponent({
-      id: "10",
-      version: "v1",
-      name: "Hexagon " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Hexagon,
-        style: {
-          minWidth: 100,
-          minHeight: 100,
-          maxScale: 2,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      }
-    }, { x: 500, y: 500 });
-
-    this.createComponent({
-      id: "11",
-      version: "v1",
-      name: "Ellipse " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Ellipse,
-        style: {
-          minWidth: 100,
-          minHeight: 50,
-          maxScale: 2,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      }
-    }, { x: 800, y: 500 });
-
-    this.createComponent({
-      id: "12",
-      version: "v1",
-      name: "Ellipse2 " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Ellipse,
-        style: {
-          minWidth: 50,
-          minHeight: 100,
-          maxScale: 2,
-          color: "violet",
-          stroke: "#0000ff",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      }
-    }, { x: 1100, y: 500 });
-
-    // let connection1 = this.elementFactory.createConnection({
-    //     waypoints: [
-    //         {x: shape1.x, y: shape1.y},
-    //         {x: shape2.x, y: shape2.y},
-    //     ],
-    //     source: shape1,
-    //     target: shape2,
-    // });
-    //
-    // this.canvas.addConnection(connection1, this.root);
-
+    // Add interface to parent
+    parentBusinessObject.interfaces.push(interfaceObject);
   }
 
   public deleteShape(element: any): boolean {
@@ -621,7 +379,7 @@ export default class GropiusCompatibility {
       target: target
     });
 
-   this.createConnectionBase(connection, style)
+    this.createConnectionBase(connection, style);
   }
 
   public exportDiagram(): string {
@@ -636,18 +394,34 @@ export default class GropiusCompatibility {
     Object.values(elements).forEach((element: any) => {
       element = element.element;
       if (element.id.startsWith("shape")) {
-        if (element.businessObject.type == ObjectType.Version)
+        if (element.businessObject.type != ObjectType.Gropius) // Only serialize main components
           return;
 
-        diagram.shapes.push({
+        // Serialize interfaces
+        const interfaces: Array<SerializedInterface> = this.serializeInterfaces(element)
+
+        // Main (gropius) shape serialized
+        const serializedShape = {
           grShape: element.businessObject.data,
           x: element.x,
-          y: element.y
-        });
+          y: element.y,
+          interfaces: interfaces
+        };
+
+        diagram.shapes.push(serializedShape);
+
       } else if (element.id.startsWith("connection")) {
+
+        const source = element.source.businessObject.data.id;
+        const target = element.target.businessObject.data.id;
+
+        // If target ID starts with source ID -> Connection is a Sub-Connection (e.g. Component-to-Interface)
+        if (target.startsWith(source))
+          return;
+
         diagram.connections.push({
-          sourceId: element.source.businessObject.data.id,
-          targetId: element.target.businessObject.data.id,
+          sourceId: source,
+          targetId: target,
           waypoints: element.waypoints,
           style: element.custom.style
         });
@@ -655,8 +429,40 @@ export default class GropiusCompatibility {
     });
 
     const diagramAsText = JSON.stringify(diagram);
-    console.log(diagramAsText);
+    console.log(diagram, diagramAsText);
     return diagramAsText;
+  }
+
+  private serializeInterfaces(element: any) {
+    const elements = this.elementRegistry._elements;
+    let interfaces: Array<SerializedInterface> = []
+    element.businessObject.data.interfaces.forEach((interf: any) => {
+      // Find interface (diagram) object for interface
+      const interfaceObject = element.custom.interfaces.find((i: any) => i.businessObject.data.id == interf.id);
+      // Find connection object for shape-to-interface connection
+      const connectionObject = Object.values(elements).find((e: any) => {
+        e = e.element;
+        if (!e.id.startsWith("connection"))
+          return false;
+
+        return e.source.businessObject.data.id == element.businessObject.data.id &&
+          e.target.businessObject.data.id == interf.id;
+      });
+
+      if (!interfaceObject || !connectionObject) {
+        console.error("Unknown interface or connection for", interf, interfaceObject, connectionObject);
+        return;
+      }
+
+      // Add interface to list
+      interfaces.push({
+        id: interf.id,
+        coordinates: { x: interfaceObject.x, y: interfaceObject.y },
+        // @ts-ignore
+        waypoints: connectionObject.element.waypoints
+      });
+    });
+    return interfaces
   }
 
   public importDiagramString(diagram: string) {
@@ -665,12 +471,19 @@ export default class GropiusCompatibility {
 
   public importDiagram(diagram: SerializedDiagram) {
     diagram.shapes.forEach(shape => {
-      this.createComponent(shape.grShape, { x: shape.x, y: shape.y });
+      const object = this.createComponent(shape.grShape, { x: shape.x, y: shape.y });
+      shape.interfaces.forEach(interf => {
+        const grInterface = shape.grShape.interfaces.find(i => i.id == interf.id)
+        if(!grInterface)
+          console.error("Interface error")
+        else
+          this.drawInterface(object, grInterface, interf.coordinates, interf.waypoints)
+      })
     });
 
     diagram.connections.forEach(connection => {
-      const source = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.type == ObjectType.Gropius && element.businessObject.data.id == connection.sourceId);
-      let target = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.type == ObjectType.Gropius && element.businessObject.data.id == connection.targetId);
+      const source = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == connection.sourceId);
+      let target = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == connection.targetId);
 
       if (!source || !target) {
         console.error("Unknown source or target for connection:", connection);
@@ -731,4 +544,291 @@ export default class GropiusCompatibility {
     });
   }
 
+
+  public test() {
+
+    this.importDiagramString("{\"shapes\":[{\"grShape\":{\"id\":\"1\",\"name\":\"rect1\",\"version\":\"v1\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":40,\"minHeight\":40,\"maxScale\":10,\"color\":\"#ffffff\",\"stroke\":\"#ff55aa\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[]},\"x\":241,\"y\":54,\"interfaces\":[]},{\"grShape\":{\"id\":\"2\",\"version\":\"v1\",\"name\":\"rect2 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":50,\"minHeight\":50,\"maxScale\":5,\"color\":\"#ffffff\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[{\"id\":\"2-My Interface-true\",\"name\":\"My Interface\",\"provide\":true}]},\"x\":150,\"y\":250,\"interfaces\":[{\"id\":\"2-My Interface-true\",\"coordinates\":{\"x\":339,\"y\":261},\"waypoints\":[{\"original\":{\"x\":280,\"y\":315},\"x\":280,\"y\":315},{\"x\":302,\"y\":315},{\"x\":302,\"y\":281},{\"original\":{\"x\":339,\"y\":281},\"x\":339,\"y\":281}]}]},{\"grShape\":{\"id\":\"3\",\"version\":\"v1.10.5\",\"name\":\"rect3 little text, big shape\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":250,\"minHeight\":200,\"maxScale\":1,\"color\":\"#ffffff\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[]},\"x\":150,\"y\":450,\"interfaces\":[]},{\"grShape\":{\"id\":\"4\",\"version\":\"v1\",\"name\":\"Triangle Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":1,\"style\":{\"minWidth\":100,\"minHeight\":50,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":500,\"y\":75,\"interfaces\":[]},{\"grShape\":{\"id\":\"5\",\"version\":\"v1\",\"name\":\"Parallel Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":7,\"style\":{\"minWidth\":150,\"minHeight\":100,\"maxScale\":1,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":800,\"y\":75,\"interfaces\":[]},{\"grShape\":{\"id\":\"6\",\"version\":\"v1\",\"name\":\"Diamond Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":3,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1.5,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":1100,\"y\":75,\"interfaces\":[]},{\"grShape\":{\"id\":\"7\",\"version\":\"v1\",\"name\":\"Octagon Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":5,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1.5,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":500,\"y\":250,\"interfaces\":[]},{\"grShape\":{\"id\":\"8\",\"version\":\"v1\",\"name\":\"Circle Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":2,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":800,\"y\":250,\"interfaces\":[]},{\"grShape\":{\"id\":\"9\",\"version\":\"v1\",\"name\":\"Trapeze Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":8,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":1100,\"y\":300,\"interfaces\":[]},{\"grShape\":{\"id\":\"10\",\"version\":\"v1\",\"name\":\"Hexagon Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":4,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":500,\"y\":500,\"interfaces\":[]},{\"grShape\":{\"id\":\"11\",\"version\":\"v1\",\"name\":\"Ellipse Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":6,\"style\":{\"minWidth\":100,\"minHeight\":50,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":800,\"y\":500,\"interfaces\":[]},{\"grShape\":{\"id\":\"12\",\"version\":\"v1\",\"name\":\"Ellipse2 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":6,\"style\":{\"minWidth\":50,\"minHeight\":100,\"maxScale\":2,\"color\":\"violet\",\"stroke\":\"#0000ff\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":1100,\"y\":500,\"interfaces\":[]}],\"connections\":[{\"sourceId\":\"1\",\"targetId\":\"2\",\"waypoints\":[{\"original\":{\"x\":241,\"y\":54},\"x\":241,\"y\":74},{\"x\":200,\"y\":74},{\"x\":200,\"y\":150},{\"original\":{\"x\":150,\"y\":250},\"x\":200,\"y\":250}],\"style\":{\"strokeColor\":\"red\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"sourceMarkerType\":3,\"targetMarkerType\":1}}]}")
+    return
+
+    const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+    const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst.";
+    const m = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+    const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+    let a = this.createComponent({
+      id: "1",
+      name: "rect1",
+      version: "v1",
+      grType: {
+        name: "x",
+        shape: Shape.Rectangle,
+        style: {
+          minWidth: 40,
+          minHeight: 40,
+          maxScale: 10,
+          color: "#ffffff",
+          stroke: "#ff55aa",
+          strokeWidth: 2,
+          strokeDasharray: "",
+          radius: 5
+        }
+      },
+      interfaces: []
+    }, { x: 150, y: 100 });
+
+    let b = this.createComponent({
+      id: "2",
+      version: "v1",
+      name: "rect2 " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Rectangle,
+        style: {
+          minWidth: 50,
+          minHeight: 50,
+          maxScale: 5,
+          color: "#ffffff",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: "",
+          radius: 5
+        }
+      },
+      interfaces: []
+    }, { x: 150, y: 250 });
+
+    this.createConnection(a, b, [
+      { x: a.x, y: a.y },
+      { x: b.x, y: b.y }
+    ], {
+      strokeColor: "red",
+      strokeWidth: 2,
+      strokeDasharray: "",
+      sourceMarkerType: ConnectionMarker.Round,
+      targetMarkerType: ConnectionMarker.Right
+    });
+
+    this.createInterface("2", "My Interface", true);
+
+    this.createComponent({
+      id: "3",
+      version: "v1.10.5",
+      name: "rect3 little text, big shape",
+      grType: {
+        name: "x",
+        shape: Shape.Rectangle,
+        style: {
+          minWidth: 250,
+          minHeight: 200,
+          maxScale: 1,
+          color: "#ffffff",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: "",
+          radius: 5
+        }
+      },
+      interfaces: []
+    }, { x: 150, y: 450 });
+
+    this.createComponent({
+      id: "4",
+      version: "v1",
+      name: "Triangle " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Triangle,
+        style: {
+          minWidth: 100,
+          minHeight: 50,
+          maxScale: 2,
+          color: "yellow",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      },
+      interfaces: []
+    }, { x: 500, y: 75 });
+
+    this.createComponent({
+      id: "5",
+      version: "v1",
+      name: "Parallel " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Parallelogram,
+        style: {
+          minWidth: 150,
+          minHeight: 100,
+          maxScale: 1,
+          color: "yellow",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      },
+      interfaces: []
+    }, { x: 800, y: 75 });
+
+    this.createComponent({
+      id: "6",
+      version: "v1",
+      name: "Diamond " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Diamond,
+        style: {
+          minWidth: 100,
+          minHeight: 100,
+          maxScale: 1.5,
+          color: "yellow",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      },
+      interfaces: []
+    }, { x: 1100, y: 75 });
+
+    this.createComponent({
+      id: "7",
+      version: "v1",
+      name: "Octagon " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Octagon,
+        style: {
+          minWidth: 100,
+          minHeight: 100,
+          maxScale: 1.5,
+          color: "yellow",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      },
+      interfaces: []
+    }, { x: 500, y: 250 });
+
+    this.createComponent({
+      id: "8",
+      version: "v1",
+      name: "Circle " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Circle,
+        style: {
+          minWidth: 100,
+          minHeight: 100,
+          maxScale: 2,
+          color: "yellow",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      },
+      interfaces: []
+    }, { x: 800, y: 250 });
+
+    this.createComponent({
+      id: "9",
+      version: "v1",
+      name: "Trapeze " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Trapeze,
+        style: {
+          minWidth: 100,
+          minHeight: 100,
+          maxScale: 1,
+          color: "yellow",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      },
+      interfaces: []
+    }, { x: 1100, y: 300 });
+
+    this.createComponent({
+      id: "10",
+      version: "v1",
+      name: "Hexagon " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Hexagon,
+        style: {
+          minWidth: 100,
+          minHeight: 100,
+          maxScale: 2,
+          color: "yellow",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      },
+      interfaces: []
+    }, { x: 500, y: 500 });
+
+    this.createComponent({
+      id: "11",
+      version: "v1",
+      name: "Ellipse " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Ellipse,
+        style: {
+          minWidth: 100,
+          minHeight: 50,
+          maxScale: 2,
+          color: "yellow",
+          stroke: "#000000",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      },
+      interfaces: []
+    }, { x: 800, y: 500 });
+
+    this.createComponent({
+      id: "12",
+      version: "v1",
+      name: "Ellipse2 " + s,
+      grType: {
+        name: "x",
+        shape: Shape.Ellipse,
+        style: {
+          minWidth: 50,
+          minHeight: 100,
+          maxScale: 2,
+          color: "violet",
+          stroke: "#0000ff",
+          strokeWidth: 2,
+          strokeDasharray: "5 2",
+          radius: 0
+        }
+      },
+      interfaces: []
+    }, { x: 1100, y: 500 });
+
+    // let connection1 = this.elementFactory.createConnection({
+    //     waypoints: [
+    //         {x: shape1.x, y: shape1.y},
+    //         {x: shape2.x, y: shape2.y},
+    //     ],
+    //     source: shape1,
+    //     target: shape2,
+    // });
+    //
+    // this.canvas.addConnection(connection1, this.root);
+
+  }
 }
