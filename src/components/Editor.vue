@@ -18,6 +18,7 @@
     ></Confirm>
     <!-- ref anstelle -->
     <button @click=handleThemeChange>Theme Switch</button>
+    <button @click=handleExport>Export</button>
 
     <div id="container" :style="{ backgroundColor: darkMode ? '#333' : '#fff'}"></div>
 
@@ -100,6 +101,10 @@ export default defineComponent({
     handleThemeChange() {
       this.darkMode = !this.darkMode
       diagram.setDarkMode(this.darkMode)
+    },
+
+    handleExport() {
+      diagram.exportDiagram()
     },
 
     /**

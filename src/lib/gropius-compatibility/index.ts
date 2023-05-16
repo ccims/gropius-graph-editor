@@ -261,15 +261,21 @@ export default class GropiusCompatibility {
     return this.createShape(shape);
   }
 
-  public createInterface(gropiusId: string, name: string, provide = true) {
-    let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data.id == gropiusId);
+  public createInterface(gropiusId: string, name: string, provide = true, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
+    let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == gropiusId);
     const businessObject = diagramParentObject.businessObject.data;
 
+    if(!coordinates)
+      coordinates = {
+        x: diagramParentObject.x + diagramParentObject.width + 40,
+        y: diagramParentObject.y + diagramParentObject.height / 2 - 20
+      }
+
     let shape = {
-      x: diagramParentObject.x + 80,
-      y: diagramParentObject.y,
-      width: 50,
-      height: 50,
+      x: coordinates.x,
+      y: coordinates.y,
+      width: 40,
+      height: 40,
       businessObject: { type: provide ? ObjectType.InterfaceProvide : ObjectType.InterfaceRequire },
       custom: {
         shape: provide ? Shape.InterfaceProvide : Shape.InterfaceRequire,
@@ -288,10 +294,13 @@ export default class GropiusCompatibility {
 
     diagramParentObject.custom.interfaces.push(diagramInterfaceObject);
 
-    this.createConnection(diagramParentObject, diagramInterfaceObject, [
-      {x: diagramParentObject.x + diagramParentObject.width, y: diagramParentObject.y + diagramParentObject.height / 2},
-      {x: diagramInterfaceObject.x, y: diagramInterfaceObject.y + diagramInterfaceObject.height / 2}
-    ], {
+    if(!waypoints)
+      waypoints = [
+        {x: diagramParentObject.x + diagramParentObject.width, y: diagramParentObject.y + diagramParentObject.height / 2},
+        {x: diagramInterfaceObject.x, y: diagramInterfaceObject.y + diagramInterfaceObject.height / 2}
+      ]
+
+    this.createConnection(diagramParentObject, diagramInterfaceObject, waypoints, {
       strokeColor: businessObject.grType.style.stroke,
       strokeWidth: 2,
       strokeDasharray: "",
@@ -324,7 +333,6 @@ export default class GropiusCompatibility {
         }
       }
     }, { x: 150, y: 100 });
-    this.createInterface("1", "My Interface", true);
 
     let b = this.createComponent({
       id: "2",
@@ -356,6 +364,8 @@ export default class GropiusCompatibility {
       sourceMarkerType: ConnectionMarker.Round,
       targetMarkerType: ConnectionMarker.Right
     });
+
+    this.createInterface("2", "My Interface", true);
 
     this.createComponent({
       id: "3",
