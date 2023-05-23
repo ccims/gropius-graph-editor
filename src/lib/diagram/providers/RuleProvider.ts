@@ -32,9 +32,12 @@ CustomRuleProvider.prototype.init = function () {
   this.addRule("connection.create", function (context: any) {
     const source = context.source,
       target = context.target;
-    if (source.businessObject && target.businessObject)
-      return source.id.startsWith("shape") && source.businessObject.type != ObjectType.Version && target.id.startsWith("shape") && target.businessObject.type != ObjectType.Version;
-    //return source.parent === target.parent;
+    if (source.businessObject && target.businessObject) {
+      if(source.businessObject.type == ObjectType.Gropius && target.businessObject.type == ObjectType.Gropius)
+        return true
+      if(source.businessObject.type == ObjectType.InterfaceRequire && target.businessObject.type == ObjectType.InterfaceProvide)
+        return true
+    }
     return false;
   });
 
