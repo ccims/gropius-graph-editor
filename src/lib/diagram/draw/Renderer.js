@@ -269,23 +269,23 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function renderCircle(visuals, element, attrs) {
-    let rect = svgCreate("circle");
+    let circle = svgCreate("circle");
 
     const radius = element.width / 2;
     const c = element.width / 2;
 
     attrs = styles.style(attrs);
 
-    svgAttr(rect, {
+    svgAttr(circle, {
       cx: c,
       cy: c,
       r: radius,
       ...attrs
     });
 
-    svgAppend(visuals, rect);
+    svgAppend(visuals, circle);
 
-    return rect;
+    return circle;
   }
 
   function renderOctagon(parentGfx, element, attrs) {
