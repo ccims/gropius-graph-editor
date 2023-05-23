@@ -141,7 +141,6 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         renderExternalLabel(
           visuals,
           element,
-          "center-middle",
           element.custom.label,
           DEFAULT_TEXT_SIZE,
           element.custom.style.whiteText ? "white" : "black"
@@ -504,10 +503,10 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     return label;
   }
 
-  function renderExternalLabel(parentGfx, element, align, text, fontSize = DEFAULT_TEXT_SIZE, color = "black") {
+  function renderExternalLabel(parentGfx, element, text, fontSize = DEFAULT_TEXT_SIZE, color = "black") {
     const box = {
       width: 90,
-      height: 30,
+      height: 90,
       x: - element.width / 2,
       y: element.height + 5,
       custom: element.custom

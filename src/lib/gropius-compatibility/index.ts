@@ -1010,7 +1010,7 @@ export default class GropiusCompatibility {
       interfaces: []
     }, { x: 150, y: 450 });
 
-    this.createInterface("3", "My Interface", false);
+    this.createInterface("3", "Another Interface", false);
 
     this.createComponent({
       id: "4",
