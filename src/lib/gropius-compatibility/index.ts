@@ -398,7 +398,7 @@ export default class GropiusCompatibility {
           return;
 
         // Serialize interfaces
-        const interfaces: Array<SerializedInterface> = this.serializeInterfaces(element)
+        const interfaces: Array<SerializedInterface> = this.serializeInterfaces(element);
 
         // Main (gropius) shape serialized
         const serializedShape = {
@@ -435,7 +435,7 @@ export default class GropiusCompatibility {
 
   private serializeInterfaces(element: any) {
     const elements = this.elementRegistry._elements;
-    let interfaces: Array<SerializedInterface> = []
+    let interfaces: Array<SerializedInterface> = [];
     element.businessObject.data.interfaces.forEach((interf: any) => {
       // Find interface (diagram) object for interface
       const interfaceObject = element.custom.interfaces.find((i: any) => i.businessObject.data.id == interf.id);
@@ -462,7 +462,7 @@ export default class GropiusCompatibility {
         waypoints: connectionObject.element.waypoints
       });
     });
-    return interfaces
+    return interfaces;
   }
 
   public importDiagramString(diagram: string) {
@@ -473,12 +473,12 @@ export default class GropiusCompatibility {
     diagram.shapes.forEach(shape => {
       const object = this.createComponent(shape.grShape, { x: shape.x, y: shape.y });
       shape.interfaces.forEach(interf => {
-        const grInterface = shape.grShape.interfaces.find(i => i.id == interf.id)
-        if(!grInterface)
-          console.error("Interface error")
+        const grInterface = shape.grShape.interfaces.find(i => i.id == interf.id);
+        if (!grInterface)
+          console.error("Interface error");
         else
-          this.drawInterface(object, grInterface, interf.coordinates, interf.waypoints)
-      })
+          this.drawInterface(object, grInterface, interf.coordinates, interf.waypoints);
+      });
     });
 
     diagram.connections.forEach(connection => {
@@ -498,8 +498,8 @@ export default class GropiusCompatibility {
     Object.values(this.elementRegistry._elements).forEach((element: any) => {
       element = element.element;
 
-      if(!element.businessObject)
-        return
+      if (!element.businessObject)
+        return;
 
       const white = "#ffffff";
       const black = "#000000";
@@ -545,7 +545,7 @@ export default class GropiusCompatibility {
 
         element.custom.style.stroke = stroke;
         element.custom.style.fill = fill;
-      } else if(element.businessObject.type == ObjectType.InterfaceProvide) { // Interface-provide Object
+      } else if (element.businessObject.type == ObjectType.InterfaceProvide) { // Interface-provide Object
         element.custom.style.whiteText = false;
 
         if (enabled) {
@@ -559,17 +559,16 @@ export default class GropiusCompatibility {
 
         element.custom.style.stroke = stroke;
         element.custom.style.fill = fill;
-      } else if(element.businessObject.type == ObjectType.Connection) {
+      } else if (element.businessObject.type == ObjectType.Connection) {
 
-        if(enabled && element.custom.style.strokeColor == black)
-            stroke = white;
-        else if(!enabled && element.custom.style.strokeColor == white) {
-            stroke = black;
-          }
-        else
-          return
+        if (enabled && element.custom.style.strokeColor == black)
+          stroke = white;
+        else if (!enabled && element.custom.style.strokeColor == white) {
+          stroke = black;
+        } else
+          return;
 
-        element.custom.style.strokeColor = stroke
+        element.custom.style.strokeColor = stroke;
       }
       this.canvas._eventBus.fire("element.changed", { element: element });
     });
@@ -578,8 +577,362 @@ export default class GropiusCompatibility {
 
   public test() {
 
-    // this.importDiagramString("{\"shapes\":[{\"grShape\":{\"id\":\"1\",\"name\":\"rect1\",\"version\":\"v1\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":40,\"minHeight\":40,\"maxScale\":10,\"color\":\"#ffffff\",\"stroke\":\"#ff55aa\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[]},\"x\":241,\"y\":54,\"interfaces\":[]},{\"grShape\":{\"id\":\"2\",\"version\":\"v1\",\"name\":\"rect2 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":50,\"minHeight\":50,\"maxScale\":5,\"color\":\"#ffffff\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[{\"id\":\"2-My Interface-true\",\"name\":\"My Interface\",\"provide\":true}]},\"x\":150,\"y\":250,\"interfaces\":[{\"id\":\"2-My Interface-true\",\"coordinates\":{\"x\":339,\"y\":261},\"waypoints\":[{\"original\":{\"x\":280,\"y\":315},\"x\":280,\"y\":315},{\"x\":302,\"y\":315},{\"x\":302,\"y\":281},{\"original\":{\"x\":339,\"y\":281},\"x\":339,\"y\":281}]}]},{\"grShape\":{\"id\":\"3\",\"version\":\"v1.10.5\",\"name\":\"rect3 little text, big shape\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":250,\"minHeight\":200,\"maxScale\":1,\"color\":\"#ffffff\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[]},\"x\":150,\"y\":450,\"interfaces\":[]},{\"grShape\":{\"id\":\"4\",\"version\":\"v1\",\"name\":\"Triangle Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":1,\"style\":{\"minWidth\":100,\"minHeight\":50,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":500,\"y\":75,\"interfaces\":[]},{\"grShape\":{\"id\":\"5\",\"version\":\"v1\",\"name\":\"Parallel Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":7,\"style\":{\"minWidth\":150,\"minHeight\":100,\"maxScale\":1,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":800,\"y\":75,\"interfaces\":[]},{\"grShape\":{\"id\":\"6\",\"version\":\"v1\",\"name\":\"Diamond Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":3,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1.5,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":1100,\"y\":75,\"interfaces\":[]},{\"grShape\":{\"id\":\"7\",\"version\":\"v1\",\"name\":\"Octagon Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":5,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1.5,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":500,\"y\":250,\"interfaces\":[]},{\"grShape\":{\"id\":\"8\",\"version\":\"v1\",\"name\":\"Circle Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":2,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":800,\"y\":250,\"interfaces\":[]},{\"grShape\":{\"id\":\"9\",\"version\":\"v1\",\"name\":\"Trapeze Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":8,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":1100,\"y\":300,\"interfaces\":[]},{\"grShape\":{\"id\":\"10\",\"version\":\"v1\",\"name\":\"Hexagon Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":4,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":500,\"y\":500,\"interfaces\":[]},{\"grShape\":{\"id\":\"11\",\"version\":\"v1\",\"name\":\"Ellipse Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":6,\"style\":{\"minWidth\":100,\"minHeight\":50,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":800,\"y\":500,\"interfaces\":[]},{\"grShape\":{\"id\":\"12\",\"version\":\"v1\",\"name\":\"Ellipse2 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":6,\"style\":{\"minWidth\":50,\"minHeight\":100,\"maxScale\":2,\"color\":\"violet\",\"stroke\":\"#0000ff\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[]},\"x\":1100,\"y\":500,\"interfaces\":[]}],\"connections\":[{\"sourceId\":\"1\",\"targetId\":\"2\",\"waypoints\":[{\"original\":{\"x\":241,\"y\":74},\"x\":241,\"y\":74},{\"x\":200,\"y\":74},{\"x\":200,\"y\":150},{\"original\":{\"x\":200,\"y\":250},\"x\":200,\"y\":250}],\"style\":{\"strokeColor\":\"red\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"sourceMarkerType\":3,\"targetMarkerType\":1}}]}")
-    // return
+    this.importDiagramString("{\n" +
+      "  \"shapes\": [\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"1\",\n" +
+      "        \"name\": \"rect1\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 0,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 40,\n" +
+      "            \"minHeight\": 40,\n" +
+      "            \"maxScale\": 10,\n" +
+      "            \"color\": \"#ffffff\",\n" +
+      "            \"stroke\": \"#ff55aa\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"\",\n" +
+      "            \"radius\": 5\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 241,\n" +
+      "      \"y\": 54,\n" +
+      "      \"interfaces\": []\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"2\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"name\": \"rect2 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 0,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 50,\n" +
+      "            \"minHeight\": 50,\n" +
+      "            \"maxScale\": 5,\n" +
+      "            \"color\": \"#ffffff\",\n" +
+      "            \"stroke\": \"#000000\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"\",\n" +
+      "            \"radius\": 5\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": [\n" +
+      "          {\n" +
+      "            \"id\": \"2-My Interface-true\",\n" +
+      "            \"name\": \"My Interface\",\n" +
+      "            \"provide\": true\n" +
+      "          },\n" +
+      "          {\n" +
+      "            \"id\": \"2-My Interface-false\",\n" +
+      "            \"name\": \"Other Interface\",\n" +
+      "            \"provide\": false\n" +
+      "          }\n" +
+      "        ]\n" +
+      "      },\n" +
+      "      \"x\": 150,\n" +
+      "      \"y\": 250,\n" +
+      "      \"interfaces\": [\n" +
+      "        {\n" +
+      "          \"id\": \"2-My Interface-true\",\n" +
+      "          \"coordinates\": { \"x\": 339, \"y\": 261 },\n" +
+      "          \"waypoints\": [\n" +
+      "            { \"original\": { \"x\": 280, \"y\": 315 }, \"x\": 280, \"y\": 315 },\n" +
+      "            { \"x\": 302, \"y\": 315 },\n" +
+      "            { \"x\": 302, \"y\": 281 },\n" +
+      "            { \"original\": { \"x\": 339, \"y\": 281 }, \"x\": 339, \"y\": 281 }\n" +
+      "          ]\n" +
+      "        },\n" +
+      "        {\n" +
+      "          \"id\": \"2-My Interface-false\",\n" +
+      "          \"coordinates\": { \"x\": 324, \"y\": 340 },\n" +
+      "          \"waypoints\": [\n" +
+      "            { \"original\": { \"x\": 280, \"y\": 315 }, \"x\": 280, \"y\": 315 },\n" +
+      "            { \"x\": 300, \"y\": 315 },\n" +
+      "            { \"x\": 300, \"y\": 360 },\n" +
+      "            { \"original\": { \"x\": 324, \"y\": 360 }, \"x\": 324, \"y\": 360 }\n" +
+      "          ]\n" +
+      "        }\n" +
+      "      ]\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"3\",\n" +
+      "        \"version\": \"v1.10.5\",\n" +
+      "        \"name\": \"rect3 little text, big shape\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 0,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 250,\n" +
+      "            \"minHeight\": 200,\n" +
+      "            \"maxScale\": 1,\n" +
+      "            \"color\": \"#ffffff\",\n" +
+      "            \"stroke\": \"#000000\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"\",\n" +
+      "            \"radius\": 5\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 150,\n" +
+      "      \"y\": 450,\n" +
+      "      \"interfaces\": []\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"4\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"name\": \"Triangle Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 1,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 100,\n" +
+      "            \"minHeight\": 50,\n" +
+      "            \"maxScale\": 2,\n" +
+      "            \"color\": \"yellow\",\n" +
+      "            \"stroke\": \"#000000\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"5 2\",\n" +
+      "            \"radius\": 0\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 500,\n" +
+      "      \"y\": 75,\n" +
+      "      \"interfaces\": []\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"5\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"name\": \"Parallel Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 7,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 150,\n" +
+      "            \"minHeight\": 100,\n" +
+      "            \"maxScale\": 1,\n" +
+      "            \"color\": \"yellow\",\n" +
+      "            \"stroke\": \"#000000\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"5 2\",\n" +
+      "            \"radius\": 0\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 800,\n" +
+      "      \"y\": 75,\n" +
+      "      \"interfaces\": []\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"6\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"name\": \"Diamond Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 3,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 100,\n" +
+      "            \"minHeight\": 100,\n" +
+      "            \"maxScale\": 1.5,\n" +
+      "            \"color\": \"yellow\",\n" +
+      "            \"stroke\": \"#000000\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"5 2\",\n" +
+      "            \"radius\": 0\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 1100,\n" +
+      "      \"y\": 75,\n" +
+      "      \"interfaces\": []\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"7\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"name\": \"Octagon Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 5,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 100,\n" +
+      "            \"minHeight\": 100,\n" +
+      "            \"maxScale\": 1.5,\n" +
+      "            \"color\": \"yellow\",\n" +
+      "            \"stroke\": \"#000000\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"5 2\",\n" +
+      "            \"radius\": 0\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 500,\n" +
+      "      \"y\": 250,\n" +
+      "      \"interfaces\": []\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"8\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"name\": \"Circle Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 2,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 100,\n" +
+      "            \"minHeight\": 100,\n" +
+      "            \"maxScale\": 2,\n" +
+      "            \"color\": \"yellow\",\n" +
+      "            \"stroke\": \"#000000\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"5 2\",\n" +
+      "            \"radius\": 0\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 800,\n" +
+      "      \"y\": 250,\n" +
+      "      \"interfaces\": []\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"9\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"name\": \"Trapeze Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 8,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 100,\n" +
+      "            \"minHeight\": 100,\n" +
+      "            \"maxScale\": 1,\n" +
+      "            \"color\": \"yellow\",\n" +
+      "            \"stroke\": \"#000000\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"5 2\",\n" +
+      "            \"radius\": 0\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 1100,\n" +
+      "      \"y\": 300,\n" +
+      "      \"interfaces\": []\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"10\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"name\": \"Hexagon Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 4,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 100,\n" +
+      "            \"minHeight\": 100,\n" +
+      "            \"maxScale\": 2,\n" +
+      "            \"color\": \"yellow\",\n" +
+      "            \"stroke\": \"#000000\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"5 2\",\n" +
+      "            \"radius\": 0\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 500,\n" +
+      "      \"y\": 500,\n" +
+      "      \"interfaces\": []\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"11\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"name\": \"Ellipse Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 6,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 100,\n" +
+      "            \"minHeight\": 50,\n" +
+      "            \"maxScale\": 2,\n" +
+      "            \"color\": \"yellow\",\n" +
+      "            \"stroke\": \"#000000\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"5 2\",\n" +
+      "            \"radius\": 0\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 800,\n" +
+      "      \"y\": 500,\n" +
+      "      \"interfaces\": []\n" +
+      "    },\n" +
+      "    {\n" +
+      "      \"grShape\": {\n" +
+      "        \"id\": \"12\",\n" +
+      "        \"version\": \"v1\",\n" +
+      "        \"name\": \"Ellipse2 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n" +
+      "        \"grType\": {\n" +
+      "          \"name\": \"x\",\n" +
+      "          \"shape\": 6,\n" +
+      "          \"style\": {\n" +
+      "            \"minWidth\": 50,\n" +
+      "            \"minHeight\": 100,\n" +
+      "            \"maxScale\": 2,\n" +
+      "            \"color\": \"violet\",\n" +
+      "            \"stroke\": \"#0000ff\",\n" +
+      "            \"strokeWidth\": 2,\n" +
+      "            \"strokeDasharray\": \"5 2\",\n" +
+      "            \"radius\": 0\n" +
+      "          }\n" +
+      "        },\n" +
+      "        \"interfaces\": []\n" +
+      "      },\n" +
+      "      \"x\": 1100,\n" +
+      "      \"y\": 500,\n" +
+      "      \"interfaces\": []\n" +
+      "    }\n" +
+      "  ],\n" +
+      "  \"connections\": [\n" +
+      "    {\n" +
+      "      \"sourceId\": \"1\",\n" +
+      "      \"targetId\": \"2\",\n" +
+      "      \"waypoints\": [\n" +
+      "        { \"original\": { \"x\": 241, \"y\": 74 }, \"x\": 241, \"y\": 74 },\n" +
+      "        { \"x\": 200, \"y\": 74 },\n" +
+      "        { \"x\": 200, \"y\": 150 },\n" +
+      "        { \"original\": { \"x\": 200, \"y\": 250 }, \"x\": 200, \"y\": 250 }\n" +
+      "      ],\n" +
+      "      \"style\": {\n" +
+      "        \"strokeColor\": \"red\",\n" +
+      "        \"strokeWidth\": 2,\n" +
+      "        \"strokeDasharray\": \"\",\n" +
+      "        \"sourceMarkerType\": 3,\n" +
+      "        \"targetMarkerType\": 1\n" +
+      "      }\n" +
+      "    }\n" +
+      "  ]\n" +
+      "}\n");
+    return;
 
     const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst.";
