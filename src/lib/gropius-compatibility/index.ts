@@ -532,6 +532,13 @@ export default class GropiusCompatibility {
 
         element.custom.style.stroke = stroke;
         element.custom.style.fill = fill;
+
+        element.custom.interfaces.forEach((interfaceObject: any) => {
+          interfaceObject.custom.style.stroke = stroke
+          if(interfaceObject.shape == Shape.InterfaceProvide)
+            interfaceObject.custom.style.fill = fill
+        })
+
       } else if (element.businessObject.type == ObjectType.Version) { // Version Object
         element.custom.style.whiteText = false;
 
@@ -546,31 +553,6 @@ export default class GropiusCompatibility {
 
         element.custom.style.stroke = stroke;
         element.custom.style.fill = fill;
-      } else if (element.businessObject.type == ObjectType.InterfaceProvide) { // Interface-provide Object
-        element.custom.style.whiteText = false;
-
-        if (enabled) {
-          stroke = white;
-          fill = dark;
-          element.custom.style.whiteText = true;
-        } else {
-          stroke = black;
-          fill = white;
-        }
-
-        element.custom.style.stroke = stroke;
-        element.custom.style.fill = fill;
-      } else if (element.businessObject.type == ObjectType.InterfaceRequire) { // Interface-provide Object
-        element.custom.style.whiteText = false;
-
-        if (enabled) {
-          stroke = white;
-          element.custom.style.whiteText = true;
-        } else {
-          stroke = black;
-        }
-
-        element.custom.style.stroke = stroke;
       } else if (element.businessObject.type == ObjectType.Connection) {
 
         if (enabled && element.custom.style.strokeColor == black)
