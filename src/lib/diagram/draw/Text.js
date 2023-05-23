@@ -297,11 +297,6 @@ Text.prototype.layoutText = function(text, options) {
     y: 0
   };
 
-  if(shape == Shape.InterfaceRequire || shape == Shape.InterfaceProvide) {
-    offset.x = box.x
-    offset.y = box.y
-  }
-
   switch (shape) {
     case Shape.Triangle:
       box.width /= 2;
@@ -329,6 +324,10 @@ Text.prototype.layoutText = function(text, options) {
     case Shape.Trapeze:
       box.width /= 1.25;
       break;
+    case Shape.InterfaceRequire:
+    case Shape.InterfaceProvide:
+      offset.x = box.x
+      offset.y = box.y
   }
   var lineHeight = getLineHeight(style);
 
@@ -393,7 +392,6 @@ Text.prototype.layoutText = function(text, options) {
 
   if (align.vertical === "middle") {
     y += (shapeHeight - totalHeight) / 2;
-    y += offset.y;
   }
 
   // magic number initial offset
