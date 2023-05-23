@@ -425,7 +425,9 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function renderInterfaceRequire(visuals, element, attrs) {
-    let circle = svgCreate("circle");
+    let circle = svgCreate("path", {
+      d: "M20,0 a1,1 0 10,0 40,0"
+    });
 
     const radius = element.width / 2;
     const c = element.width / 2;

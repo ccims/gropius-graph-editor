@@ -638,7 +638,7 @@ export default class GropiusCompatibility {
       targetMarkerType: ConnectionMarker.Right
     });
 
-    // this.createInterface("2", "My Interface", true);
+    this.createInterface("2", "My Interface", true);
     this.createInterface("2", "My Interface", false);
 
     this.createComponent({
