@@ -55,18 +55,20 @@ ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
       click: startConnect,
       dragstart: startConnect
     }
-  }
+  };
 
-  if(element.businessObject.type == ObjectType.Gropius)
+  if (element.businessObject.type == ObjectType.Gropius
+    || element.businessObject.type == ObjectType.InterfaceProvide
+    || element.businessObject.type == ObjectType.InterfaceRequire)
     return {
       "delete": deleteIcon,
       "connect": connectIcon
-    }
-  else if(element.id.startsWith("connection"))
+    };
+  else if (element.businessObject.type == ObjectType.Connection)
     return {
       "delete": deleteIcon
-    }
+    };
   else
-    return {}
+    return {};
 
 };
