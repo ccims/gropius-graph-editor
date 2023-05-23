@@ -428,7 +428,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     const parentObject = element.custom.parentObject
     let path
 
-    if(element.x < parentObject.x)
+    if(element.x + element.width < parentObject.x)
       path = "M20,0 a1,1 0 0,10 40,0" // left
     else if(element.x > parentObject.x + parentObject.width)
       path = "M20,0 a1,1 0 10,0 40,0" // right
