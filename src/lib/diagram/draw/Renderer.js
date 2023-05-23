@@ -35,7 +35,7 @@ import visuals from "diagram-js/lib/features/grid-snapping/visuals";
 
 import { query as domQuery } from "min-dom";
 import Ids from "ids";
-import { vi } from "vuetify/locale";
+import { el, vi } from "vuetify/locale";
 import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 import { ObjectType } from "@/lib/gropius-compatibility/types";
 
@@ -425,8 +425,20 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function renderInterfaceRequire(visuals, element, attrs) {
+    const parentObject = element.custom.parentObject
+    let path
+
+    if(element.x < parentObject.x)
+      path = "M20,0 a1,1 0 0,10 40,0" // left
+    else if(element.x > parentObject.x + parentObject.width)
+      path = "M20,0 a1,1 0 10,0 40,0" // right
+    else if(element.y < parentObject.y)
+      path = "M0,20 a1,1 0 0,0 40,0" // top
+    else
+      path = "M0,20 a1,1 0 0,1 40,0" // bottom
+
     let circle = svgCreate("path", {
-      d: "M20,0 a1,1 0 10,0 40,0"
+      d: path
     });
 
     const radius = element.width / 2;
