@@ -537,6 +537,8 @@ export default class GropiusCompatibility {
           interfaceObject.custom.style.stroke = stroke
           if(interfaceObject.shape == Shape.InterfaceProvide)
             interfaceObject.custom.style.fill = fill
+
+          interfaceObject.custom.style.whiteText = enabled
         })
 
       } else if (element.businessObject.type == ObjectType.Version) { // Version Object
