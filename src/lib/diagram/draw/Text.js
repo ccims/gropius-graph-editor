@@ -296,6 +296,12 @@ Text.prototype.layoutText = function(text, options) {
     x: 0,
     y: 0
   };
+
+  if(shape == Shape.InterfaceRequire || shape == Shape.InterfaceProvide) {
+    offset.x = box.x
+    offset.y = box.y
+  }
+
   switch (shape) {
     case Shape.Triangle:
       box.width /= 2;
@@ -324,7 +330,6 @@ Text.prototype.layoutText = function(text, options) {
       box.width /= 1.25;
       break;
   }
-
   var lineHeight = getLineHeight(style);
 
   // we split text by lines and normalize
@@ -384,7 +389,7 @@ Text.prototype.layoutText = function(text, options) {
   }, 0);
 
   // the y position of the next line
-  var y = padding.top;
+  var y = offset.y + padding.top;
 
   if (align.vertical === "middle") {
     y += (shapeHeight - totalHeight) / 2;

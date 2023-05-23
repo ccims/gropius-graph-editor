@@ -135,15 +135,17 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
           element.custom.style.whiteText ? "white" : "black"
         );
       }
-      else {
-        // renderExternalLabel(
-        //   visuals,
-        //   element,
-        //   "center-middle",
-        //   element.custom.label,
-        //   DEFAULT_TEXT_SIZE,
-        //   element.custom.style.whiteText ? "white" : "black"
-        // );
+      else if(element.businessObject.type == ObjectType.Connection
+        || element.businessObject.type == ObjectType.InterfaceRequire
+        || element.businessObject.type == ObjectType.InterfaceProvide) {
+        renderExternalLabel(
+          visuals,
+          element,
+          "center-middle",
+          element.custom.label,
+          DEFAULT_TEXT_SIZE,
+          element.custom.style.whiteText ? "white" : "black"
+        );
       }
     }
   };
@@ -502,19 +504,22 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     return label;
   }
 
-  function renderExternalLabel(parentGfx, element, text) {
+  function renderExternalLabel(parentGfx, element, align, text, fontSize = DEFAULT_TEXT_SIZE, color = "black") {
     const box = {
       width: 90,
       height: 30,
-      x: element.width / 2 + element.x,
-      y: element.height / 2 + element.y
+      x: - element.width / 2,
+      y: element.height + 5,
+      custom: element.custom
     };
+
     return renderLabel(parentGfx, text, {
       box: box,
-      fitbox: true,
-      style: assign({}, textRenderer.getExternalStyle(), {
-        fill: "black"
-      })
+      fitBox: true,
+      style: {
+        fill: color,
+        fontSize: fontSize
+      }
     });
   }
 
