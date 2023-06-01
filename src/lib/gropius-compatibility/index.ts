@@ -402,7 +402,7 @@ export default class GropiusCompatibility {
       ];
 
     this.createConnection(parentShape, diagramIssueFolderObject, waypoints, {
-      strokeColor: parentBusinessObject.grType.style.stroke,
+      strokeColor: "#000000",
       strokeWidth: 2,
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.None,
@@ -680,8 +680,6 @@ export default class GropiusCompatibility {
 
   public test() {
 
-    //this.importDiagramString("")
-    //return
 
     const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst.";
@@ -744,6 +742,7 @@ export default class GropiusCompatibility {
       targetMarkerType: ConnectionMarker.Right
     });
 
+    // GOTO1
     this.createInterface("2", "My Interface", Shape.Hexagon, "1.0",true);
     this.createIssueFolder("2", "123", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#33dd88")
     this.createIssueFolder("2", "456", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb")
