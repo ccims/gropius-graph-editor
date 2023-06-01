@@ -458,7 +458,6 @@ export default class GropiusCompatibility {
 
   public exportDiagram(): string {
     const elements = this.elementRegistry._elements;
-    console.log(elements);
 
     let diagram: SerializedDiagram = {
       shapes: [],
@@ -474,7 +473,6 @@ export default class GropiusCompatibility {
         // Serialize interfaces
         const interfaces: Array<SerializedInterface> = this.serializeInterfaces(element);
         const issueFolders: Array<SerializedIssueFolder> = this.serializeIssueFolders(element);
-        console.log(issueFolders)
 
         // Main (gropius) shape serialized
         const serializedShape = {
@@ -488,7 +486,6 @@ export default class GropiusCompatibility {
         diagram.shapes.push(serializedShape);
 
       } else if (element.id.startsWith("connection")) {
-
         const source = element.source.businessObject.data.id;
         const target = element.target.businessObject.data.id;
 
