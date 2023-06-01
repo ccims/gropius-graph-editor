@@ -345,10 +345,10 @@ export default class GropiusCompatibility {
   public createIssueFolder(parentId: string, id: string, path: string, color: string, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
     let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == parentId);
     const parentBusinessObject = diagramParentObject.businessObject.data;
-    const issueFolderId = id
+    const interfaceId = parentBusinessObject.id + "-" + id
 
     const issueFolderObject: GropiusIssueFolder = {
-      id: id,
+      id: interfaceId,
       path: path,
       color: color
     }
@@ -406,7 +406,7 @@ export default class GropiusCompatibility {
       strokeWidth: 2,
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.None,
-      targetMarkerType: ConnectionMarker.ArrowRight
+      targetMarkerType: ConnectionMarker.None
     });
 
     return diagramIssueFolderObject;
