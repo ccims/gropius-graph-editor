@@ -174,11 +174,11 @@ export default function MoveEvents(
       isAttach = canExecute === "attach",
       shapes = Array<any>();
 
-    if(context.shapes.length == 1 && (context.shapes[0].businessObject.type == ObjectType.InterfaceProvide || context.shapes[0].businessObject.type == ObjectType.InterfaceRequire)) {
-      // Only one interface shall be moved
+    if(context.shapes.length == 1 && (context.shapes[0].businessObject.type == ObjectType.InterfaceProvide || context.shapes[0].businessObject.type == ObjectType.InterfaceRequire || context.shapes[0].businessObject.type == ObjectType.IssueFolder)) {
+      // Only one sub-element shall be moved
       shapes = context.shapes
     } else {
-      // Multiple elements or a non-interface shall be moved
+      // Multiple elements or a non-sub-element shall be moved
 
       // Add all not-versions and connections
       context.shapes.forEach((shape: any) => {
@@ -192,6 +192,7 @@ export default function MoveEvents(
         if (shape.id.startsWith("shape") && shape.businessObject.type == ObjectType.Gropius) {
           shapes.push(shape.custom.versionObject);
           shape.custom.interfaces.forEach((i: any) => shapes.push(i))
+          shape.custom.issueFolders.forEach((i: any) => shapes.push(i))
         }
       })
     }

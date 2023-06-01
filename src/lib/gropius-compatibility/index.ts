@@ -2,10 +2,10 @@
 import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
 import {
-  GropiusConnectionStyle, GropiusInterface,
+  GropiusConnectionStyle, GropiusInterface, GropiusIssueFolder,
   GropiusShape,
   ObjectType,
-  SerializedDiagram, SerializedInterface
+  SerializedDiagram, SerializedInterface, SerializedIssueFolder
 } from "@/lib/gropius-compatibility/types";
 
 import { ConnectionMarker, Shape } from "@/lib/diagram/types";
@@ -209,7 +209,8 @@ export default class GropiusCompatibility {
         },
         label: dimensions.text,
         versionObject: undefined,
-        interfaces: []
+        interfaces: [],
+        issueFolders: []
       }
     };
 
@@ -341,6 +342,76 @@ export default class GropiusCompatibility {
     parentBusinessObject.interfaces.push(interfaceObject);
   }
 
+  public createIssueFolder(parentId: string, id: string, path: string, color: string, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
+    let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == parentId);
+    const parentBusinessObject = diagramParentObject.businessObject.data;
+    const issueFolderId = id
+
+    const issueFolderObject: GropiusIssueFolder = {
+      id: id,
+      path: path,
+      color: color
+    }
+
+    if (!coordinates)
+      coordinates = {
+        x: diagramParentObject.x + diagramParentObject.width + 40,
+        y: diagramParentObject.y + diagramParentObject.height / 2 - 20
+      };
+
+    const diagramIssueFolderObject = this.drawIssueFolder(diagramParentObject, issueFolderObject, coordinates, waypoints)
+
+    parentBusinessObject.issueFolders.push(issueFolderObject)
+  }
+
+  private drawIssueFolder(parentShape: any, issueFolder: GropiusIssueFolder, coordinates: Coordinates, waypoints?: Array<Coordinates>) {
+    const parentBusinessObject = parentShape.businessObject.data;
+
+    let shape = {
+      x: coordinates.x,
+      y: coordinates.y,
+      width: 40,
+      height: 40,
+      businessObject: {
+        type: ObjectType.IssueFolder,
+        data: issueFolder
+      },
+      custom: {
+        shape: issueFolder.path,
+        style: {
+          rx: 0,
+          ry: 0,
+          fill: issueFolder.color,
+          stroke: "#00000000",
+          strokeWidth: parentBusinessObject.grType.style.strokeWidth,
+          strokeDasharray: ""
+        },
+        label: null,
+        parentObject: parentShape
+      }
+    };
+
+    const diagramIssueFolderObject = this.createShape(shape);
+    parentShape.custom.issueFolders.push(diagramIssueFolderObject); // Rendering details
+
+    // Set waypoints if not given
+    if (!waypoints)
+      waypoints = [
+        { x: parentShape.x + parentShape.width, y: parentShape.y + parentShape.height / 2 },
+        { x: diagramIssueFolderObject.x, y: diagramIssueFolderObject.y + diagramIssueFolderObject.height / 2 }
+      ];
+
+    this.createConnection(parentShape, diagramIssueFolderObject, waypoints, {
+      strokeColor: parentBusinessObject.grType.style.stroke,
+      strokeWidth: 2,
+      strokeDasharray: "",
+      sourceMarkerType: ConnectionMarker.None,
+      targetMarkerType: ConnectionMarker.ArrowRight
+    });
+
+    return diagramIssueFolderObject;
+  }
+
   public deleteShape(element: any): boolean {
 
     if (!element.custom || !element.custom.versionObject)
@@ -402,13 +473,16 @@ export default class GropiusCompatibility {
 
         // Serialize interfaces
         const interfaces: Array<SerializedInterface> = this.serializeInterfaces(element);
+        const issueFolders: Array<SerializedIssueFolder> = this.serializeIssueFolders(element);
+        console.log(issueFolders)
 
         // Main (gropius) shape serialized
         const serializedShape = {
           grShape: element.businessObject.data,
           x: element.x,
           y: element.y,
-          interfaces: interfaces
+          interfaces: interfaces,
+          issueFolders: issueFolders
         };
 
         diagram.shapes.push(serializedShape);
@@ -468,6 +542,38 @@ export default class GropiusCompatibility {
     return interfaces;
   }
 
+  private serializeIssueFolders(element: any) {
+    const elements = this.elementRegistry._elements;
+    let issueFolders: Array<SerializedIssueFolder> = [];
+    element.businessObject.data.issueFolders.forEach((issue: any) => {
+      // Find issueFolder (diagram) object for issueFolder
+      const issueObject = element.custom.issueFolders.find((i: any) => i.businessObject.data.id == issue.id);
+      // Find connection object for shape-to-issue connection
+      const connectionObject = Object.values(elements).find((e: any) => {
+        e = e.element;
+        if (!e.id.startsWith("connection"))
+          return false;
+
+        return e.source.businessObject.data.id == element.businessObject.data.id &&
+          e.target.businessObject.data.id == issue.id;
+      });
+
+      if (!issueObject || !connectionObject) {
+        console.error("Unknown issueFolder or connection for", issue, issueObject, connectionObject);
+        return;
+      }
+
+      // Add issueFolder to list
+      issueFolders.push({
+        issueFolder: issue,
+        coordinates: { x: issueObject.x, y: issueObject.y },
+        // @ts-ignore
+        waypoints: connectionObject.element.waypoints,
+      });
+    });
+    return issueFolders;
+  }
+
   public importDiagramString(diagram: string) {
     this.importDiagram(JSON.parse(diagram));
   }
@@ -478,6 +584,9 @@ export default class GropiusCompatibility {
       shape.interfaces.forEach(interf => {
           this.drawInterface(object, interf.interface, interf.coordinates, interf.waypoints);
       });
+      shape.issueFolders.forEach(issueFolder => {
+        this.drawIssueFolder(object, issueFolder.issueFolder, issueFolder.coordinates, issueFolder.waypoints)
+      })
     });
 
     diagram.connections.forEach(connection => {
@@ -596,7 +705,8 @@ export default class GropiusCompatibility {
           radius: 5
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 150, y: 100 });
 
     let b = this.createComponent({
@@ -617,7 +727,8 @@ export default class GropiusCompatibility {
           radius: 5
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 150, y: 250 });
 
     this.createConnection(a, b, [
@@ -634,6 +745,7 @@ export default class GropiusCompatibility {
     });
 
     this.createInterface("2", "My Interface", Shape.Hexagon, "1.0",true);
+    this.createIssueFolder("2", "123", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#33dd88")
 
     this.createComponent({
       id: "3",
@@ -653,7 +765,8 @@ export default class GropiusCompatibility {
           radius: 5
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 150, y: 450 });
 
     this.createInterface("3", "Another Interface", Shape.InterfaceRequire, "2.0", false);
@@ -676,7 +789,8 @@ export default class GropiusCompatibility {
           radius: 0
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 500, y: 75 });
 
     this.createComponent({
@@ -697,7 +811,8 @@ export default class GropiusCompatibility {
           radius: 0
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 800, y: 75 });
 
     this.createComponent({
@@ -718,7 +833,8 @@ export default class GropiusCompatibility {
           radius: 0
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 1100, y: 75 });
 
     this.createComponent({
@@ -739,7 +855,8 @@ export default class GropiusCompatibility {
           radius: 0
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 500, y: 250 });
 
     this.createComponent({
@@ -760,7 +877,8 @@ export default class GropiusCompatibility {
           radius: 0
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 800, y: 250 });
 
     this.createComponent({
@@ -781,7 +899,8 @@ export default class GropiusCompatibility {
           radius: 0
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 1100, y: 300 });
 
     this.createComponent({
@@ -802,7 +921,8 @@ export default class GropiusCompatibility {
           radius: 0
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 500, y: 500 });
 
     this.createComponent({
@@ -823,7 +943,8 @@ export default class GropiusCompatibility {
           radius: 0
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 800, y: 500 });
 
     this.createComponent({
@@ -844,7 +965,8 @@ export default class GropiusCompatibility {
           radius: 0
         }
       },
-      interfaces: []
+      interfaces: [],
+      issueFolders: []
     }, { x: 1100, y: 500 });
 
     // let connection1 = this.elementFactory.createConnection({

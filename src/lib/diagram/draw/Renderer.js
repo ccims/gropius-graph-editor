@@ -118,8 +118,8 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
           render = renderInterfaceRequire;
           break;
         default:
-          render = renderRectangle;
-          return;
+          render = renderPath;
+          break;
       }
 
     render(visuals, element, element.custom.style);
@@ -439,6 +439,32 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
     return circle;
   }
+
+  function renderPath(visuals, element, attrs) {
+    const parentObject = element.custom.parentObject;
+    let path = element.custom.shape;
+
+    let circle = svgCreate("path", {
+      d: path
+    });
+
+    const c = element.width / 2;
+
+    attrs = styles.style(attrs);
+
+    svgAttr(circle, {
+      cx: c,
+      cy: c,
+      r: 0,
+      ...attrs
+    });
+
+    svgAppend(visuals, circle);
+
+    return circle;
+  }
+
+
 
 
   function renderLabel(parentGfx, label, options) {
