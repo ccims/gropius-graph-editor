@@ -31,6 +31,7 @@ export interface GropiusShape {
 export interface GropiusInterface {
   id: string,
   name: string
+  shape: Shape
   provide: boolean
 }
 

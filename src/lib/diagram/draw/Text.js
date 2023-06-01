@@ -286,7 +286,8 @@ Text.prototype.layoutText = function(text, options) {
     style = assign({}, this._config.style, options.style),
     align = parseAlign(options.align || this._config.align),
     padding = parsePadding(options.padding !== undefined ? options.padding : this._config.padding),
-    fitBox = options.fitBox || false;
+    fitBox = options.fitBox || false,
+    external = options.external;
 
   let shape = box.custom.shape;
   const shapeWidth = box.width,
@@ -297,37 +298,39 @@ Text.prototype.layoutText = function(text, options) {
     y: 0
   };
 
-  switch (shape) {
-    case Shape.Triangle:
-      box.width /= 2;
-      box.height /= 1.5;
-      offset.y = box.height / 4;
-      break;
-    case Shape.Diamond:
-      box.width /= 1.8;
-      box.height /= 1.75;
-      break;
-    case Shape.Parallelogram:
-      box.width /= 1.2;
-      break;
-    case Shape.Octagon:
-      box.width /= 1.2;
-      break;
-    case Shape.Circle:
-    case Shape.Ellipse:
-      box.width /= 1.25;
-      box.height /= 1.25;
-      break;
-    case Shape.Hexagon:
-      box.width /= 1.25;
-      break;
-    case Shape.Trapeze:
-      box.width /= 1.25;
-      break;
-    case Shape.InterfaceRequire:
-    case Shape.InterfaceProvide:
-      offset.x = box.x
-      offset.y = box.y
+  if(external) {
+    offset.x = box.x
+    offset.y = box.y
+  } else {
+
+    switch (shape) {
+      case Shape.Triangle:
+        box.width /= 2;
+        box.height /= 1.5;
+        offset.y = box.height / 4;
+        break;
+      case Shape.Diamond:
+        box.width /= 1.8;
+        box.height /= 1.75;
+        break;
+      case Shape.Parallelogram:
+        box.width /= 1.2;
+        break;
+      case Shape.Octagon:
+        box.width /= 1.2;
+        break;
+      case Shape.Circle:
+      case Shape.Ellipse:
+        box.width /= 1.25;
+        box.height /= 1.25;
+        break;
+      case Shape.Hexagon:
+        box.width /= 1.25;
+        break;
+      case Shape.Trapeze:
+        box.width /= 1.25;
+        break;
+    }
   }
   var lineHeight = getLineHeight(style);
 

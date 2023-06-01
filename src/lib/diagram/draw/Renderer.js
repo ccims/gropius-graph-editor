@@ -135,9 +135,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
           element.custom.style.whiteText ? "white" : "black"
         );
       }
-      else if(element.businessObject.type == ObjectType.Connection
-        || element.businessObject.type == ObjectType.InterfaceRequire
-        || element.businessObject.type == ObjectType.InterfaceProvide) {
+      else {
         renderExternalLabel(
           visuals,
           element,
@@ -406,23 +404,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function renderInterfaceProvide(visuals, element, attrs) {
-    let circle = svgCreate("circle");
-
-    const radius = element.width / 2;
-    const c = element.width / 2;
-
-    attrs = styles.style(attrs);
-
-    svgAttr(circle, {
-      cx: c,
-      cy: c,
-      r: radius,
-      ...attrs
-    });
-
-    svgAppend(visuals, circle);
-
-    return circle;
+    return renderCircle(visuals, element,attrs)
   }
 
   function renderInterfaceRequire(visuals, element, attrs) {
@@ -518,7 +500,8 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
       style: {
         fill: color,
         fontSize: fontSize
-      }
+      },
+      external: true
     });
   }
 

@@ -280,7 +280,7 @@ export default class GropiusCompatibility {
         data: interf
       },
       custom: {
-        shape: interf.provide ? Shape.InterfaceProvide : Shape.InterfaceRequire,
+        shape: interf.shape,
         style: {
           rx: parentBusinessObject.grType.style.radius,
           ry: parentBusinessObject.grType.style.radius,
@@ -315,7 +315,7 @@ export default class GropiusCompatibility {
     return diagramInterfaceObject;
   }
 
-  public createInterface(gropiusId: string, name: string, provide = true, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
+  public createInterface(gropiusId: string, name: string, shape: Shape, provide = true, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
     let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == gropiusId);
     const parentBusinessObject = diagramParentObject.businessObject.data;
     const interfaceId = parentBusinessObject.id + "-" + name + "-" + provide;
@@ -330,6 +330,7 @@ export default class GropiusCompatibility {
     const interfaceObject: GropiusInterface = {
       id: interfaceId,
       name: name,
+      shape: shape,
       provide: provide
     };
 
@@ -635,7 +636,7 @@ export default class GropiusCompatibility {
       targetMarkerType: ConnectionMarker.Right
     });
 
-    this.createInterface("2", "My Interface", true);
+    this.createInterface("2", "My Interface", Shape.Hexagon,true);
 
     this.createComponent({
       id: "3",
@@ -658,7 +659,7 @@ export default class GropiusCompatibility {
       interfaces: []
     }, { x: 150, y: 450 });
 
-    this.createInterface("3", "Another Interface", false);
+    this.createInterface("3", "Another Interface", Shape.InterfaceRequire, false);
 
     this.createComponent({
       id: "4",
