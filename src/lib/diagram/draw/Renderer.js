@@ -113,10 +113,10 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
           break;
         case Shape.InterfaceProvide:
           render = renderInterfaceProvide;
-          break
+          break;
         case Shape.InterfaceRequire:
           render = renderInterfaceRequire;
-          break
+          break;
         default:
           render = renderRectangle;
           return;
@@ -124,27 +124,27 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
     render(visuals, element, element.custom.style);
 
-    if(element.custom && element.custom.label) {
-      if (element.businessObject.type === ObjectType.Gropius || element.businessObject.type === ObjectType.Version) {
-        renderEmbeddedLabel(
-          visuals,
-          element,
-          "center-middle",
-          element.custom.label,
-          DEFAULT_TEXT_SIZE,
-          element.custom.style.whiteText ? "white" : "black"
-        );
-      }
-      else {
-        renderExternalLabel(
-          visuals,
-          element,
-          element.custom.label,
-          DEFAULT_TEXT_SIZE,
-          element.custom.style.whiteText ? "white" : "black"
-        );
-      }
+
+    if (element.businessObject.type === ObjectType.Gropius || element.businessObject.type === ObjectType.Version) {
+      renderEmbeddedLabel(
+        visuals,
+        element,
+        "center-middle",
+        element.custom.label,
+        DEFAULT_TEXT_SIZE,
+        element.custom.style.whiteText ? "white" : "black"
+      );
+    } else {
+      console.log(element)
+      renderExternalLabel(
+        visuals,
+        element,
+        element.custom.label,
+        DEFAULT_TEXT_SIZE,
+        element.custom.style.whiteText ? "white" : "black"
+      );
     }
+
   };
 
   this.connectionHandler = function(visuals, element, attrs) {
@@ -404,21 +404,21 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   }
 
   function renderInterfaceProvide(visuals, element, attrs) {
-    return renderCircle(visuals, element,attrs)
+    return renderCircle(visuals, element, attrs);
   }
 
   function renderInterfaceRequire(visuals, element, attrs) {
-    const parentObject = element.custom.parentObject
-    let path
+    const parentObject = element.custom.parentObject;
+    let path;
 
-    if(element.x + element.width < parentObject.x)
-      path = "M20,0 a1,1 0 0,10 40,0" // left
-    else if(element.x > parentObject.x + parentObject.width)
-      path = "M20,0 a1,1 0 10,0 40,0" // right
-    else if(element.y < parentObject.y)
-      path = "M0,20 a1,1 0 0,0 40,0" // top
+    if (element.x + element.width < parentObject.x)
+      path = "M20,0 a1,1 0 0,10 40,0"; // left
+    else if (element.x > parentObject.x + parentObject.width)
+      path = "M20,0 a1,1 0 10,0 40,0"; // right
+    else if (element.y < parentObject.y)
+      path = "M0,20 a1,1 0 0,0 40,0"; // top
     else
-      path = "M0,20 a1,1 0 0,1 40,0" // bottom
+      path = "M0,20 a1,1 0 0,1 40,0"; // bottom
 
     let circle = svgCreate("path", {
       d: path
@@ -440,16 +440,6 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
     return circle;
   }
-
-
-
-
-
-
-
-
-
-
 
 
   function renderLabel(parentGfx, label, options) {
@@ -489,7 +479,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     const box = {
       width: 90,
       height: 90,
-      x: - element.width / 2,
+      x: -element.width / 2,
       y: element.height + 5,
       custom: element.custom
     };
@@ -788,13 +778,13 @@ DefaultRenderer.prototype.getShapePath = function(shape) {
     case Shape.Hexagon:
       return getHexagonPath(shape);
     case Shape.Trapeze:
-      return getTrapezePath(shape)
+      return getTrapezePath(shape);
     case Shape.Ellipse:
-      return getEllipsePath(shape)
+      return getEllipsePath(shape);
     case Shape.InterfaceProvide:
-      return getInterfaceProvidePath(shape)
+      return getInterfaceProvidePath(shape);
     case Shape.InterfaceRequire:
-      return getInterfaceRequirePath(shape)
+      return getInterfaceRequirePath(shape);
     default:
       return getRectPath(shape);
   }

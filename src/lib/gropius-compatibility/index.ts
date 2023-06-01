@@ -289,7 +289,7 @@ export default class GropiusCompatibility {
           strokeWidth: parentBusinessObject.grType.style.strokeWidth,
           strokeDasharray: parentBusinessObject.grType.style.strokeDasharray
         },
-        label: interf.name,
+        label: interf.name + "\n" + interf.version,
         parentObject: parentShape
       }
     };
@@ -315,7 +315,7 @@ export default class GropiusCompatibility {
     return diagramInterfaceObject;
   }
 
-  public createInterface(gropiusId: string, name: string, shape: Shape, provide = true, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
+  public createInterface(gropiusId: string, name: string, shape: Shape, version: string, provide = true, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
     let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == gropiusId);
     const parentBusinessObject = diagramParentObject.businessObject.data;
     const interfaceId = parentBusinessObject.id + "-" + name + "-" + provide;
@@ -331,7 +331,8 @@ export default class GropiusCompatibility {
       id: interfaceId,
       name: name,
       shape: shape,
-      provide: provide
+      provide: provide,
+      version: version
     };
 
     const diagramInterfaceObject = this.drawInterface(diagramParentObject, interfaceObject, coordinates, waypoints);
@@ -636,7 +637,7 @@ export default class GropiusCompatibility {
       targetMarkerType: ConnectionMarker.Right
     });
 
-    this.createInterface("2", "My Interface", Shape.Hexagon,true);
+    this.createInterface("2", "My Interface", Shape.Hexagon, "1.0",true);
 
     this.createComponent({
       id: "3",
@@ -659,7 +660,7 @@ export default class GropiusCompatibility {
       interfaces: []
     }, { x: 150, y: 450 });
 
-    this.createInterface("3", "Another Interface", Shape.InterfaceRequire, false);
+    this.createInterface("3", "Another Interface", Shape.InterfaceRequire, "2.0", false);
 
     this.createComponent({
       id: "4",
