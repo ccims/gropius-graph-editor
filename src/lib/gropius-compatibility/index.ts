@@ -459,10 +459,10 @@ export default class GropiusCompatibility {
 
       // Add interface to list
       interfaces.push({
-        id: interf.id,
+        interface: interf,
         coordinates: { x: interfaceObject.x, y: interfaceObject.y },
         // @ts-ignore
-        waypoints: connectionObject.element.waypoints
+        waypoints: connectionObject.element.waypoints,
       });
     });
     return interfaces;
@@ -476,11 +476,7 @@ export default class GropiusCompatibility {
     diagram.shapes.forEach(shape => {
       const object = this.createComponent(shape.grShape, { x: shape.x, y: shape.y });
       shape.interfaces.forEach(interf => {
-        const grInterface = shape.grShape.interfaces.find(i => i.id == interf.id);
-        if (!grInterface)
-          console.error("Interface error");
-        else
-          this.drawInterface(object, grInterface, interf.coordinates, interf.waypoints);
+          this.drawInterface(object, interf.interface, interf.coordinates, interf.waypoints);
       });
     });
 
@@ -575,8 +571,8 @@ export default class GropiusCompatibility {
 
   public test() {
 
-    // this.importDiagramString("")
-    // return
+    //this.importDiagramString("")
+    //return
 
     const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst.";

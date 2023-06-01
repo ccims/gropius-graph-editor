@@ -135,7 +135,6 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         element.custom.style.whiteText ? "white" : "black"
       );
     } else {
-      console.log(element)
       renderExternalLabel(
         visuals,
         element,

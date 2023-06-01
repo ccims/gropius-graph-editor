@@ -63,7 +63,7 @@ export interface SerializedShape {
 }
 
 export interface SerializedInterface {
-  id: string,
+  interface: GropiusInterface,
   coordinates: Coordinates,
   waypoints: Array<Coordinates>
 }
