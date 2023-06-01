@@ -746,6 +746,7 @@ export default class GropiusCompatibility {
 
     this.createInterface("2", "My Interface", Shape.Hexagon, "1.0",true);
     this.createIssueFolder("2", "123", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#33dd88")
+    this.createIssueFolder("2", "456", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb")
 
     this.createComponent({
       id: "3",
