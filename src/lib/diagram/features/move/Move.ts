@@ -174,6 +174,10 @@ export default function MoveEvents(
       isAttach = canExecute === "attach",
       shapes = Array<any>();
 
+    if (canExecute === false) {
+      return false;
+    }
+
     if(context.shapes.length == 1 && (context.shapes[0].businessObject.type == ObjectType.InterfaceProvide || context.shapes[0].businessObject.type == ObjectType.InterfaceRequire || context.shapes[0].businessObject.type == ObjectType.IssueFolder)) {
       // Only one sub-element shall be moved
       shapes = context.shapes
@@ -197,10 +201,6 @@ export default function MoveEvents(
       })
     }
 
-    if (canExecute === false) {
-      return false;
-    }
-
     // ensure we have actual pixel values deltas
     // (important when zoom level was > 1 during move)
     delta.x = round(delta.x);
@@ -210,7 +210,6 @@ export default function MoveEvents(
       // didn't move
       return;
     }
-
     modeling.moveElements(shapes, delta, context.target, {
       primaryShape: context.shape,
       attach: isAttach

@@ -14,6 +14,9 @@ import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
 
+import ELK from "elkjs";
+const elk = new ELK();
+
 const HEIGHT_PER_LINE = 20;
 const WIDTH_PER_CHARACTER = 10;
 const PADDING = 10;
@@ -345,13 +348,13 @@ export default class GropiusCompatibility {
   public createIssueFolder(parentId: string, id: string, path: string, color: string, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
     let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == parentId);
     const parentBusinessObject = diagramParentObject.businessObject.data;
-    const interfaceId = parentBusinessObject.id + "-" + id
+    const interfaceId = parentBusinessObject.id + "-" + id;
 
     const issueFolderObject: GropiusIssueFolder = {
       id: interfaceId,
       path: path,
       color: color
-    }
+    };
 
     if (!coordinates)
       coordinates = {
@@ -359,9 +362,9 @@ export default class GropiusCompatibility {
         y: diagramParentObject.y + diagramParentObject.height / 2 - 20
       };
 
-    const diagramIssueFolderObject = this.drawIssueFolder(diagramParentObject, issueFolderObject, coordinates, waypoints)
+    const diagramIssueFolderObject = this.drawIssueFolder(diagramParentObject, issueFolderObject, coordinates, waypoints);
 
-    parentBusinessObject.issueFolders.push(issueFolderObject)
+    parentBusinessObject.issueFolders.push(issueFolderObject);
   }
 
   private drawIssueFolder(parentShape: any, issueFolder: GropiusIssueFolder, coordinates: Coordinates, waypoints?: Array<Coordinates>) {
@@ -533,7 +536,7 @@ export default class GropiusCompatibility {
         interface: interf,
         coordinates: { x: interfaceObject.x, y: interfaceObject.y },
         // @ts-ignore
-        waypoints: connectionObject.element.waypoints,
+        waypoints: connectionObject.element.waypoints
       });
     });
     return interfaces;
@@ -565,7 +568,7 @@ export default class GropiusCompatibility {
         issueFolder: issue,
         coordinates: { x: issueObject.x, y: issueObject.y },
         // @ts-ignore
-        waypoints: connectionObject.element.waypoints,
+        waypoints: connectionObject.element.waypoints
       });
     });
     return issueFolders;
@@ -582,8 +585,8 @@ export default class GropiusCompatibility {
           this.drawInterface(object, interf.interface, interf.coordinates, interf.waypoints);
       });
       shape.issueFolders.forEach(issueFolder => {
-        this.drawIssueFolder(object, issueFolder.issueFolder, issueFolder.coordinates, issueFolder.waypoints)
-      })
+        this.drawIssueFolder(object, issueFolder.issueFolder, issueFolder.coordinates, issueFolder.waypoints);
+      });
     });
 
     diagram.connections.forEach(connection => {
@@ -638,12 +641,12 @@ export default class GropiusCompatibility {
         element.custom.style.fill = fill;
 
         element.custom.interfaces.forEach((interfaceObject: any) => {
-          interfaceObject.custom.style.stroke = stroke
+          interfaceObject.custom.style.stroke = stroke;
           if(interfaceObject.shape == Shape.InterfaceProvide)
-            interfaceObject.custom.style.fill = fill
+            interfaceObject.custom.style.fill = fill;
 
-          interfaceObject.custom.style.whiteText = enabled
-        })
+          interfaceObject.custom.style.whiteText = enabled;
+        });
 
       } else if (element.businessObject.type == ObjectType.Version) { // Version Object
         element.custom.style.whiteText = false;
@@ -674,9 +677,70 @@ export default class GropiusCompatibility {
     });
   }
 
+  public autolayout() {
+    const offsetX = 200,
+      offsetY = 50
+    let graph = {
+      id: "root",
+      layoutOptions: { "elk.algorithm": "layered", "spacing.baseValue": 100},
+      children: Array<any>(),
+      edges: Array<any>()
+    };
+
+    const elements = this.elementRegistry._elements;
+
+    Object.values(elements).forEach((element: any) => {
+      element = element.element
+      if(!element.businessObject) {
+        return;
+      }
+      if(element.businessObject.type == ObjectType.Gropius ||
+        element.businessObject.type == ObjectType.InterfaceProvide ||
+        element.businessObject.type == ObjectType.InterfaceRequire ||
+        element.businessObject.type == ObjectType.IssueFolder) {
+        graph.children.push({
+          id: element.id,
+          width: element.width,
+          height: element.height
+        });
+      } else if(element.businessObject.type == ObjectType.Connection) {
+        graph.edges.push({
+          id: "" + Math.random(),
+          sources: [ element.source.id ],
+          targets: [ element.target.id ]
+        });
+      }
+    });
+
+    elk.layout(graph).then(graph => {
+      console.log(graph)
+      graph.children?.forEach(node => {
+        if(node.id == 'root')
+          return
+
+        const element = this.elementRegistry.get(node.id)
+
+        this.canvas._eventBus.fire("shape.move.move", {
+          shape: element,
+          context: {
+            canExecute: true,
+            shape: element,
+            shapes: [ element ],
+          },
+          x: element.x,
+          y: element.y,
+          dx: (node.x + offsetX) - element.x,
+          dy: (node.y + offsetY) - element.y
+        });
+      })
+    });
+  }
+
 
   public test() {
 
+    //this.importDiagramString("{\"shapes\":[{\"grShape\":{\"id\":\"1\",\"name\":\"rect1\",\"version\":\"v1\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":40,\"minHeight\":40,\"maxScale\":10,\"color\":\"#ffffff\",\"stroke\":\"#ff55aa\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[],\"issueFolders\":[]},\"x\":150,\"y\":100,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"2\",\"version\":\"v1\",\"name\":\"rect2 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":50,\"minHeight\":50,\"maxScale\":5,\"color\":\"#ffccff\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[{\"id\":\"2-My Interface-true\",\"name\":\"My Interface\",\"shape\":4,\"provide\":true,\"version\":\"1.0\"}],\"issueFolders\":[{\"id\":\"2-123\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#33dd88\"},{\"id\":\"2-456\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#dd33bb\"}]},\"x\":150,\"y\":250,\"interfaces\":[{\"interface\":{\"id\":\"2-My Interface-true\",\"name\":\"My Interface\",\"shape\":4,\"provide\":true,\"version\":\"1.0\"},\"coordinates\":{\"x\":342,\"y\":339},\"waypoints\":[{\"original\":{\"x\":280,\"y\":315},\"x\":280,\"y\":315},{\"x\":302,\"y\":315},{\"x\":302,\"y\":359},{\"original\":{\"x\":342,\"y\":359},\"x\":342,\"y\":359}]}],\"issueFolders\":[{\"issueFolder\":{\"id\":\"2-123\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#33dd88\"},\"coordinates\":{\"x\":333,\"y\":139},\"waypoints\":[{\"original\":{\"x\":280,\"y\":315},\"x\":280,\"y\":250},{\"x\":280,\"y\":159},{\"original\":{\"x\":333,\"y\":159},\"x\":333,\"y\":159}]},{\"issueFolder\":{\"id\":\"2-456\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#dd33bb\"},\"coordinates\":{\"x\":330,\"y\":207},\"waypoints\":[{\"original\":{\"x\":280,\"y\":315},\"x\":280,\"y\":315},{\"x\":301,\"y\":315},{\"x\":301,\"y\":227},{\"original\":{\"x\":330,\"y\":227},\"x\":330,\"y\":227}]}]},{\"grShape\":{\"id\":\"3\",\"version\":\"v1.10.5\",\"name\":\"rect3 little text, big shape\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":250,\"minHeight\":200,\"maxScale\":1,\"color\":\"#ffffff\",\"stroke\":\"#aa0000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[{\"id\":\"3-Another Interface-false\",\"name\":\"Another Interface\",\"shape\":10,\"provide\":false,\"version\":\"2.0\"}],\"issueFolders\":[]},\"x\":150,\"y\":450,\"interfaces\":[{\"interface\":{\"id\":\"3-Another Interface-false\",\"name\":\"Another Interface\",\"shape\":10,\"provide\":false,\"version\":\"2.0\"},\"coordinates\":{\"x\":440,\"y\":530},\"waypoints\":[{\"x\":400,\"y\":550},{\"x\":440,\"y\":550}]}],\"issueFolders\":[]},{\"grShape\":{\"id\":\"4\",\"version\":\"v1\",\"name\":\"Triangle Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":1,\"style\":{\"minWidth\":100,\"minHeight\":50,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":500,\"y\":75,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"5\",\"version\":\"v1\",\"name\":\"Parallel Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":7,\"style\":{\"minWidth\":150,\"minHeight\":100,\"maxScale\":1,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":800,\"y\":75,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"6\",\"version\":\"v1\",\"name\":\"Diamond Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":3,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1.5,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":1100,\"y\":75,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"7\",\"version\":\"v1\",\"name\":\"Octagon Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":5,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1.5,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":500,\"y\":250,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"8\",\"version\":\"v1\",\"name\":\"Circle Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":2,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":800,\"y\":250,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"9\",\"version\":\"v1\",\"name\":\"Trapeze Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":8,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":1100,\"y\":300,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"10\",\"version\":\"v1\",\"name\":\"Hexagon Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":4,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":500,\"y\":500,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"11\",\"version\":\"v1\",\"name\":\"Ellipse Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":6,\"style\":{\"minWidth\":100,\"minHeight\":50,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":800,\"y\":500,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"12\",\"version\":\"v1\",\"name\":\"Ellipse2 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":6,\"style\":{\"minWidth\":50,\"minHeight\":100,\"maxScale\":2,\"color\":\"violet\",\"stroke\":\"#0000ff\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":1100,\"y\":500,\"interfaces\":[],\"issueFolders\":[]}],\"connections\":[{\"sourceId\":\"1\",\"targetId\":\"2\",\"waypoints\":[{\"x\":150,\"y\":110},{\"x\":100,\"y\":110},{\"x\":100,\"y\":260},{\"x\":150,\"y\":260}],\"style\":{\"strokeColor\":\"red\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"sourceMarkerType\":3,\"targetMarkerType\":1}}]}")
+    //return
 
     const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst.";
@@ -741,8 +805,10 @@ export default class GropiusCompatibility {
 
     // GOTO1
     this.createInterface("2", "My Interface", Shape.Hexagon, "1.0",true);
-    this.createIssueFolder("2", "123", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#33dd88")
-    this.createIssueFolder("2", "456", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb")
+    this.createIssueFolder("2", "123", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#33dd88");
+
+    return
+    this.createIssueFolder("2", "456", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
 
     this.createComponent({
       id: "3",

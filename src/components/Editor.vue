@@ -19,6 +19,7 @@
     <!-- ref anstelle -->
     <button @click=handleThemeChange>Theme Switch</button>
     <button @click=handleExport>Export</button>
+    <button @click=autolayout>Layout</button>
 
     <div id="container" :style="{ backgroundColor: darkMode ? '#333' : '#fff'}"></div>
 
@@ -105,6 +106,10 @@ export default defineComponent({
 
     handleExport() {
       diagram.exportDiagram()
+    },
+
+    autolayout() {
+      diagram.autolayout()
     },
 
     /**
