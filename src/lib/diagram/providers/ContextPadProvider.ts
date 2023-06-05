@@ -76,6 +76,11 @@ ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
       return {
         "delete": deleteIcon
       };
+    case ObjectType.IssueFolder:
+      return {
+        "delete": deleteIcon,
+        "connect": connectIcon
+      };
     default:
       return {}
   }

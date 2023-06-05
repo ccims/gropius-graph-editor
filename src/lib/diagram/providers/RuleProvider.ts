@@ -39,6 +39,8 @@ CustomRuleProvider.prototype.init = function() {
       if (source.businessObject.type == ObjectType.InterfaceRequire
         && (target.businessObject.type == ObjectType.InterfaceProvide || target.businessObject.type == ObjectType.Gropius))
         return true;
+      if(source.businessObject.type == ObjectType.IssueFolder && target.businessObject.type == ObjectType.IssueFolder)
+        return true
     }
     return false;
   });
