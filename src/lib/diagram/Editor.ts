@@ -28,6 +28,7 @@ import SelectionModule from "diagram-js/lib/features/selection";
 import ZoomScrollModule from "diagram-js/lib/navigation/zoomscroll";
 // @ts-ignore
 import Layouter from "diagram-js/lib/layout";
+import BendpointsModule from 'diagram-js/lib/features/bendpoints';
 
 
 // @ts-ignore
@@ -79,7 +80,8 @@ export default function EditorLib(container: Element): Diagram {
     ResizeModule,
     RulesModule,
     SelectionModule,
-    ZoomScrollModule
+    ZoomScrollModule,
+    BendpointsModule
   ];
 
   // our own modules, contributing controls, customizations, and more
