@@ -67,9 +67,12 @@ export default class GropiusCompatibility {
       if (this.onAddShape)
         this.onAddShape(coordinates);
     });
+
     this.canvas._eventBus.on("context.shape.delete", (e: any) => {
-      if (this.onDeleteShape)
-        this.onDeleteShape(e.element);
+      // TODO Uncomment this and delete last line
+      // if (this.onDeleteShape)
+      //   this.onDeleteShape(e.element);
+      this.deleteShape(e.element)
     });
 
     this.canvas._eventBus.on("connection.added", (e: any) => {
@@ -84,9 +87,9 @@ export default class GropiusCompatibility {
       if (this.onAddConnection)
         this.onAddConnection(e.element);
 
-      // TODO: This is for dev purpose! If should get called by the frontend
+      // TODO: This is for dev purpose! It should get called by the frontend
       this.createConnectionBase(element, {
-        strokeColor: "blue",
+        strokeColor: "orange",
         strokeWidth: 3,
         strokeDasharray: "5 5",
         sourceMarkerType: ConnectionMarker.Round,
@@ -290,8 +293,8 @@ export default class GropiusCompatibility {
     let shape = {
       x: coordinates.x,
       y: coordinates.y,
-      width: 40,
-      height: 40,
+      width: 50,
+      height: 50,
       businessObject: {
         type: interf.provide ? ObjectType.InterfaceProvide : ObjectType.InterfaceRequire,
         data: interf
@@ -326,7 +329,7 @@ export default class GropiusCompatibility {
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.None,
       targetMarkerType: ConnectionMarker.ArrowRight
-    });
+    }, true);
 
     return diagramInterfaceObject;
   }
@@ -426,15 +429,17 @@ export default class GropiusCompatibility {
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.None,
       targetMarkerType: ConnectionMarker.None
-    });
+    }, true);
 
     return diagramIssueFolderObject;
   }
 
   public deleteShape(element: any): boolean {
 
-    if (!element.custom || !element.custom.versionObject)
+    if (!element.businessObject)
       return false;
+    else if(element.businessObject.type == ObjectType.SubConnection)
+      return false
 
     this.modeling.removeElements([element]); // Delete main shape
     if (element.custom && element.custom.versionObject)
@@ -449,7 +454,7 @@ export default class GropiusCompatibility {
     return _shape;
   }
 
-  private createConnectionBase(connection: Connection, style: GropiusConnectionStyle) {
+  private createConnectionBase(connection: Connection, style: GropiusConnectionStyle, isSubConnection = false) {
     // @ts-ignore
     connection.customRendered = true;
     // @ts-ignore
@@ -459,20 +464,20 @@ export default class GropiusCompatibility {
     };
 
     connection.businessObject = {
-      type: ObjectType.Connection
+      type: isSubConnection ? ObjectType.SubConnection : ObjectType.Connection
     };
 
     return this.canvas.addConnection(connection, this.root);
   }
 
-  public createConnection(source: any, target: any, waypoints: Array<Coordinates>, style: GropiusConnectionStyle) {
+  public createConnection(source: any, target: any, waypoints: Array<Coordinates>, style: GropiusConnectionStyle, isSubConnection = false) {
     let connection = this.elementFactory.createConnection({
       waypoints: waypoints,
       source: source,
       target: target
     });
 
-    return this.createConnectionBase(connection, style);
+    return this.createConnectionBase(connection, style, isSubConnection);
   }
 
   public exportDiagram(): string {
@@ -678,7 +683,7 @@ export default class GropiusCompatibility {
 
         element.custom.style.stroke = stroke;
         element.custom.style.fill = fill;
-      } else if (element.businessObject.type == ObjectType.Connection) {
+      } else if (element.businessObject.type == ObjectType.Connection || element.businessObject.type == ObjectType.SubConnection) {
 
         if (enabled && element.custom.style.strokeColor == black)
           stroke = white;
@@ -702,14 +707,14 @@ export default class GropiusCompatibility {
         "elk.algorithm": "layered",
         "spacing.baseValue": "80",
         "spacing.nodeNode": "60",
-        "spacing.nodeNodeBetweenLayers": "40",
+        "spacing.nodeNodeBetweenLayers": "80",
         "spacing.edgeNode": "25",
         "spacing.edgeNodeBetweenLayers": "20",
         "spacing.edgeEdge": "20",
         "spacing.edgeEdgeBetweenLayers": "15",
         // "crossingMinimization.semiInteractive": true,
-        "separateConnectedComponents": "true"
-        // "nodePlacement.strategy": "NETWORK_SIMPLEX"
+        "separateConnectedComponents": "true",
+        "nodePlacement.strategy": "NETWORK_SIMPLEX"
       },
       children: Array<any>(),
       edges: Array<any>()
@@ -748,7 +753,7 @@ export default class GropiusCompatibility {
             height: element.height
           });
         });
-      } else if (element.businessObject.type == ObjectType.Connection) {
+      } else if (element.businessObject.type == ObjectType.Connection || element.businessObject.type == ObjectType.SubConnection) {
         graph.edges.push({
           id: "" + Math.random(),
           sources: [element.source.id],
@@ -805,10 +810,10 @@ export default class GropiusCompatibility {
 
     let a = this.createComponent("1", "Payment Service", "1.42.0", {
       name: "x",
-      shape: Shape.Rectangle,
+      shape: Shape.Triangle,
       style: {
-        minWidth: 80,
-        minHeight: 80,
+        minWidth: 150,
+        minHeight: 150,
         maxScale: 10,
         color: "#ffffff",
         stroke: "#ff55aa",
@@ -818,7 +823,10 @@ export default class GropiusCompatibility {
       }
     }, { x: 150, y: 100 });
 
-    this.createInterface("1", "My Interface", Shape.Hexagon, "1.0", false);
+    this.createInterface("1", "Paypal", Shape.InterfaceProvide, "1.0", true);
+    this.createInterface("1", "CreditCard", Shape.Diamond, "1.0", true);
+    this.createInterface("1", "Goats", Shape.Hexagon, "1.0", true);
+    this.createIssueFolder("1", "070707", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#eef1c9");
 
     let b = this.createComponent("2", "Order Service", "1.0.0", {
       name: "x",
@@ -835,26 +843,47 @@ export default class GropiusCompatibility {
       }
     }, { x: 150, y: 250 });
 
-    this.createConnection(a, b, [
-      { x: a.x, y: a.y + 10 },
-      { x: a.x - 50, y: a.y + 10 },
-      { x: b.x - 50, y: b.y + 10 },
-      { x: b.x, y: b.y + 10 }
-    ], {
-      strokeColor: "red",
-      strokeWidth: 2,
-      strokeDasharray: "",
-      sourceMarkerType: ConnectionMarker.Round,
-      targetMarkerType: ConnectionMarker.Right
-    });
-
     // GOTO1
-    this.createInterface("2", "My Interface", Shape.Diamond, "1.0", true);
+    this.createInterface("2", "Generic", Shape.InterfaceRequire, "1.0", false);
     this.createIssueFolder("2", "123", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#33dd88");
     this.createIssueFolder("2", "456", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
     this.createIssueFolder("2", "789", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
     this.createIssueFolder("2", "987", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
-    this.createIssueFolder("2", "654", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
+
+    let c = this.createComponent("3", "Shipping Service", "2.13.37", {
+      name: "x",
+      shape: Shape.Octagon,
+      style: {
+        minWidth: 100,
+        minHeight: 100,
+        maxScale: 5,
+        color: "#11dd33",
+        stroke: "#000000",
+        strokeWidth: 2,
+        strokeDasharray: "",
+        radius: 5
+      }
+    }, { x: 150, y: 250 });
+
+    this.createInterface("3", "DHL", Shape.InterfaceProvide, "1.0", true);
+    this.createInterface("3", "DPD", Shape.InterfaceProvide, "1.0", true);
+    this.createIssueFolder("3", "#94f543", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#040543");
+
+    let d = this.createComponent("4", "Logging Service", "10.10.10", {
+      name: "x",
+      shape: Shape.Triangle,
+      style: {
+        minWidth: 150,
+        minHeight: 100,
+        maxScale: 5,
+        color: "#999999",
+        stroke: "#000000",
+        strokeWidth: 2,
+        strokeDasharray: "",
+        radius: 5,
+      }
+    }, { x: 150, y: 250 });
+
 
     this.autolayout();
 

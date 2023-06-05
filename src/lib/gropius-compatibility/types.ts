@@ -11,6 +11,7 @@ export enum ObjectType {
   Gropius,
   Version,
   Connection,
+  SubConnection,
   InterfaceProvide,
   InterfaceRequire,
   IssueFolder
