@@ -35,7 +35,7 @@ import {
 import EventBus from "diagram-js/lib/core/EventBus";
 import Modeling from "diagram-js/lib/features/modeling/Modeling";
 import { Base } from "diagram-js/lib/model";
-import { ObjectType } from "@/lib/gropius-compatibility/types";
+import { GropiusInterface, GropiusIssueFolder, ObjectType } from "@/lib/gropius-compatibility/types";
 
 const round = Math.round;
 
@@ -56,7 +56,7 @@ function mid(element: any) {
  * @param {Rules} rules
  */
 export default function MoveEvents(
-  eventBus: EventBus, dragging: any, modeling: Modeling,
+  eventBus: EventBus, elementRegistry: any, dragging: any, modeling: Modeling,
   selection: any, rules: any) {
 
   // rules
@@ -195,8 +195,14 @@ export default function MoveEvents(
       context.shapes.forEach((shape: any) => {
         if (shape.id.startsWith("shape") && shape.businessObject.type == ObjectType.Gropius) {
           shapes.push(shape.custom.versionObject);
-          shape.custom.interfaces.forEach((i: any) => shapes.push(i))
-          shape.custom.issueFolders.forEach((i: any) => shapes.push(i))
+
+          shape.businessObject.data.interfaces.forEach((interf: GropiusInterface) => {
+            shapes.push(elementRegistry.get(interf.shapeId))
+          })
+
+          shape.businessObject.data.issueFolders.forEach((issueFolder: GropiusIssueFolder) => {
+            shapes.push(elementRegistry.get(issueFolder.shapeId))
+          })
         }
       })
     }
@@ -285,6 +291,7 @@ export default function MoveEvents(
 
 MoveEvents.$inject = [
   "eventBus",
+  "elementRegistry",
   "dragging",
   "modeling",
   "selection",

@@ -28,6 +28,7 @@ import SelectionModule from "diagram-js/lib/features/selection";
 import ZoomScrollModule from "diagram-js/lib/navigation/zoomscroll";
 // @ts-ignore
 import Layouter from "diagram-js/lib/layout";
+// @ts-ignore
 import BendpointsModule from 'diagram-js/lib/features/bendpoints';
 
 

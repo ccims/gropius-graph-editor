@@ -3,7 +3,7 @@ import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
 import {
   GropiusConnectionStyle, GropiusInterface, GropiusIssueFolder,
-  GropiusShape,
+  GropiusShape, GropiusType,
   ObjectType,
   SerializedDiagram, SerializedInterface, SerializedIssueFolder
 } from "@/lib/gropius-compatibility/types";
@@ -15,6 +15,7 @@ import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
 
 import ELK from "elkjs";
+
 const elk = new ELK();
 
 const HEIGHT_PER_LINE = 20;
@@ -181,10 +182,24 @@ export default class GropiusCompatibility {
     return ret;
   }
 
-  public createComponent(grShape: GropiusShape, coordinates: Coordinates) {
+  public createComponentBase(grShape: GropiusShape, coordinates: Coordinates) {
     const componentObject = this.drawComponent(grShape, coordinates);
     componentObject.custom.versionObject = this.drawVersion(componentObject);
+    componentObject.businessObject.data.shapeId = componentObject.id;
     return componentObject;
+  }
+
+  public createComponent(id: string, name: string, version: string, grType: GropiusType, coordinates: Coordinates) {
+    const grShape: GropiusShape = {
+      id: id,
+      shapeId: "",
+      name: name,
+      version: version,
+      grType: grType,
+      interfaces: [],
+      issueFolders: []
+    };
+    return this.createComponentBase(grShape, coordinates);
   }
 
   private drawComponent(grShape: GropiusShape, coordinates: Coordinates) {
@@ -197,8 +212,8 @@ export default class GropiusCompatibility {
       width: dimensions.width,
       height: dimensions.height,
       businessObject: {
-        type: ObjectType.Gropius, data:
-        grShape
+        type: ObjectType.Gropius,
+        data: grShape
       },
       custom: {
         shape: grShape.grType.shape,
@@ -211,9 +226,7 @@ export default class GropiusCompatibility {
           strokeDasharray: grStyle.strokeDasharray
         },
         label: dimensions.text,
-        versionObject: undefined,
-        interfaces: [],
-        issueFolders: []
+        versionObject: undefined
       }
     };
 
@@ -299,7 +312,6 @@ export default class GropiusCompatibility {
     };
 
     const diagramInterfaceObject = this.createShape(shape);
-    parentShape.custom.interfaces.push(diagramInterfaceObject); // Rendering details
 
     // Set waypoints if not given
     if (!waypoints)
@@ -333,6 +345,8 @@ export default class GropiusCompatibility {
 
     const interfaceObject: GropiusInterface = {
       id: interfaceId,
+      shapeId: "",
+      connectionId: "",
       name: name,
       shape: shape,
       provide: provide,
@@ -340,6 +354,7 @@ export default class GropiusCompatibility {
     };
 
     const diagramInterfaceObject = this.drawInterface(diagramParentObject, interfaceObject, coordinates, waypoints);
+    diagramInterfaceObject.businessObject.data.shapeId = diagramInterfaceObject.id;
 
     // Add interface to parent
     parentBusinessObject.interfaces.push(interfaceObject);
@@ -352,6 +367,7 @@ export default class GropiusCompatibility {
 
     const issueFolderObject: GropiusIssueFolder = {
       id: interfaceId,
+      shapeId: "",
       path: path,
       color: color
     };
@@ -362,7 +378,8 @@ export default class GropiusCompatibility {
         y: diagramParentObject.y + diagramParentObject.height / 2 - 20
       };
 
-    const diagramIssueFolderObject = this.drawIssueFolder(diagramParentObject, issueFolderObject, coordinates, waypoints);
+    let diagramIssueFolderObject = this.drawIssueFolder(diagramParentObject, issueFolderObject, coordinates, waypoints);
+    diagramIssueFolderObject.businessObject.data.shapeId = diagramIssueFolderObject.id;
 
     parentBusinessObject.issueFolders.push(issueFolderObject);
   }
@@ -395,7 +412,6 @@ export default class GropiusCompatibility {
     };
 
     const diagramIssueFolderObject = this.createShape(shape);
-    parentShape.custom.issueFolders.push(diagramIssueFolderObject); // Rendering details
 
     // Set waypoints if not given
     if (!waypoints)
@@ -446,7 +462,7 @@ export default class GropiusCompatibility {
       type: ObjectType.Connection
     };
 
-    this.canvas.addConnection(connection, this.root);
+    return this.canvas.addConnection(connection, this.root);
   }
 
   public createConnection(source: any, target: any, waypoints: Array<Coordinates>, style: GropiusConnectionStyle) {
@@ -456,7 +472,7 @@ export default class GropiusCompatibility {
       target: target
     });
 
-    this.createConnectionBase(connection, style);
+    return this.createConnectionBase(connection, style);
   }
 
   public exportDiagram(): string {
@@ -515,7 +531,7 @@ export default class GropiusCompatibility {
     let interfaces: Array<SerializedInterface> = [];
     element.businessObject.data.interfaces.forEach((interf: any) => {
       // Find interface (diagram) object for interface
-      const interfaceObject = element.custom.interfaces.find((i: any) => i.businessObject.data.id == interf.id);
+      const interfaceObject = this.elementRegistry.get(interf.shapeId);
       // Find connection object for shape-to-interface connection
       const connectionObject = Object.values(elements).find((e: any) => {
         e = e.element;
@@ -547,7 +563,7 @@ export default class GropiusCompatibility {
     let issueFolders: Array<SerializedIssueFolder> = [];
     element.businessObject.data.issueFolders.forEach((issue: any) => {
       // Find issueFolder (diagram) object for issueFolder
-      const issueObject = element.custom.issueFolders.find((i: any) => i.businessObject.data.id == issue.id);
+      const issueObject = this.elementRegistry.get(issue.shapeId);
       // Find connection object for shape-to-issue connection
       const connectionObject = Object.values(elements).find((e: any) => {
         e = e.element;
@@ -580,9 +596,9 @@ export default class GropiusCompatibility {
 
   public importDiagram(diagram: SerializedDiagram) {
     diagram.shapes.forEach(shape => {
-      const object = this.createComponent(shape.grShape, { x: shape.x, y: shape.y });
+      const object = this.createComponentBase(shape.grShape, { x: shape.x, y: shape.y });
       shape.interfaces.forEach(interf => {
-          this.drawInterface(object, interf.interface, interf.coordinates, interf.waypoints);
+        this.drawInterface(object, interf.interface, interf.coordinates, interf.waypoints);
       });
       shape.issueFolders.forEach(issueFolder => {
         this.drawIssueFolder(object, issueFolder.issueFolder, issueFolder.coordinates, issueFolder.waypoints);
@@ -640,12 +656,12 @@ export default class GropiusCompatibility {
         element.custom.style.stroke = stroke;
         element.custom.style.fill = fill;
 
-        element.custom.interfaces.forEach((interfaceObject: any) => {
-          interfaceObject.custom.style.stroke = stroke;
-          if(interfaceObject.shape == Shape.InterfaceProvide)
-            interfaceObject.custom.style.fill = fill;
-
-          interfaceObject.custom.style.whiteText = enabled;
+        element.businessObject.data.interfaces.forEach((interf: any) => {
+          const element = this.elementRegistry.get(interf.shapeId);
+          if(interf.shape != Shape.InterfaceRequire)
+            element.custom.style.fill = fill;
+          element.custom.style.stroke = stroke;
+          element.custom.style.whiteText = enabled;
         });
 
       } else if (element.businessObject.type == ObjectType.Version) { // Version Object
@@ -679,10 +695,22 @@ export default class GropiusCompatibility {
 
   public autolayout() {
     const offsetX = 200,
-      offsetY = 50
+      offsetY = 50;
     let graph = {
       id: "root",
-      layoutOptions: { "elk.algorithm": "layered", "spacing.baseValue": 100},
+      layoutOptions: {
+        "elk.algorithm": "layered",
+        "spacing.baseValue": "80",
+        "spacing.nodeNode": "60",
+        "spacing.nodeNodeBetweenLayers": "40",
+        "spacing.edgeNode": "25",
+        "spacing.edgeNodeBetweenLayers": "20",
+        "spacing.edgeEdge": "20",
+        "spacing.edgeEdgeBetweenLayers": "15",
+        // "crossingMinimization.semiInteractive": true,
+        "separateConnectedComponents": "true"
+        // "nodePlacement.strategy": "NETWORK_SIMPLEX"
+      },
       children: Array<any>(),
       edges: Array<any>()
     };
@@ -690,49 +718,77 @@ export default class GropiusCompatibility {
     const elements = this.elementRegistry._elements;
 
     Object.values(elements).forEach((element: any) => {
-      element = element.element
-      if(!element.businessObject) {
+      element = element.element;
+      if (!element.businessObject) {
         return;
       }
-      if(element.businessObject.type == ObjectType.Gropius ||
-        element.businessObject.type == ObjectType.InterfaceProvide ||
-        element.businessObject.type == ObjectType.InterfaceRequire ||
-        element.businessObject.type == ObjectType.IssueFolder) {
+      if (element.businessObject.type == ObjectType.Gropius) {
         graph.children.push({
           id: element.id,
           width: element.width,
           height: element.height
         });
-      } else if(element.businessObject.type == ObjectType.Connection) {
+
+        // Layout Interfaces
+        element.businessObject.data.interfaces.forEach((interf: GropiusInterface) => {
+          const element = this.elementRegistry.get(interf.shapeId);
+          graph.children.push({
+            id: element.id,
+            width: element.width,
+            height: element.height
+          });
+        });
+
+        // Layout Issue Folders
+        element.businessObject.data.issueFolders.forEach((issueFolder: GropiusIssueFolder) => {
+          const element = this.elementRegistry.get(issueFolder.shapeId);
+          graph.children.push({
+            id: element.id,
+            width: element.width,
+            height: element.height
+          });
+        });
+      } else if (element.businessObject.type == ObjectType.Connection) {
         graph.edges.push({
           id: "" + Math.random(),
-          sources: [ element.source.id ],
-          targets: [ element.target.id ]
+          sources: [element.source.id],
+          targets: [element.target.id]
         });
       }
     });
 
     elk.layout(graph).then(graph => {
-      console.log(graph)
+      console.log("Layouted Graph", graph);
       graph.children?.forEach(node => {
-        if(node.id == 'root')
-          return
+        if (node.id == "root" || !node.x || !node.y) {
+          return;
+        }
 
-        const element = this.elementRegistry.get(node.id)
+        this.moveShape(node.id, node.x, node.y, offsetX, offsetY)
+      });
+    });
+  }
 
-        this.canvas._eventBus.fire("shape.move.move", {
-          shape: element,
-          context: {
-            canExecute: true,
-            shape: element,
-            shapes: [ element ],
-          },
-          x: element.x,
-          y: element.y,
-          dx: (node.x + offsetX) - element.x,
-          dy: (node.y + offsetY) - element.y
-        });
-      })
+  public moveShape(shapeId: string, x: number, y: number, offsetX = 0, offsetY = 0) {
+    const element = this.elementRegistry.get(shapeId);
+
+    const deltaX = (x + offsetX) - element.x,
+      deltaY = (y + offsetY) - element.y;
+
+    if (deltaX === 0 && deltaY === 0)
+      return;
+
+    this.canvas._eventBus.fire("shape.move.move", {
+      shape: element,
+      context: {
+        canExecute: true,
+        shape: element,
+        shapes: [element]
+      },
+      x: element.x,
+      y: element.y,
+      dx: deltaX,
+      dy: deltaY
     });
   }
 
@@ -746,48 +802,37 @@ export default class GropiusCompatibility {
     const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst.";
     const m = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
     const s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
-    let a = this.createComponent({
-      id: "1",
-      name: "rect1",
-      version: "v1",
-      grType: {
-        name: "x",
-        shape: Shape.Rectangle,
-        style: {
-          minWidth: 40,
-          minHeight: 40,
-          maxScale: 10,
-          color: "#ffffff",
-          stroke: "#ff55aa",
-          strokeWidth: 2,
-          strokeDasharray: "",
-          radius: 5
-        }
-      },
-      interfaces: [],
-      issueFolders: []
+
+    let a = this.createComponent("1", "Payment Service", "1.42.0", {
+      name: "x",
+      shape: Shape.Rectangle,
+      style: {
+        minWidth: 80,
+        minHeight: 80,
+        maxScale: 10,
+        color: "#ffffff",
+        stroke: "#ff55aa",
+        strokeWidth: 2,
+        strokeDasharray: "",
+        radius: 5
+      }
     }, { x: 150, y: 100 });
 
-    let b = this.createComponent({
-      id: "2",
-      version: "v1",
-      name: "rect2 " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Rectangle,
-        style: {
-          minWidth: 50,
-          minHeight: 50,
-          maxScale: 5,
-          color: "#ffccff",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "",
-          radius: 5
-        }
-      },
-      interfaces: [],
-      issueFolders: []
+    this.createInterface("1", "My Interface", Shape.Hexagon, "1.0", false);
+
+    let b = this.createComponent("2", "Order Service", "1.0.0", {
+      name: "x",
+      shape: Shape.Rectangle,
+      style: {
+        minWidth: 150,
+        minHeight: 150,
+        maxScale: 5,
+        color: "#ffccff",
+        stroke: "#000000",
+        strokeWidth: 2,
+        strokeDasharray: "",
+        radius: 5
+      }
     }, { x: 150, y: 250 });
 
     this.createConnection(a, b, [
@@ -804,233 +849,14 @@ export default class GropiusCompatibility {
     });
 
     // GOTO1
-    this.createInterface("2", "My Interface", Shape.Hexagon, "1.0",true);
+    this.createInterface("2", "My Interface", Shape.Diamond, "1.0", true);
     this.createIssueFolder("2", "123", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#33dd88");
-
-    return
     this.createIssueFolder("2", "456", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
+    this.createIssueFolder("2", "789", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
+    this.createIssueFolder("2", "987", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
+    this.createIssueFolder("2", "654", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
 
-    this.createComponent({
-      id: "3",
-      version: "v1.10.5",
-      name: "rect3 little text, big shape",
-      grType: {
-        name: "x",
-        shape: Shape.Rectangle,
-        style: {
-          minWidth: 250,
-          minHeight: 200,
-          maxScale: 1,
-          color: "#ffffff",
-          stroke: "#aa0000",
-          strokeWidth: 2,
-          strokeDasharray: "",
-          radius: 5
-        }
-      },
-      interfaces: [],
-      issueFolders: []
-    }, { x: 150, y: 450 });
-
-    this.createInterface("3", "Another Interface", Shape.InterfaceRequire, "2.0", false);
-
-    this.createComponent({
-      id: "4",
-      version: "v1",
-      name: "Triangle " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Triangle,
-        style: {
-          minWidth: 100,
-          minHeight: 50,
-          maxScale: 2,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      },
-      interfaces: [],
-      issueFolders: []
-    }, { x: 500, y: 75 });
-
-    this.createComponent({
-      id: "5",
-      version: "v1",
-      name: "Parallel " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Parallelogram,
-        style: {
-          minWidth: 150,
-          minHeight: 100,
-          maxScale: 1,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      },
-      interfaces: [],
-      issueFolders: []
-    }, { x: 800, y: 75 });
-
-    this.createComponent({
-      id: "6",
-      version: "v1",
-      name: "Diamond " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Diamond,
-        style: {
-          minWidth: 100,
-          minHeight: 100,
-          maxScale: 1.5,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      },
-      interfaces: [],
-      issueFolders: []
-    }, { x: 1100, y: 75 });
-
-    this.createComponent({
-      id: "7",
-      version: "v1",
-      name: "Octagon " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Octagon,
-        style: {
-          minWidth: 100,
-          minHeight: 100,
-          maxScale: 1.5,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      },
-      interfaces: [],
-      issueFolders: []
-    }, { x: 500, y: 250 });
-
-    this.createComponent({
-      id: "8",
-      version: "v1",
-      name: "Circle " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Circle,
-        style: {
-          minWidth: 100,
-          minHeight: 100,
-          maxScale: 2,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      },
-      interfaces: [],
-      issueFolders: []
-    }, { x: 800, y: 250 });
-
-    this.createComponent({
-      id: "9",
-      version: "v1",
-      name: "Trapeze " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Trapeze,
-        style: {
-          minWidth: 100,
-          minHeight: 100,
-          maxScale: 1,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      },
-      interfaces: [],
-      issueFolders: []
-    }, { x: 1100, y: 300 });
-
-    this.createComponent({
-      id: "10",
-      version: "v1",
-      name: "Hexagon " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Hexagon,
-        style: {
-          minWidth: 100,
-          minHeight: 100,
-          maxScale: 2,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      },
-      interfaces: [],
-      issueFolders: []
-    }, { x: 500, y: 500 });
-
-    this.createComponent({
-      id: "11",
-      version: "v1",
-      name: "Ellipse " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Ellipse,
-        style: {
-          minWidth: 100,
-          minHeight: 50,
-          maxScale: 2,
-          color: "yellow",
-          stroke: "#000000",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      },
-      interfaces: [],
-      issueFolders: []
-    }, { x: 800, y: 500 });
-
-    this.createComponent({
-      id: "12",
-      version: "v1",
-      name: "Ellipse2 " + s,
-      grType: {
-        name: "x",
-        shape: Shape.Ellipse,
-        style: {
-          minWidth: 50,
-          minHeight: 100,
-          maxScale: 2,
-          color: "violet",
-          stroke: "#0000ff",
-          strokeWidth: 2,
-          strokeDasharray: "5 2",
-          radius: 0
-        }
-      },
-      interfaces: [],
-      issueFolders: []
-    }, { x: 1100, y: 500 });
+    this.autolayout();
 
     // let connection1 = this.elementFactory.createConnection({
     //     waypoints: [

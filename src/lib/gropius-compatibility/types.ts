@@ -23,6 +23,7 @@ export interface GropiusType {
 }
 export interface GropiusShape {
   id: string,
+  shapeId: string,
   name: string,
   version: string,
   grType: GropiusType,
@@ -32,6 +33,8 @@ export interface GropiusShape {
 
 export interface GropiusInterface {
   id: string,
+  shapeId: string,
+  connectionId: string,
   name: string
   shape: Shape
   provide: boolean
@@ -40,6 +43,7 @@ export interface GropiusInterface {
 
 export interface GropiusIssueFolder {
   id: string
+  shapeId: string,
   path: string
   color: string
 }
