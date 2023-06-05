@@ -502,16 +502,16 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
 
   function renderExternalLabel(parentGfx, element, text, fontSize = DEFAULT_TEXT_SIZE, color = "black") {
     const box = {
-      width: 90,
-      height: 90,
-      x: -element.width / 2,
+      width: 80,
+      height: 80,
+      x: -element.width / 2 + (element.width/8),
       y: element.height + 5,
       custom: element.custom
     };
 
     return renderLabel(parentGfx, text, {
       box: box,
-      fitBox: true,
+      // fitBox: true,
       style: {
         fill: color,
         fontSize: fontSize
