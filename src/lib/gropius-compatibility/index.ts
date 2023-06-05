@@ -72,7 +72,7 @@ export default class GropiusCompatibility {
       // TODO Uncomment this and delete last line
       // if (this.onDeleteShape)
       //   this.onDeleteShape(e.element);
-      this.deleteShape(e.element)
+      this.deleteShape(e.element);
     });
 
     this.canvas._eventBus.on("connection.added", (e: any) => {
@@ -315,6 +315,7 @@ export default class GropiusCompatibility {
     };
 
     const diagramInterfaceObject = this.createShape(shape);
+    diagramInterfaceObject.businessObject.data.shapeId = diagramInterfaceObject.id;
 
     // Set waypoints if not given
     if (!waypoints)
@@ -323,13 +324,15 @@ export default class GropiusCompatibility {
         { x: diagramInterfaceObject.x, y: diagramInterfaceObject.y + diagramInterfaceObject.height / 2 }
       ];
 
-    this.createConnection(parentShape, diagramInterfaceObject, waypoints, {
+    let con = this.createConnection(parentShape, diagramInterfaceObject, waypoints, {
       strokeColor: parentBusinessObject.grType.style.stroke,
       strokeWidth: 2,
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.None,
       targetMarkerType: ConnectionMarker.ArrowRight
     }, true);
+
+    diagramInterfaceObject.businessObject.data.connectionId = con.id;
 
     return diagramInterfaceObject;
   }
@@ -356,8 +359,7 @@ export default class GropiusCompatibility {
       version: version
     };
 
-    const diagramInterfaceObject = this.drawInterface(diagramParentObject, interfaceObject, coordinates, waypoints);
-    diagramInterfaceObject.businessObject.data.shapeId = diagramInterfaceObject.id;
+    this.drawInterface(diagramParentObject, interfaceObject, coordinates, waypoints);
 
     // Add interface to parent
     parentBusinessObject.interfaces.push(interfaceObject);
@@ -371,6 +373,7 @@ export default class GropiusCompatibility {
     const issueFolderObject: GropiusIssueFolder = {
       id: interfaceId,
       shapeId: "",
+      connectionId: "",
       path: path,
       color: color
     };
@@ -381,8 +384,7 @@ export default class GropiusCompatibility {
         y: diagramParentObject.y + diagramParentObject.height / 2 - 20
       };
 
-    let diagramIssueFolderObject = this.drawIssueFolder(diagramParentObject, issueFolderObject, coordinates, waypoints);
-    diagramIssueFolderObject.businessObject.data.shapeId = diagramIssueFolderObject.id;
+    this.drawIssueFolder(diagramParentObject, issueFolderObject, coordinates, waypoints);
 
     parentBusinessObject.issueFolders.push(issueFolderObject);
   }
@@ -415,6 +417,7 @@ export default class GropiusCompatibility {
     };
 
     const diagramIssueFolderObject = this.createShape(shape);
+    diagramIssueFolderObject.businessObject.data.shapeId = diagramIssueFolderObject.id;
 
     // Set waypoints if not given
     if (!waypoints)
@@ -423,13 +426,15 @@ export default class GropiusCompatibility {
         { x: diagramIssueFolderObject.x, y: diagramIssueFolderObject.y + diagramIssueFolderObject.height / 2 }
       ];
 
-    this.createConnection(parentShape, diagramIssueFolderObject, waypoints, {
+    const con = this.createConnection(parentShape, diagramIssueFolderObject, waypoints, {
       strokeColor: "#000000",
       strokeWidth: 2,
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.None,
       targetMarkerType: ConnectionMarker.None
     }, true);
+
+    diagramIssueFolderObject.businessObject.data.connectionId = con.id;
 
     return diagramIssueFolderObject;
   }
@@ -438,8 +443,8 @@ export default class GropiusCompatibility {
 
     if (!element.businessObject)
       return false;
-    else if(element.businessObject.type == ObjectType.SubConnection)
-      return false
+    else if (element.businessObject.type == ObjectType.SubConnection)
+      return false;
 
     this.modeling.removeElements([element]); // Delete main shape
     if (element.custom && element.custom.versionObject)
@@ -663,7 +668,7 @@ export default class GropiusCompatibility {
 
         element.businessObject.data.interfaces.forEach((interf: any) => {
           const element = this.elementRegistry.get(interf.shapeId);
-          if(interf.shape != Shape.InterfaceRequire)
+          if (interf.shape != Shape.InterfaceRequire)
             element.custom.style.fill = fill;
           element.custom.style.stroke = stroke;
           element.custom.style.whiteText = enabled;
@@ -706,15 +711,16 @@ export default class GropiusCompatibility {
       layoutOptions: {
         "elk.algorithm": "layered",
         "spacing.baseValue": "80",
-        "spacing.nodeNode": "60",
-        "spacing.nodeNodeBetweenLayers": "80",
-        "spacing.edgeNode": "25",
-        "spacing.edgeNodeBetweenLayers": "20",
-        "spacing.edgeEdge": "20",
-        "spacing.edgeEdgeBetweenLayers": "15",
+        // "spacing.nodeNode": "80",
+        // "spacing.nodeNodeBetweenLayers": "100",
+        // "spacing.edgeNode": "100",
+        // "spacing.edgeNodeBetweenLayers": "40",
+        // "spacing.edgeEdge": "60",
+        // "spacing.edgeEdgeBetweenLayers": "50",
         // "crossingMinimization.semiInteractive": true,
         "separateConnectedComponents": "true",
-        "nodePlacement.strategy": "NETWORK_SIMPLEX"
+        "nodePlacement.strategy": "NETWORK_SIMPLEX",
+        // "hierarchyHandling": "INCLUDE_CHILDREN"
       },
       children: Array<any>(),
       edges: Array<any>()
@@ -728,40 +734,63 @@ export default class GropiusCompatibility {
         return;
       }
       if (element.businessObject.type == ObjectType.Gropius) {
-        graph.children.push({
+        let group = {
+          id: "group-" + element.id,
+          layoutOptions: graph.layoutOptions,
+          width: 500,
+          height: 500,
+          children: Array<any>(),
+          edges: Array<any>()
+        };
+
+        let parent = {
           id: element.id,
           width: element.width,
           height: element.height
-        });
-
+        };
+        group.children.push(parent);
         // Layout Interfaces
         element.businessObject.data.interfaces.forEach((interf: GropiusInterface) => {
           const element = this.elementRegistry.get(interf.shapeId);
-          graph.children.push({
+          group.children.push({
             id: element.id,
             width: element.width,
             height: element.height
           });
+          const connection = this.elementRegistry.get(element.businessObject.data.connectionId);
+          group.edges.push({
+            id: connection.id,
+            sources: [connection.source.id],
+            targets: [connection.target.id]
+          })
         });
 
         // Layout Issue Folders
         element.businessObject.data.issueFolders.forEach((issueFolder: GropiusIssueFolder) => {
           const element = this.elementRegistry.get(issueFolder.shapeId);
-          graph.children.push({
+          group.children.push({
             id: element.id,
             width: element.width,
             height: element.height
           });
+          const connection = this.elementRegistry.get(element.businessObject.data.connectionId);
+          group.edges.push({
+            id: connection.id,
+            sources: [connection.source.id],
+            targets: [connection.target.id]
+          })
         });
-      } else if (element.businessObject.type == ObjectType.Connection || element.businessObject.type == ObjectType.SubConnection) {
-        graph.edges.push({
-          id: "" + Math.random(),
-          sources: [element.source.id],
-          targets: [element.target.id]
-        });
+        graph.children.push(group);
+      } else if (element.businessObject.type == ObjectType.Connection) {
+        // graph.edges.push({
+        //   id: "" + Math.random(),
+        //   sources: [element.source.id],
+        //   targets: [element.target.id]
+        // });
       }
     });
-
+    console.log(graph);
+    // @ts-ignore
     elk.layout(graph).then(graph => {
       console.log("Layouted Graph", graph);
       graph.children?.forEach(node => {
@@ -769,7 +798,13 @@ export default class GropiusCompatibility {
           return;
         }
 
-        this.moveShape(node.id, node.x, node.y, offsetX, offsetY)
+        if(node.id.startsWith("group-")) {
+          node.children?.forEach(child => {
+            this.moveShape(child.id, node.x + child.x, node.y + child.y, offsetX, offsetY);
+          })
+        } else {
+          this.moveShape(node.id, node.x, node.y, offsetX, offsetY);
+        }
       });
     });
   }
@@ -801,7 +836,10 @@ export default class GropiusCompatibility {
   public test() {
 
     //this.importDiagramString("{\"shapes\":[{\"grShape\":{\"id\":\"1\",\"name\":\"rect1\",\"version\":\"v1\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":40,\"minHeight\":40,\"maxScale\":10,\"color\":\"#ffffff\",\"stroke\":\"#ff55aa\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[],\"issueFolders\":[]},\"x\":150,\"y\":100,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"2\",\"version\":\"v1\",\"name\":\"rect2 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":50,\"minHeight\":50,\"maxScale\":5,\"color\":\"#ffccff\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[{\"id\":\"2-My Interface-true\",\"name\":\"My Interface\",\"shape\":4,\"provide\":true,\"version\":\"1.0\"}],\"issueFolders\":[{\"id\":\"2-123\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#33dd88\"},{\"id\":\"2-456\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#dd33bb\"}]},\"x\":150,\"y\":250,\"interfaces\":[{\"interface\":{\"id\":\"2-My Interface-true\",\"name\":\"My Interface\",\"shape\":4,\"provide\":true,\"version\":\"1.0\"},\"coordinates\":{\"x\":342,\"y\":339},\"waypoints\":[{\"original\":{\"x\":280,\"y\":315},\"x\":280,\"y\":315},{\"x\":302,\"y\":315},{\"x\":302,\"y\":359},{\"original\":{\"x\":342,\"y\":359},\"x\":342,\"y\":359}]}],\"issueFolders\":[{\"issueFolder\":{\"id\":\"2-123\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#33dd88\"},\"coordinates\":{\"x\":333,\"y\":139},\"waypoints\":[{\"original\":{\"x\":280,\"y\":315},\"x\":280,\"y\":250},{\"x\":280,\"y\":159},{\"original\":{\"x\":333,\"y\":159},\"x\":333,\"y\":159}]},{\"issueFolder\":{\"id\":\"2-456\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#dd33bb\"},\"coordinates\":{\"x\":330,\"y\":207},\"waypoints\":[{\"original\":{\"x\":280,\"y\":315},\"x\":280,\"y\":315},{\"x\":301,\"y\":315},{\"x\":301,\"y\":227},{\"original\":{\"x\":330,\"y\":227},\"x\":330,\"y\":227}]}]},{\"grShape\":{\"id\":\"3\",\"version\":\"v1.10.5\",\"name\":\"rect3 little text, big shape\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":250,\"minHeight\":200,\"maxScale\":1,\"color\":\"#ffffff\",\"stroke\":\"#aa0000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[{\"id\":\"3-Another Interface-false\",\"name\":\"Another Interface\",\"shape\":10,\"provide\":false,\"version\":\"2.0\"}],\"issueFolders\":[]},\"x\":150,\"y\":450,\"interfaces\":[{\"interface\":{\"id\":\"3-Another Interface-false\",\"name\":\"Another Interface\",\"shape\":10,\"provide\":false,\"version\":\"2.0\"},\"coordinates\":{\"x\":440,\"y\":530},\"waypoints\":[{\"x\":400,\"y\":550},{\"x\":440,\"y\":550}]}],\"issueFolders\":[]},{\"grShape\":{\"id\":\"4\",\"version\":\"v1\",\"name\":\"Triangle Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":1,\"style\":{\"minWidth\":100,\"minHeight\":50,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":500,\"y\":75,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"5\",\"version\":\"v1\",\"name\":\"Parallel Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":7,\"style\":{\"minWidth\":150,\"minHeight\":100,\"maxScale\":1,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":800,\"y\":75,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"6\",\"version\":\"v1\",\"name\":\"Diamond Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":3,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1.5,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":1100,\"y\":75,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"7\",\"version\":\"v1\",\"name\":\"Octagon Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":5,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1.5,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":500,\"y\":250,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"8\",\"version\":\"v1\",\"name\":\"Circle Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":2,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":800,\"y\":250,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"9\",\"version\":\"v1\",\"name\":\"Trapeze Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":8,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":1,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":1100,\"y\":300,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"10\",\"version\":\"v1\",\"name\":\"Hexagon Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":4,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":500,\"y\":500,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"11\",\"version\":\"v1\",\"name\":\"Ellipse Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":6,\"style\":{\"minWidth\":100,\"minHeight\":50,\"maxScale\":2,\"color\":\"yellow\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":800,\"y\":500,\"interfaces\":[],\"issueFolders\":[]},{\"grShape\":{\"id\":\"12\",\"version\":\"v1\",\"name\":\"Ellipse2 Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"grType\":{\"name\":\"x\",\"shape\":6,\"style\":{\"minWidth\":50,\"minHeight\":100,\"maxScale\":2,\"color\":\"violet\",\"stroke\":\"#0000ff\",\"strokeWidth\":2,\"strokeDasharray\":\"5 2\",\"radius\":0}},\"interfaces\":[],\"issueFolders\":[]},\"x\":1100,\"y\":500,\"interfaces\":[],\"issueFolders\":[]}],\"connections\":[{\"sourceId\":\"1\",\"targetId\":\"2\",\"waypoints\":[{\"x\":150,\"y\":110},{\"x\":100,\"y\":110},{\"x\":100,\"y\":260},{\"x\":150,\"y\":260}],\"style\":{\"strokeColor\":\"red\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"sourceMarkerType\":3,\"targetMarkerType\":1}}]}")
-    //return
+    this.importDiagramString("{\"shapes\":[{\"grShape\":{\"id\":\"1\",\"shapeId\":\"shape_13\",\"name\":\"Payment Service\",\"version\":\"1.42.0\",\"grType\":{\"name\":\"x\",\"shape\":1,\"style\":{\"minWidth\":150,\"minHeight\":150,\"maxScale\":10,\"color\":\"#ffffff\",\"stroke\":\"#ff55aa\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[{\"id\":\"1-Paypal-true\",\"shapeId\":\"shape_15\",\"connectionId\":\"\",\"name\":\"Paypal\",\"shape\":9,\"provide\":true,\"version\":\"1.0\"},{\"id\":\"1-CreditCard-true\",\"shapeId\":\"shape_17\",\"connectionId\":\"\",\"name\":\"CreditCard\",\"shape\":3,\"provide\":true,\"version\":\"1.0\"},{\"id\":\"1-Goats-true\",\"shapeId\":\"shape_19\",\"connectionId\":\"\",\"name\":\"Goats\",\"shape\":4,\"provide\":true,\"version\":\"1.0\"}],\"issueFolders\":[{\"id\":\"1-070707\",\"shapeId\":\"shape_21\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#eef1c9\"}]},\"x\":1123,\"y\":1240,\"interfaces\":[{\"interface\":{\"id\":\"1-Paypal-true\",\"shapeId\":\"shape_15\",\"connectionId\":\"\",\"name\":\"Paypal\",\"shape\":9,\"provide\":true,\"version\":\"1.0\"},\"coordinates\":{\"x\":1513,\"y\":1004},\"waypoints\":[{\"original\":{\"x\":1273,\"y\":1315},\"x\":1273,\"y\":1315},{\"x\":1313,\"y\":1315},{\"x\":1313,\"y\":1029},{\"original\":{\"x\":1513,\"y\":1029},\"x\":1513,\"y\":1029}]},{\"interface\":{\"id\":\"1-CreditCard-true\",\"shapeId\":\"shape_17\",\"connectionId\":\"\",\"name\":\"CreditCard\",\"shape\":3,\"provide\":true,\"version\":\"1.0\"},\"coordinates\":{\"x\":1513,\"y\":1384},\"waypoints\":[{\"original\":{\"x\":1273,\"y\":1315},\"x\":1273,\"y\":1315},{\"x\":1313,\"y\":1315},{\"x\":1313,\"y\":1409},{\"original\":{\"x\":1513,\"y\":1409},\"x\":1513,\"y\":1409}]},{\"interface\":{\"id\":\"1-Goats-true\",\"shapeId\":\"shape_19\",\"connectionId\":\"\",\"name\":\"Goats\",\"shape\":4,\"provide\":true,\"version\":\"1.0\"},\"coordinates\":{\"x\":1513,\"y\":1254},\"waypoints\":[{\"original\":{\"x\":1239,\"y\":1315},\"x\":1239,\"y\":1315},{\"x\":1313,\"y\":1315},{\"x\":1313,\"y\":1279},{\"original\":{\"x\":1513,\"y\":1279},\"x\":1513,\"y\":1279}]}],\"issueFolders\":[{\"issueFolder\":{\"id\":\"1-070707\",\"shapeId\":\"shape_21\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#eef1c9\"},\"coordinates\":{\"x\":1516,\"y\":1134},\"waypoints\":[{\"original\":{\"x\":1221,\"y\":1286},\"x\":1221,\"y\":1286},{\"x\":1395,\"y\":1286},{\"x\":1395,\"y\":1165},{\"original\":{\"x\":1523,\"y\":1165},\"x\":1516,\"y\":1165}]}]},{\"grShape\":{\"id\":\"2\",\"shapeId\":\"shape_23\",\"name\":\"Order Service\",\"version\":\"1.0.0\",\"grType\":{\"name\":\"x\",\"shape\":0,\"style\":{\"minWidth\":150,\"minHeight\":150,\"maxScale\":5,\"color\":\"#ffccff\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[{\"id\":\"2-Generic-false\",\"shapeId\":\"shape_25\",\"connectionId\":\"\",\"name\":\"Generic\",\"shape\":10,\"provide\":false,\"version\":\"1.0\"}],\"issueFolders\":[{\"id\":\"2-123\",\"shapeId\":\"shape_27\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#33dd88\"},{\"id\":\"2-456\",\"shapeId\":\"shape_29\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#dd33bb\"},{\"id\":\"2-789\",\"shapeId\":\"shape_31\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#dd33bb\"},{\"id\":\"2-987\",\"shapeId\":\"shape_33\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#dd33bb\"}]},\"x\":212,\"y\":443,\"interfaces\":[{\"interface\":{\"id\":\"2-Generic-false\",\"shapeId\":\"shape_25\",\"connectionId\":\"\",\"name\":\"Generic\",\"shape\":10,\"provide\":false,\"version\":\"1.0\"},\"coordinates\":{\"x\":461,\"y\":794},\"waypoints\":[{\"original\":{\"x\":362,\"y\":518},\"x\":362,\"y\":518},{\"x\":430,\"y\":518},{\"x\":430,\"y\":819},{\"original\":{\"x\":461,\"y\":819},\"x\":461,\"y\":819}]}],\"issueFolders\":[{\"issueFolder\":{\"id\":\"2-123\",\"shapeId\":\"shape_27\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#33dd88\"},\"coordinates\":{\"x\":537,\"y\":370},\"waypoints\":[{\"original\":{\"x\":362,\"y\":518},\"x\":362,\"y\":518},{\"x\":400,\"y\":518},{\"x\":400,\"y\":390},{\"original\":{\"x\":537,\"y\":390},\"x\":537,\"y\":390}]},{\"issueFolder\":{\"id\":\"2-456\",\"shapeId\":\"shape_29\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#dd33bb\"},\"coordinates\":{\"x\":522,\"y\":62},\"waypoints\":[{\"original\":{\"x\":362,\"y\":518},\"x\":362,\"y\":518},{\"x\":402,\"y\":518},{\"x\":402,\"y\":82},{\"original\":{\"x\":522,\"y\":82},\"x\":522,\"y\":82}]},{\"issueFolder\":{\"id\":\"2-789\",\"shapeId\":\"shape_31\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#dd33bb\"},\"coordinates\":{\"x\":522,\"y\":182},\"waypoints\":[{\"original\":{\"x\":362,\"y\":518},\"x\":362,\"y\":518},{\"x\":402,\"y\":518},{\"x\":402,\"y\":202},{\"original\":{\"x\":522,\"y\":202},\"x\":522,\"y\":202}]},{\"issueFolder\":{\"id\":\"2-987\",\"shapeId\":\"shape_33\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#dd33bb\"},\"coordinates\":{\"x\":535,\"y\":269},\"waypoints\":[{\"original\":{\"x\":362,\"y\":518},\"x\":362,\"y\":518},{\"x\":404,\"y\":518},{\"x\":404,\"y\":289},{\"original\":{\"x\":535,\"y\":289},\"x\":535,\"y\":289}]}]},{\"grShape\":{\"id\":\"3\",\"shapeId\":\"shape_35\",\"name\":\"Shipping Service\",\"version\":\"2.13.37\",\"grType\":{\"name\":\"x\",\"shape\":5,\"style\":{\"minWidth\":100,\"minHeight\":100,\"maxScale\":5,\"color\":\"#11dd33\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[{\"id\":\"3-DHL-true\",\"shapeId\":\"shape_37\",\"connectionId\":\"\",\"name\":\"DHL\",\"shape\":9,\"provide\":true,\"version\":\"1.0\"},{\"id\":\"3-DPD-true\",\"shapeId\":\"shape_39\",\"connectionId\":\"\",\"name\":\"DPD\",\"shape\":9,\"provide\":true,\"version\":\"1.0\"}],\"issueFolders\":[{\"id\":\"3-#94f543\",\"shapeId\":\"shape_41\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#040543\"}]},\"x\":1108,\"y\":-41,\"interfaces\":[{\"interface\":{\"id\":\"3-DHL-true\",\"shapeId\":\"shape_37\",\"connectionId\":\"\",\"name\":\"DHL\",\"shape\":9,\"provide\":true,\"version\":\"1.0\"},\"coordinates\":{\"x\":1452,\"y\":57},\"waypoints\":[{\"original\":{\"x\":1208,\"y\":9},\"x\":1208,\"y\":9},{\"x\":1248,\"y\":9},{\"x\":1248,\"y\":82},{\"original\":{\"x\":1477,\"y\":82},\"x\":1452,\"y\":82}]},{\"interface\":{\"id\":\"3-DPD-true\",\"shapeId\":\"shape_39\",\"connectionId\":\"\",\"name\":\"DPD\",\"shape\":9,\"provide\":true,\"version\":\"1.0\"},\"coordinates\":{\"x\":1448,\"y\":-41},\"waypoints\":[{\"original\":{\"x\":1208,\"y\":9},\"x\":1208,\"y\":9},{\"x\":1248,\"y\":9},{\"x\":1248,\"y\":-16},{\"original\":{\"x\":1448,\"y\":-16},\"x\":1448,\"y\":-16}]}],\"issueFolders\":[{\"issueFolder\":{\"id\":\"3-#94f543\",\"shapeId\":\"shape_41\",\"path\":\"M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40\",\"color\":\"#040543\"},\"coordinates\":{\"x\":1533,\"y\":177},\"waypoints\":[{\"original\":{\"x\":1208,\"y\":9},\"x\":1208,\"y\":26},{\"x\":1208,\"y\":197},{\"original\":{\"x\":1533,\"y\":197},\"x\":1533,\"y\":197}]}]},{\"grShape\":{\"id\":\"4\",\"shapeId\":\"shape_43\",\"name\":\"Logging Service\",\"version\":\"10.10.10\",\"grType\":{\"name\":\"x\",\"shape\":1,\"style\":{\"minWidth\":150,\"minHeight\":100,\"maxScale\":5,\"color\":\"#999999\",\"stroke\":\"#000000\",\"strokeWidth\":2,\"strokeDasharray\":\"\",\"radius\":5}},\"interfaces\":[],\"issueFolders\":[]},\"x\":-229,\"y\":1309,\"interfaces\":[],\"issueFolders\":[]}],\"connections\":[{\"sourceId\":\"2-Generic-false\",\"targetId\":\"3-DHL-true\",\"waypoints\":[{\"original\":{\"x\":504,\"y\":803},\"x\":504,\"y\":803},{\"x\":1021,\"y\":803},{\"x\":1021,\"y\":275},{\"x\":1475,\"y\":275},{\"original\":{\"x\":1475,\"y\":82},\"x\":1475,\"y\":107}],\"style\":{\"strokeColor\":\"orange\",\"strokeWidth\":3,\"strokeDasharray\":\"5 5\",\"sourceMarkerType\":3,\"targetMarkerType\":1}},{\"sourceId\":\"2-Generic-false\",\"targetId\":\"1-Paypal-true\",\"waypoints\":[{\"original\":{\"x\":486,\"y\":830},\"x\":500,\"y\":830},{\"x\":582,\"y\":830},{\"x\":582,\"y\":1051},{\"original\":{\"x\":1540,\"y\":1051},\"x\":1526,\"y\":1051}],\"style\":{\"strokeColor\":\"orange\",\"strokeWidth\":3,\"strokeDasharray\":\"5 5\",\"sourceMarkerType\":3,\"targetMarkerType\":1}},{\"sourceId\":\"2-123\",\"targetId\":\"1-070707\",\"waypoints\":[{\"original\":{\"x\":557,\"y\":390},\"x\":577,\"y\":390},{\"x\":1426,\"y\":390},{\"x\":1426,\"y\":1140},{\"original\":{\"x\":1533,\"y\":1140},\"x\":1516,\"y\":1140}],\"style\":{\"strokeColor\":\"orange\",\"strokeWidth\":3,\"strokeDasharray\":\"5 5\",\"sourceMarkerType\":3,\"targetMarkerType\":1}},{\"sourceId\":\"1-070707\",\"targetId\":\"3-#94f543\",\"waypoints\":[{\"original\":{\"x\":1536,\"y\":1159},\"x\":1536,\"y\":1134},{\"x\":1536,\"y\":676},{\"x\":1539,\"y\":676},{\"original\":{\"x\":1539,\"y\":202},\"x\":1539,\"y\":217}],\"style\":{\"strokeColor\":\"orange\",\"strokeWidth\":3,\"strokeDasharray\":\"5 5\",\"sourceMarkerType\":3,\"targetMarkerType\":1}},{\"sourceId\":\"2-123\",\"targetId\":\"3-#94f543\",\"waypoints\":[{\"original\":{\"x\":557,\"y\":390},\"x\":557,\"y\":410},{\"x\":557,\"y\":445},{\"x\":1568,\"y\":445},{\"original\":{\"x\":1568,\"y\":202},\"x\":1568,\"y\":217}],\"style\":{\"strokeColor\":\"orange\",\"strokeWidth\":3,\"strokeDasharray\":\"5 5\",\"sourceMarkerType\":3,\"targetMarkerType\":1}},{\"sourceId\":\"2\",\"targetId\":\"4\",\"waypoints\":[{\"original\":{\"x\":287,\"y\":518},\"x\":287,\"y\":593},{\"x\":287,\"y\":782},{\"x\":-134,\"y\":782},{\"original\":{\"x\":-134,\"y\":1356},\"x\":-134,\"y\":1336}],\"style\":{\"strokeColor\":\"orange\",\"strokeWidth\":3,\"strokeDasharray\":\"5 5\",\"sourceMarkerType\":3,\"targetMarkerType\":1}}]}");
+    //this.autolayout()
+
+    return;
 
     const xl = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     const l = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tortor consequat id porta nibh venenatis cras. Sollicitudin tempor id eu nisl. Viverra tellus in hac habitasse platea dictumst.";
@@ -880,7 +918,7 @@ export default class GropiusCompatibility {
         stroke: "#000000",
         strokeWidth: 2,
         strokeDasharray: "",
-        radius: 5,
+        radius: 5
       }
     }, { x: 150, y: 250 });
 

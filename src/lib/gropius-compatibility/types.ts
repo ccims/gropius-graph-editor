@@ -45,6 +45,7 @@ export interface GropiusInterface {
 export interface GropiusIssueFolder {
   id: string
   shapeId: string,
+  connectionId: string,
   path: string
   color: string
 }
