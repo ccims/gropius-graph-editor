@@ -690,18 +690,6 @@ export default class GropiusCompatibility {
       layoutOptions: {
         "elk.algorithm": "layered",
         "spacing.baseValue": "100"
-        // "interactiveLayout": "false",
-        // "elk.direction": "RIGHT",
-        // "spacing.nodeNode": "80",
-        // "spacing.nodeNodeBetweenLayers": "100",
-        // "spacing.edgeNode": "100",
-        // "spacing.edgeNodeBetweenLayers": "40",
-        // "spacing.edgeEdge": "60",
-        // "spacing.edgeEdgeBetweenLayers": "50",
-        // "crossingMinimization.semiInteractive": true,
-        // "separateConnectedComponents": "true",
-        // "nodePlacement.strategy": "NETWORK_SIMPLEX",
-        // "hierarchyHandling": "INCLUDE_CHILDREN",
       },
       children: Array<any>(),
       edges: Array<any>()
@@ -726,7 +714,7 @@ export default class GropiusCompatibility {
         };
 
         let mainComponentGroupWithIssues = { // With issues
-          id: "group_issuefolders",
+          id: "group_main",
           layoutOptions: {
             "elk.algorithm": "rectpacking",
             "spacing.baseValue": "50"
@@ -795,10 +783,10 @@ export default class GropiusCompatibility {
       }
     });
     console.log("Raw graph", graph);
+
     // @ts-ignore
     elk.layout(graph).then(graph => {
       console.log("Layouted Graph", graph);
-
       this.layoutGroup(graph, 250, 100);
     });
   }
