@@ -2,7 +2,7 @@
   <div class="container">
     <v-row justify="space-around">
       <v-card class="pa-6" width="400">
-        <h3>Do you really want to delete the component=</h3>
+        <h3>Do you really want to delete the component?</h3>
         <v-btn @click="onDeny">No</v-btn>
         <v-btn @click="onConfirm">Yes</v-btn>
       </v-card>
