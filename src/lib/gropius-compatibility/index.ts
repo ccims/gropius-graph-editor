@@ -30,10 +30,6 @@ export default class GropiusCompatibility {
   private elementRegistry: any;
   private modeling: any;
   private root: any;
-  private gropiusShapeNameMap = new Map<string, string>([
-    ["ComponentVersion", "shape-gropius-component_version"],
-    ["Library", "shape-gropius-library"]
-  ]);
 
   public onAddShape?: (coordinates: Coordinates) => void;
   public onDeleteShape?: (element: any) => void;
