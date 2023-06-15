@@ -622,7 +622,7 @@ export default class GropiusCompatibility {
 
       const white = "#ffffff";
       const black = "#000000";
-      const dark = "#444444";
+      const dark = "#486581";
       let stroke = black,
         fill = white;
 
@@ -664,11 +664,11 @@ export default class GropiusCompatibility {
 
         if (enabled) {
           stroke = white;
-          fill = "#444499";
+          fill = "#215a8f";
           element.custom.style.whiteText = true;
         } else {
           stroke = black;
-          fill = "#aaaaff";
+          fill = "#babafd";
         }
 
         element.custom.style.stroke = stroke;
@@ -689,7 +689,7 @@ export default class GropiusCompatibility {
 
     const container = document.getElementById("container");
     if (container)
-      container.style.backgroundColor = enabled ? "#333" : "#fff";
+      container.style.backgroundColor = enabled ? "#102a43" : "#fff";
     else
       console.error("Cannot find element with ID: Container");
 
@@ -699,10 +699,15 @@ export default class GropiusCompatibility {
     let graph = {
       id: "root",
       layoutOptions: {
+        "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]",
         "elk.algorithm": "layered",
         "spacing.baseValue": "100",
         "hierarchyHandling": "INCLUDE_CHILDREN",
-        "elk.edgeRouting": "ORTHOGONAL"
+        "elk.edgeRouting": "ORTHOGONAL",
+        "cycleBreaking.strategy": "INTERACTIVE",
+        "layering.strategy": "INTERACTIVE",
+        "crossingMinimization.semiInteractive": true,
+        "separateConnectedComponents": false,
       },
       children: Array<any>(),
       edges: Array<any>()
@@ -721,20 +726,25 @@ export default class GropiusCompatibility {
           layoutOptions: {
             // "elk.algorithm": "rectpacking",
             "spacing.baseValue": "40",
+            "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]"
           },
           children: Array<any>(),
           edges: Array<any>()
         };
 
-        let mainComponentGroupWithIssues = { // With issues
+        let issueFolders = { // With issues
           id: "group_main",
+          layoutOptions: {
+            "elk.direction": "RIGHT",
+            "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]"
+          },
           children: Array<any>(),
           edges: Array<any>()
         };
         let parent = {
           id: element.id,
           width: element.width,
-          height: element.height
+          height: element.height + 40
         };
         group.children.push(parent);
 
@@ -752,14 +762,14 @@ export default class GropiusCompatibility {
         // Layout Issue Folders
         element.businessObject.data.issueFolders.forEach((issueFolder: GropiusIssueFolder) => {
           const element = this.elementRegistry.get(issueFolder.shapeId);
-          mainComponentGroupWithIssues.children.push({
+          issueFolders.children.push({
             id: element.id,
             width: element.width,
             height: element.height
           });
         });
-        if (mainComponentGroupWithIssues.children.length > 0)
-          group.children.push(mainComponentGroupWithIssues);
+        if (issueFolders.children.length > 0)
+          group.children.push(issueFolders);
 
         // Layout Interfaces
         element.businessObject.data.interfaces.forEach((interf: GropiusInterface) => {
@@ -936,7 +946,7 @@ export default class GropiusCompatibility {
 
     this.createInterface("31", "3", "DHL", Shape.InterfaceProvide, "1.0", true);
     this.createInterface("32", "3", "DPD", Shape.InterfaceRequire, "1.0", false);
-    this.createIssueFolder("33", "3", svgPath, "#040543");
+    this.createIssueFolder("33", "3", svgPath, "#a7f143");
     this.createIssueFolder("34", "3", svgPath, "#a1b2c3");
 
     let d = this.createComponent("4", "Logging Service", "10.10.10", {
@@ -956,11 +966,13 @@ export default class GropiusCompatibility {
 
     this.createConnection("1", "2", [{ x: a.x, y: a.y }, { x: b.x, y: b.y }], {
       sourceMarkerType: ConnectionMarker.None,
-      strokeColor: "#00ff00",
+      strokeColor: "#ff0000",
       strokeDasharray: "",
       strokeWidth: 2,
       targetMarkerType: ConnectionMarker.ArrowRight
     });
+
+
 
     this.autolayout();
 
