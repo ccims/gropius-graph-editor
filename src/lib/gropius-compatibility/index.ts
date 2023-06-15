@@ -719,59 +719,50 @@ export default class GropiusCompatibility {
           id: "group_root_" + element.id,
           layoutOptions: {
             "elk.algorithm": "layered",
-            "spacing.baseValue": "40",
-            // "interactiveLayout": "true",
-            // "elk.direction": "RIGHT",
-            // "spacing.nodeNode": "800",
-            // "spacing.nodeNodeBetweenLayers": "100",
-            // "spacing.edgeNode": "100",
-            // "spacing.edgeNodeBetweenLayers": "400",
-            // "spacing.edgeEdge": "600",
-            // "spacing.edgeEdgeBetweenLayers": "500",
-            // "crossingMinimization.semiInteractive": true,
-            // "separateConnectedComponents": "false",
-            // "nodePlacement.strategy": "NETWORK_SIMPLEX",
-            // "hierarchyHandling": "INCLUDE_CHILDREN",
+            "spacing.baseValue": "40"
           },
           children: Array<any>(),
           edges: Array<any>()
         };
-        let layoutOptions = {
-          "elk.algorithm": "layered",
-          "spacing.baseValue": "50",
-          // "interactiveLayout": "true",
-          // "elk.direction": "RIGHT",
-          // "spacing.nodeNode": "800",
-          // "spacing.nodeNodeBetweenLayers": "100",
-          // "spacing.edgeNode": "100",
-          // "spacing.edgeNodeBetweenLayers": "400",
-          // "spacing.edgeEdge": "600",
-          // "spacing.edgeEdgeBetweenLayers": "500",
-          // "crossingMinimization.semiInteractive": false,
-          // "separateConnectedComponents": "true",
-          // "nodePlacement.strategy": "NETWORK_SIMPLEX",
-          // "hierarchyHandling": "INCLUDE_CHILDREN",
-        };
-        let interfaces = {
-          id: "group_interfaces",
-          layoutOptions: layoutOptions,
-          children: Array<any>(),
-          edges: Array<any>()
-        };
-        let issueFolders = {
-          id: "group_issuefolders",
-          layoutOptions: layoutOptions,
-          children: Array<any>(),
-          edges: Array<any>()
-        };
 
+        let mainComponentGroupWithIssues = { // With issues
+          id: "group_issuefolders",
+          layoutOptions: {
+            "elk.algorithm": "rectpacking",
+            "spacing.baseValue": "50"
+          },
+          children: Array<any>(),
+          edges: Array<any>()
+        };
         let parent = {
           id: element.id,
           width: element.width,
           height: element.height
         };
-        group.children.push(parent);
-        // graph.children.push(parent);
+        mainComponentGroupWithIssues.children.push(parent);
+
+
+        let interfaces = {
+          id: "group_interfaces",
+          layoutOptions: {
+            "elk.algorithm": "layered",
+            "spacing.baseValue": "50"
+          },
+          children: Array<any>(),
+          edges: Array<any>()
+        };
+
+        // Layout Issue Folders
+        element.businessObject.data.issueFolders.forEach((issueFolder: GropiusIssueFolder) => {
+          const element = this.elementRegistry.get(issueFolder.shapeId);
+          mainComponentGroupWithIssues.children.push({
+            id: element.id,
+            width: element.width,
+            height: element.height
+          });
+        });
+        if (mainComponentGroupWithIssues.children.length > 0)
+          group.children.push(mainComponentGroupWithIssues);
 
         // Layout Interfaces
         element.businessObject.data.interfaces.forEach((interf: GropiusInterface) => {
@@ -792,18 +783,6 @@ export default class GropiusCompatibility {
         });
         if (interfaces.children.length > 0)
           group.children.push(interfaces);
-
-        // Layout Issue Folders
-        element.businessObject.data.issueFolders.forEach((issueFolder: GropiusIssueFolder) => {
-          const element = this.elementRegistry.get(issueFolder.shapeId);
-          issueFolders.children.push({
-            id: element.id,
-            width: element.width,
-            height: element.height
-          });
-        });
-        if (issueFolders.children.length > 0)
-          group.children.push(issueFolders);
 
         graph.children.push(group);
       } else if (element.businessObject.type == ObjectType.Connection) {
@@ -915,6 +894,8 @@ export default class GropiusCompatibility {
     this.createIssueFolder("2", "456", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
     this.createIssueFolder("2", "789", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
     this.createIssueFolder("2", "987", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
+    this.createIssueFolder("2", "9871", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd3311");
+    this.createIssueFolder("2", "9872", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#0033bb");
 
     let c = this.createComponent("3", "Shipping Service", "2.13.37", {
       name: "x",
