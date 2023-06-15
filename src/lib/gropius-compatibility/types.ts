@@ -85,8 +85,7 @@ export interface SerializedInterface {
 
 export interface SerializedIssueFolder {
   issueFolder: GropiusIssueFolder,
-  coordinates: Coordinates,
-  waypoints: Array<Coordinates>
+  coordinates: Coordinates
 }
 
 export  interface SerializedConnection {
