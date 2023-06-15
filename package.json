@@ -13,6 +13,7 @@
     "elkjs": "^0.8.2",
     "form-wizard-vue3": "^1.1.0",
     "ids": "^1.0.0",
+    "svgpath": "^2.6.0",
     "vite": "^4.2.1",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",
