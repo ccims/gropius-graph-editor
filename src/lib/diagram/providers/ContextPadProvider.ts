@@ -63,14 +63,10 @@ ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
         "delete": deleteIcon,
         "connect": connectIcon
       };
-    case ObjectType.InterfaceRequire:
+    case ObjectType.Interface:
       return {
         "delete": deleteIcon,
         "connect": connectIcon
-      };
-    case ObjectType.InterfaceProvide:
-      return {
-        "delete": deleteIcon
       };
     case ObjectType.Connection:
       return {

@@ -296,7 +296,7 @@ export default class GropiusCompatibility {
       width: 50,
       height: 50,
       businessObject: {
-        type: interf.provide ? ObjectType.InterfaceProvide : ObjectType.InterfaceRequire,
+        type: ObjectType.Interface,
         data: interf
       },
       custom: {
@@ -304,7 +304,7 @@ export default class GropiusCompatibility {
         style: {
           rx: parentBusinessObject.grType.style.radius,
           ry: parentBusinessObject.grType.style.radius,
-          fill: interf.provide ? parentBusinessObject.grType.style.color : "#00000000",
+          fill: interf.openShape ? parentBusinessObject.grType.style.color : "#00000000",
           stroke: parentBusinessObject.grType.style.stroke,
           strokeWidth: parentBusinessObject.grType.style.strokeWidth,
           strokeDasharray: parentBusinessObject.grType.style.strokeDasharray
@@ -355,7 +355,7 @@ export default class GropiusCompatibility {
       connectionId: "",
       name: name,
       shape: shape,
-      provide: provide,
+      openShape: provide,
       version: version
     };
 

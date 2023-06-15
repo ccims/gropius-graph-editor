@@ -85,7 +85,7 @@ export default function MoveEvents(
   // * validatedShapes: a list of shapes that are being checked
   //                    against the rules before and during move
   //
-  eventBus.on("shape.move.start", HIGH_PRIORITY, function (event: any) {
+  eventBus.on("shape.move.start", HIGH_PRIORITY, function(event: any) {
 
     let context = event.context,
       shape = event.shape,
@@ -114,7 +114,7 @@ export default function MoveEvents(
   // others may hook up later, e.g. at default priority and modify
   // the move environment
   //
-  eventBus.on("shape.move.start", MEDIUM_PRIORITY, function (event: any) {
+  eventBus.on("shape.move.start", MEDIUM_PRIORITY, function(event: any) {
     let context = event.context,
       validatedShapes = context.validatedShapes,
       canExecute;
@@ -131,7 +131,7 @@ export default function MoveEvents(
   // to let others modify the move event before we update
   // the context
   //
-  eventBus.on("shape.move.move", LOW_PRIORITY, function (event: any) {
+  eventBus.on("shape.move.move", LOW_PRIORITY, function(event: any) {
     let context = event.context,
       validatedShapes = context.validatedShapes,
       hover = event.hover,
@@ -139,7 +139,6 @@ export default function MoveEvents(
       position = { x: event.x, y: event.y },
       canExecute,
       lastPosition = context.lastPosition;
-
 
 
     if (lastPosition) {
@@ -178,9 +177,10 @@ export default function MoveEvents(
       return false;
     }
 
-    if(context.shapes.length == 1 && (context.shapes[0].businessObject.type == ObjectType.InterfaceProvide || context.shapes[0].businessObject.type == ObjectType.InterfaceRequire || context.shapes[0].businessObject.type == ObjectType.IssueFolder)) {
+    if (context.shapes.length == 1 && (context.shapes[0].businessObject.type == ObjectType.Interface
+      || context.shapes[0].businessObject.type == ObjectType.IssueFolder)) {
       // Only one sub-element shall be moved
-      shapes = context.shapes
+      shapes = context.shapes;
     } else {
       // Multiple elements or a non-sub-element shall be moved
 
@@ -188,8 +188,8 @@ export default function MoveEvents(
       context.shapes.forEach((shape: any) => {
         if (shape.id.startsWith("shape") && shape.businessObject.type == ObjectType.Gropius
           || shape.id.startsWith("connection"))
-          shapes.push(shape)
-      })
+          shapes.push(shape);
+      });
 
       // Add all sub-components (versions, interfaces, etc)
       context.shapes.forEach((shape: any) => {
@@ -197,14 +197,14 @@ export default function MoveEvents(
           shapes.push(shape.custom.versionObject);
 
           shape.businessObject.data.interfaces.forEach((interf: GropiusInterface) => {
-            shapes.push(elementRegistry.get(interf.shapeId))
-          })
+            shapes.push(elementRegistry.get(interf.shapeId));
+          });
 
           shape.businessObject.data.issueFolders.forEach((issueFolder: GropiusIssueFolder) => {
-            shapes.push(elementRegistry.get(issueFolder.shapeId))
-          })
+            shapes.push(elementRegistry.get(issueFolder.shapeId));
+          });
         }
-      })
+      });
     }
 
     // ensure we have actual pixel values deltas
@@ -222,14 +222,14 @@ export default function MoveEvents(
     });
   }
 
-  eventBus.on("shape.move.end", function (event) {
+  eventBus.on("shape.move.end", function(event) {
     moveShape(event);
   });
 
 
   // move activation
 
-  eventBus.on("element.mousedown", function (event: any) {
+  eventBus.on("element.mousedown", function(event: any) {
 
     if (!isPrimaryButton(event)) {
       return;
@@ -311,7 +311,7 @@ function removeNested(elements: Array<Base>) {
 
   const ids = groupBy(elements, "id");
 
-  return filter(elements, function (element: Base) {
+  return filter(elements, function(element: Base) {
     while ((element = element.parent)) {
 
       // parent in selection

@@ -29,20 +29,17 @@ CustomRuleProvider.prototype.init = function() {
     return target.parent === shape.target;
   });
 
+  //@ts-ignore
   this.addRule("connection.create", function(context: any) {
     const source = context.source,
       target = context.target;
-    if (source.businessObject && target.businessObject) {
-      if (source.businessObject.type == ObjectType.Gropius
-        && target.businessObject.type == ObjectType.Gropius)
-        return true;
-      if (source.businessObject.type == ObjectType.InterfaceRequire
-        && (target.businessObject.type == ObjectType.InterfaceProvide || target.businessObject.type == ObjectType.Gropius))
-        return true;
-      if(source.businessObject.type == ObjectType.IssueFolder && target.businessObject.type == ObjectType.IssueFolder)
-        return true
-    }
-    return false;
+    if (!source.businessObject || !target.businessObject)
+      return false;
+
+    if(source.businessObject.type == ObjectType.Version || target.businessObject.type == ObjectType.Version)
+      return false
+
+    return true;
   });
 
   this.addRule("shape.resize", function(context: any) {

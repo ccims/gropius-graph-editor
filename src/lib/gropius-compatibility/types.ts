@@ -12,8 +12,7 @@ export enum ObjectType {
   Version,
   Connection,
   SubConnection,
-  InterfaceProvide,
-  InterfaceRequire,
+  Interface,
   IssueFolder
 }
 
@@ -38,7 +37,7 @@ export interface GropiusInterface {
   connectionId: string,
   name: string
   shape: Shape
-  provide: boolean
+  openShape: boolean
   version: string
 }
 
