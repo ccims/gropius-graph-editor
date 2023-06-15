@@ -21,8 +21,7 @@
     <button @click=handleExport>Export</button>
     <button @click=autolayout>Layout</button>
 
-    <div id="container" :style="{ backgroundColor: darkMode ? '#333' : '#fff'}"></div>
-
+    <div id="container"></div>
     <AddComponent
       v-if="showAddComponent"
       @onChoiceDone="onComponentSelected"

@@ -682,6 +682,13 @@ export default class GropiusCompatibility {
       }
       this.canvas._eventBus.fire("element.changed", { element: element });
     });
+
+    const container = document.getElementById("container")
+    if(container)
+      container.style.backgroundColor = enabled ? '#333' : '#fff'
+    else
+      console.error("Cannot find element with ID: Container")
+
   }
 
   public autolayout() {
