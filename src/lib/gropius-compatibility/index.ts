@@ -724,8 +724,7 @@ export default class GropiusCompatibility {
         let group = {
           id: "group_root_" + element.id,
           layoutOptions: {
-            "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]",
-            "spacing.baseValue": "40"
+            "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]"
           },
           children: Array<any>(),
           edges: Array<any>()
@@ -742,6 +741,7 @@ export default class GropiusCompatibility {
           id: "group_main",
           layoutOptions: {
             "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]",
+            "spacing.baseValue": "10"
           },
           children: Array<any>(),
           edges: Array<any>()
@@ -752,7 +752,7 @@ export default class GropiusCompatibility {
           layoutOptions: {
             // "elk.algorithm": "layered",
             "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]",
-            "spacing.baseValue": "20",
+            "spacing.baseValue": "50",
           },
           children: Array<any>(),
           edges: Array<any>()
