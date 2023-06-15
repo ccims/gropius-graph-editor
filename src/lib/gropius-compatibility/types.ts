@@ -31,6 +31,12 @@ export interface GropiusShape {
   issueFolders: Array<GropiusIssueFolder>
 }
 
+export interface GropiusConnection {
+  id: string,
+  sourceId: string,
+  targetId: string
+}
+
 export interface GropiusInterface {
   id: string,
   shapeId: string,

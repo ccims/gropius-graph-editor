@@ -55,7 +55,7 @@ let coordinates: Coordinates = {
   y: 0,
 };
 
-let elementToDelete: any = null;
+let elementToDelete: string = "";
 
 export default defineComponent({
   props: {
@@ -91,10 +91,14 @@ export default defineComponent({
       };
     };
 
-    diagram.onDeleteShape = (element: any) => {
+    diagram.onDeleteShape = (id: string) => {
       this.showConfirmPopup = true;
-      elementToDelete = element
+      elementToDelete = id
     };
+
+    diagram.onAddConnection = (sourceId: string, targetId: string) => {
+      console.log(sourceId, targetId)
+    }
   },
   methods: {
 

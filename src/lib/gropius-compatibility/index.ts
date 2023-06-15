@@ -2,6 +2,7 @@
 import EditorLib from "../diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
 import {
+  GropiusConnection,
   GropiusConnectionStyle, GropiusInterface, GropiusIssueFolder,
   GropiusShape, GropiusType,
   ObjectType,
@@ -32,8 +33,8 @@ export default class GropiusCompatibility {
   private root: any;
 
   public onAddShape?: (coordinates: Coordinates) => void;
-  public onDeleteShape?: (element: any) => void;
-  public onAddConnection?: (connection: Connection) => void;
+  public onDeleteShape?: (id: string) => void;
+  public onAddConnection?: (sourceId: string, targetId: string) => void;
 
 
   public init(container: Element) {
@@ -50,25 +51,29 @@ export default class GropiusCompatibility {
     this.canvas.setRootElement(this.root);
 
     this.canvas._eventBus.on("shape.added", (e: any) => {
+      // Visual placeholder element is a "frame"
       if (!e.element.isFrame)
         return;
       const element = e.element;
-      this.canvas.removeShape(element);
+      this.canvas.removeShape(element); // remove placeholder element
 
       const coordinates: Coordinates = {
         x: element.x,
         y: element.y
       };
 
+      // Call event method. Flow is done, nothing happens from here
       if (this.onAddShape)
         this.onAddShape(coordinates);
     });
 
     this.canvas._eventBus.on("context.shape.delete", (e: any) => {
-      // TODO Uncomment this and delete last line
-      // if (this.onDeleteShape)
-      //   this.onDeleteShape(e.element);
-      this.deleteShape(e.element);
+      const element = e.element;
+      if (this.onDeleteShape && element.businessObject && element.businessObject.data) {
+        this.onDeleteShape(e.element.businessObject.data.id);
+      } else {
+        console.error("Something went wrong on a delete event");
+      }
     });
 
     this.canvas._eventBus.on("connection.added", (e: any) => {
@@ -76,12 +81,17 @@ export default class GropiusCompatibility {
 
       // If connection has been created by API or UI
       if (element.customRendered)
-        return; // Ignore if it custom rendered, i.e. not by UI. Otherwise infinite recursion!
+        return; // Ignore if it's custom rendered, i.e. not by UI. Otherwise infinite recursion!
 
       this.canvas.removeConnection(element);
 
-      if (this.onAddConnection)
-        this.onAddConnection(e.element);
+      if (this.onAddConnection) {
+        try {
+          this.onAddConnection(element.source.businessObject.data.id, element.target.businessObject.data.id);
+        } catch (error) {
+          console.error(error);
+        }
+      }
 
       // TODO: This is for dev purpose! It should get called by the frontend
       this.createConnectionBase(element, {
@@ -320,7 +330,7 @@ export default class GropiusCompatibility {
         { x: diagramInterfaceObject.x, y: diagramInterfaceObject.y + diagramInterfaceObject.height / 2 }
       ];
 
-    let con = this.createConnection(parentShape, diagramInterfaceObject, waypoints, {
+    let con = this.createConnection(parentShape.businessObject.data.id, diagramInterfaceObject.businessObject.data.id, waypoints, {
       strokeColor: parentBusinessObject.grType.style.stroke,
       strokeWidth: 2,
       strokeDasharray: "",
@@ -333,10 +343,9 @@ export default class GropiusCompatibility {
     return diagramInterfaceObject;
   }
 
-  public createInterface(gropiusId: string, name: string, shape: Shape, version: string, provide = true, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
-    let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == gropiusId);
+  public createInterface(id: string, parentId: string, name: string, shape: Shape, version: string, openShape = true, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
+    let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == parentId);
     const parentBusinessObject = diagramParentObject.businessObject.data;
-    const interfaceId = parentBusinessObject.id + "-" + name + "-" + provide;
 
     // Set coordinates if not given. Default is middle-right of parent
     if (!coordinates)
@@ -346,12 +355,12 @@ export default class GropiusCompatibility {
       };
 
     const interfaceObject: GropiusInterface = {
-      id: interfaceId,
+      id: id,
       shapeId: "",
       connectionId: "",
       name: name,
       shape: shape,
-      openShape: provide,
+      openShape: openShape,
       version: version
     };
 
@@ -361,13 +370,12 @@ export default class GropiusCompatibility {
     parentBusinessObject.interfaces.push(interfaceObject);
   }
 
-  public createIssueFolder(parentId: string, id: string, path: string, color: string, coordinates?: Coordinates) {
+  public createIssueFolder(id: string, parentId: string, path: string, color: string, coordinates?: Coordinates) {
     let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == parentId);
     const parentBusinessObject = diagramParentObject.businessObject.data;
-    const interfaceId = parentBusinessObject.id + "-" + id;
 
     const issueFolderObject: GropiusIssueFolder = {
-      id: interfaceId,
+      id: id,
       shapeId: "",
       connectionId: "",
       path: path,
@@ -418,7 +426,8 @@ export default class GropiusCompatibility {
     return diagramIssueFolderObject;
   }
 
-  public deleteShape(element: any): boolean {
+  public deleteShape(id: string): boolean {
+    const element = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == id);
 
     if (!element.businessObject)
       return false;
@@ -447,18 +456,28 @@ export default class GropiusCompatibility {
       label: "" // TODO
     };
 
+    const gropiusConnection: GropiusConnection = {
+      id: connection.source.businessObject.data.id + "-" + connection.target.businessObject.data.id,
+      sourceId: connection.source.businessObject.data.id,
+      targetId: connection.target.businessObject.data.id
+    };
+
     connection.businessObject = {
-      type: isSubConnection ? ObjectType.SubConnection : ObjectType.Connection
+      type: isSubConnection ? ObjectType.SubConnection : ObjectType.Connection,
+      data: gropiusConnection
     };
 
     return this.canvas.addConnection(connection, this.root);
   }
 
-  public createConnection(source: any, target: any, waypoints: Array<Coordinates>, style: GropiusConnectionStyle, isSubConnection = false) {
+  public createConnection(sourceId: string, targetId: string, waypoints: Array<Coordinates>, style: GropiusConnectionStyle, isSubConnection = false) {
+    const sourceElement = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == sourceId);
+    const targetElement = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == targetId);
+
     let connection = this.elementFactory.createConnection({
       waypoints: waypoints,
-      source: source,
-      target: target
+      source: sourceElement,
+      target: targetElement
     });
 
     return this.createConnectionBase(connection, style, isSubConnection);
@@ -593,15 +612,7 @@ export default class GropiusCompatibility {
     });
 
     diagram.connections.forEach(connection => {
-      const source = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == connection.sourceId);
-      let target = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == connection.targetId);
-
-      if (!source || !target) {
-        console.error("Unknown source or target for connection:", connection);
-        return;
-      }
-
-      this.createConnection(source, target, connection.waypoints, connection.style);
+      this.createConnection(connection.sourceId, connection.targetId, connection.waypoints, connection.style);
     });
   }
 
@@ -679,11 +690,11 @@ export default class GropiusCompatibility {
       this.canvas._eventBus.fire("element.changed", { element: element });
     });
 
-    const container = document.getElementById("container")
-    if(container)
-      container.style.backgroundColor = enabled ? '#333' : '#fff'
+    const container = document.getElementById("container");
+    if (container)
+      container.style.backgroundColor = enabled ? "#333" : "#fff";
     else
-      console.error("Cannot find element with ID: Container")
+      console.error("Cannot find element with ID: Container");
 
   }
 
@@ -858,10 +869,10 @@ export default class GropiusCompatibility {
       }
     }, { x: 150, y: 100 });
 
-    this.createInterface("1", "Paypal", Shape.InterfaceProvide, "1.0", true);
-    this.createInterface("1", "CreditCard", Shape.Diamond, "1.0", true);
-    this.createInterface("1", "Goats", Shape.Hexagon, "1.0", true);
-    this.createIssueFolder("1", "070707", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#eef1c9");
+    this.createInterface("11", "1", "Paypal", Shape.InterfaceProvide, "1.0", true);
+    this.createInterface("12", "1", "CreditCard", Shape.Diamond, "1.0", true);
+    this.createInterface("13", "1", "Goats", Shape.Hexagon, "1.0", true);
+    this.createIssueFolder("14", "1", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#eef1c9");
 
     let b = this.createComponent("2", "Order Service", "1.0.0", {
       name: "x",
@@ -879,14 +890,14 @@ export default class GropiusCompatibility {
     }, { x: 150, y: 250 });
 
     // GOTO1
-    this.createInterface("2", "Generic", Shape.InterfaceRequire, "1.0", false);
-    this.createInterface("2", "Generic", Shape.InterfaceProvide, "1.0", true);
-    this.createIssueFolder("2", "123", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#33dd88");
-    this.createIssueFolder("2", "456", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
-    this.createIssueFolder("2", "789", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
-    this.createIssueFolder("2", "987", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
-    this.createIssueFolder("2", "9871", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd3311");
-    this.createIssueFolder("2", "9872", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#0033bb");
+    this.createInterface("21", "2", "Generic", Shape.InterfaceRequire, "1.0", false);
+    this.createInterface("22", "2", "Generic", Shape.InterfaceProvide, "1.0", true);
+    this.createIssueFolder("23", "2", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#33dd88");
+    this.createIssueFolder("24", "2", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
+    this.createIssueFolder("25", "2", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
+    this.createIssueFolder("26", "2", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd33bb");
+    this.createIssueFolder("27", "2", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#dd3311");
+    this.createIssueFolder("28", "2", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#0033bb");
 
     let c = this.createComponent("3", "Shipping Service", "2.13.37", {
       name: "x",
@@ -903,10 +914,10 @@ export default class GropiusCompatibility {
       }
     }, { x: 150, y: 250 });
 
-    this.createInterface("3", "DHL", Shape.InterfaceProvide, "1.0", true);
-    this.createInterface("3", "DPD", Shape.InterfaceRequire, "1.0", false);
-    this.createIssueFolder("3", "#94f543", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#040543");
-    this.createIssueFolder("3", "#94f543", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#a1b2c3");
+    this.createInterface("31", "3", "DHL", Shape.InterfaceProvide, "1.0", true);
+    this.createInterface("32", "3", "DPD", Shape.InterfaceRequire, "1.0", false);
+    this.createIssueFolder("33", "3", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#040543");
+    this.createIssueFolder("34", "3", "M 0 40 L 0 0 L 20 0 L 20 10 L 40 10 L 40 40", "#a1b2c3");
 
     let d = this.createComponent("4", "Logging Service", "10.10.10", {
       name: "x",
