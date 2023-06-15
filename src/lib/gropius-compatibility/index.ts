@@ -724,23 +724,13 @@ export default class GropiusCompatibility {
         let group = {
           id: "group_root_" + element.id,
           layoutOptions: {
-            // "elk.algorithm": "rectpacking",
-            "spacing.baseValue": "40",
-            "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]"
+            "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]",
+            "spacing.baseValue": "40"
           },
           children: Array<any>(),
           edges: Array<any>()
         };
 
-        let issueFolders = { // With issues
-          id: "group_main",
-          layoutOptions: {
-            "elk.direction": "RIGHT",
-            "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]"
-          },
-          children: Array<any>(),
-          edges: Array<any>()
-        };
         let parent = {
           id: element.id,
           width: element.width,
@@ -748,12 +738,21 @@ export default class GropiusCompatibility {
         };
         group.children.push(parent);
 
+        let issueFolders = { // With issues
+          id: "group_main",
+          layoutOptions: {
+            "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]",
+          },
+          children: Array<any>(),
+          edges: Array<any>()
+        };
 
         let interfaces = {
           id: "group_interfaces",
           layoutOptions: {
             // "elk.algorithm": "layered",
-            "spacing.baseValue": "50"
+            "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]",
+            "spacing.baseValue": "20",
           },
           children: Array<any>(),
           edges: Array<any>()
@@ -966,13 +965,59 @@ export default class GropiusCompatibility {
 
     this.createConnection("1", "2", [{ x: a.x, y: a.y }, { x: b.x, y: b.y }], {
       sourceMarkerType: ConnectionMarker.None,
-      strokeColor: "#ff0000",
+      strokeColor: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
       targetMarkerType: ConnectionMarker.ArrowRight
     });
 
+    this.createConnection("4", "2", [{ x: a.x, y: a.y }, { x: b.x, y: b.y }], {
+      sourceMarkerType: ConnectionMarker.None,
+      strokeColor: "#e05d01",
+      strokeDasharray: "",
+      strokeWidth: 2,
+      targetMarkerType: ConnectionMarker.ArrowRight
+    });
 
+    this.createConnection("33", "25", [{ x: a.x, y: a.y }, { x: b.x, y: b.y }], {
+      sourceMarkerType: ConnectionMarker.None,
+      strokeColor: "#e05d01",
+      strokeDasharray: "",
+      strokeWidth: 2,
+      targetMarkerType: ConnectionMarker.ArrowRight
+    });
+
+    this.createConnection("23", "34", [{ x: a.x, y: a.y }, { x: b.x, y: b.y }], {
+      sourceMarkerType: ConnectionMarker.None,
+      strokeColor: "#e05d01",
+      strokeDasharray: "",
+      strokeWidth: 2,
+      targetMarkerType: ConnectionMarker.ArrowRight
+    });
+
+    this.createConnection("2", "3", [{ x: a.x, y: a.y }, { x: b.x, y: b.y }], {
+      sourceMarkerType: ConnectionMarker.None,
+      strokeColor: "#e05d01",
+      strokeDasharray: "",
+      strokeWidth: 2,
+      targetMarkerType: ConnectionMarker.ArrowRight
+    });
+
+    this.createConnection("21", "13", [{ x: a.x, y: a.y }, { x: b.x, y: b.y }], {
+      sourceMarkerType: ConnectionMarker.None,
+      strokeColor: "#e05d01",
+      strokeDasharray: "",
+      strokeWidth: 2,
+      targetMarkerType: ConnectionMarker.ArrowRight
+    });
+
+    this.createConnection("28", "14", [{ x: a.x, y: a.y }, { x: b.x, y: b.y }], {
+      sourceMarkerType: ConnectionMarker.None,
+      strokeColor: "#e05d01",
+      strokeDasharray: "",
+      strokeWidth: 2,
+      targetMarkerType: ConnectionMarker.ArrowRight
+    });
 
     this.autolayout();
 
