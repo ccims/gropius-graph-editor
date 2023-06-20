@@ -68,7 +68,7 @@ export interface GropiusShapeStyle {
 }
 
 export interface GropiusConnectionStyle {
-  strokeColor: string,
+  color: string,
   strokeWidth: number,
   strokeDasharray: string,
   sourceMarkerType: ConnectionMarker,

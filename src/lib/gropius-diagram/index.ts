@@ -214,7 +214,7 @@ export default class GropiusDiagram {
       ];
 
     let con = this._createConnection(null, parentShape.businessObject.data.id, diagramInterfaceObject.businessObject.data.id, {
-      strokeColor: parentBusinessObject.grType.style.stroke,
+      color: parentBusinessObject.grType.style.stroke,
       strokeWidth: 2,
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.None,
@@ -650,7 +650,7 @@ export default class GropiusDiagram {
 
     this._createConnection("1", "1", "2", {
       sourceMarkerType: ConnectionMarker.None,
-      strokeColor: "#e05d01",
+      color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
       targetMarkerType: ConnectionMarker.ArrowRight
@@ -658,7 +658,7 @@ export default class GropiusDiagram {
 
     this._createConnection("2", "4", "2", {
       sourceMarkerType: ConnectionMarker.None,
-      strokeColor: "#e05d01",
+      color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
       targetMarkerType: ConnectionMarker.ArrowRight
@@ -666,7 +666,7 @@ export default class GropiusDiagram {
 
     this._createConnection("3", "33", "25", {
       sourceMarkerType: ConnectionMarker.None,
-      strokeColor: "#e05d01",
+      color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
       targetMarkerType: ConnectionMarker.ArrowRight
@@ -674,7 +674,7 @@ export default class GropiusDiagram {
 
     this._createConnection("4", "23", "34", {
       sourceMarkerType: ConnectionMarker.None,
-      strokeColor: "#e05d01",
+      color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
       targetMarkerType: ConnectionMarker.ArrowRight
@@ -682,7 +682,7 @@ export default class GropiusDiagram {
 
     this._createConnection("4", "2", "3", {
       sourceMarkerType: ConnectionMarker.None,
-      strokeColor: "#e05d01",
+      color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
       targetMarkerType: ConnectionMarker.ArrowRight
@@ -690,7 +690,7 @@ export default class GropiusDiagram {
 
     this._createConnection("5", "21", "13", {
       sourceMarkerType: ConnectionMarker.None,
-      strokeColor: "#e05d01",
+      color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
       targetMarkerType: ConnectionMarker.ArrowRight
@@ -698,7 +698,7 @@ export default class GropiusDiagram {
 
     this._createConnection("6", "28", "14", {
       sourceMarkerType: ConnectionMarker.None,
-      strokeColor: "#e05d01",
+      color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
       targetMarkerType: ConnectionMarker.ArrowRight

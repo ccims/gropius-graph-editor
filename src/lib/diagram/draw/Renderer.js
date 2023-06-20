@@ -151,14 +151,14 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     //attrs.markerStart = marker("", fill, stroke);
     if (element.custom) {
       attrs = {
-        stroke: element.custom.style.strokeColor,
+        stroke: element.custom.style.color,
         strokeWidth: element.custom.style.strokeWidth,
         strokeDasharray: element.custom.style.strokeDasharray
       };
       if (element.custom.style.sourceMarkerType != ConnectionMarker.None)
-        attrs.markerStart = marker(element.custom.style.sourceMarkerType, element.custom.style.strokeColor, element.custom.style.strokeColor, true);
+        attrs.markerStart = marker(element.custom.style.sourceMarkerType, element.custom.style.color, element.custom.style.color, true);
       if (element.custom.style.targetMarkerType != ConnectionMarker.None)
-        attrs.markerEnd = marker(element.custom.style.targetMarkerType, element.custom.style.strokeColor, element.custom.style.strokeColor, false);
+        attrs.markerEnd = marker(element.custom.style.targetMarkerType, element.custom.style.color, element.custom.style.color, false);
 
       // TODO Label
     } else {
