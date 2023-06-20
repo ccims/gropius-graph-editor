@@ -21,6 +21,7 @@
     <button @click=handleExport>Export</button>
     <button @click=autolayout>Layout</button>
     <label><input type="checkbox" @change="setHideIssues" v-model="hideIssues" />Hide Issues</label>
+    <label><input type="checkbox" @change="setHideInterfaces" v-model="hideInterfaces" />Hide Interfaces</label>
 
     <div id="container"></div>
     <AddComponent
@@ -74,7 +75,8 @@ export default defineComponent({
       showAddConnection: false,
       showConnectionNotification: false,
       darkMode: false,
-      hideIssues: false
+      hideIssues: false,
+      hideInterfaces: false
     };
   },
 
@@ -139,6 +141,10 @@ export default defineComponent({
 
     setHideIssues() {
       diagram.setObjectTypeVisibility(ObjectType.IssueFolder, this.hideIssues);
+    },
+
+    setHideInterfaces() {
+      diagram.setObjectTypeVisibility(ObjectType.Interface, this.hideInterfaces);
     },
 
     /**
