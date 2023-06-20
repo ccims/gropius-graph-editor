@@ -8,7 +8,7 @@ import RuleProvider from "diagram-js/lib/features/rules/RuleProvider";
 
 // @ts-ignore
 import { isFrameElement } from "diagram-js/lib/util/Elements";
-import { ObjectType } from "@/lib/gropius-compatibility/types";
+import { ObjectType } from "@/lib/gropius-diagram/types";
 
 
 export default function CustomRuleProvider(eventBus: EventBus) {

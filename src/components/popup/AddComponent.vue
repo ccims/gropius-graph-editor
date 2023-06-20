@@ -35,7 +35,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { GropiusType } from "@/lib/gropius-compatibility/types";
+import { GropiusType } from "@/lib/gropius-diagram/types";
 import gropiusapi from "@/mixins/api";
 
 let selectedComponent: GropiusType;

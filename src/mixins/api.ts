@@ -1,6 +1,6 @@
 import {
   GropiusType
-} from "@/lib/gropius-compatibility/types";
+} from "@/lib/gropius-diagram/types";
 
 import {
   Shape

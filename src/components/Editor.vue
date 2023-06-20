@@ -43,16 +43,16 @@ import Confirm from "./popup/Confirm.vue";
 import AddComponent from "./popup/AddComponent.vue";
 import AddConnection from "./popup/AddConnection.vue";
 
-import GropiusCompatibility from "../lib/gropius-compatibility";
-import { GropiusShape, ObjectType } from "../lib/gropius-compatibility/types";
+import GropiusDiagram from "../lib/gropius-diagram";
+import { GropiusShape, ObjectType } from "../lib/gropius-diagram/types";
 import { Coordinates } from "@/types/HelperTypes";
-import { GropiusType } from "@/lib/gropius-compatibility/types";
+import { GropiusType } from "@/lib/gropius-diagram/types";
 import { defineComponent } from "vue";
 
 import gropiusapi from "@/mixins/api";
 import { ConnectionMarker } from "@/lib/diagram/types";
 
-let diagram: GropiusCompatibility;
+let diagram: GropiusDiagram;
 let coordinates: Coordinates = {
   x: 0,
   y: 0
@@ -83,8 +83,9 @@ export default defineComponent({
   },
 
   mounted() {
-    diagram = new GropiusCompatibility();
-    diagram.init(document.querySelector("#container"));
+    diagram = new GropiusDiagram();
+    //@ts-ignore
+    diagram.init(document.getElementById("container"));
     // this.diagram.getGropiusShapeNames()
     diagram.test();
 

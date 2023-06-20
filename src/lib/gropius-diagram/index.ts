@@ -12,7 +12,7 @@ import {
   SerializedDiagram,
   SerializedInterface,
   SerializedIssueFolder
-} from "@/lib/gropius-compatibility/types";
+} from "@/lib/gropius-diagram/types";
 
 import { ConnectionMarker, Shape } from "@/lib/diagram/types";
 
@@ -21,11 +21,11 @@ import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
 
 import ELK from "elkjs/lib/elk.bundled.js";
-import { getTextBasedDimensions, getVersionOffsetFromShape, scaleSvgPath } from "@/lib/gropius-compatibility/util";
+import { getTextBasedDimensions, getVersionOffsetFromShape, scaleSvgPath } from "@/lib/gropius-diagram/util";
 
 const elk = new ELK();
 
-export default class GropiusCompatibility {
+export default class GropiusDiagram {
   private container: any;
   private diagram: Diagram;
   private canvas: any;
@@ -95,15 +95,6 @@ export default class GropiusCompatibility {
           console.error(error);
         }
       }
-
-      // TODO: This is for dev purpose! It should get called by the frontend
-      // this.createConnectionBase(element, {
-      //   strokeColor: "orange",
-      //   strokeWidth: 3,
-      //   strokeDasharray: "5 5",
-      //   sourceMarkerType: ConnectionMarker.Round,
-      //   targetMarkerType: ConnectionMarker.Right
-      // });
     });
 
   }
