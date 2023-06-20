@@ -143,7 +143,7 @@ export default defineComponent({
     },
 
     setHideIssues() {
-      diagram.setObjectTypeVisibility(ObjectType.IssueFolder, this.hideIssues);
+      diagram.setObjectTypeVisibility(ObjectType.Issue, this.hideIssues);
     },
 
     setHideInterfaces() {

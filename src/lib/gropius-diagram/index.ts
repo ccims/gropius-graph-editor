@@ -22,6 +22,7 @@ import { Connection } from "diagram-js/lib/model";
 
 import { getTextBasedDimensions, getVersionOffsetFromShape, scaleSvgPath } from "@/lib/gropius-diagram/util";
 import { autolayout } from "@/lib/gropius-diagram/layouting";
+import { exportDiagram } from "@/lib/gropius-diagram/importExport";
 
 export default class GropiusDiagram {
   private container: any;
@@ -97,7 +98,7 @@ export default class GropiusDiagram {
 
   }
 
-  public createComponentBase(grShape: GropiusShape, coordinates: Coordinates) {
+  private createComponentBase(grShape: GropiusShape, coordinates: Coordinates) {
     const componentObject = this.drawComponent(grShape, coordinates);
     componentObject.custom.versionObject = this.drawVersion(componentObject);
     componentObject.businessObject.data.shapeId = componentObject.id;
@@ -285,7 +286,7 @@ export default class GropiusDiagram {
       width: 40,
       height: 40,
       businessObject: {
-        type: ObjectType.IssueFolder,
+        type: ObjectType.Issue,
         data: issueFolder
       },
       custom: {
@@ -336,14 +337,13 @@ export default class GropiusDiagram {
       const parent = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == parentId);
       const idx = parent.businessObject.data.interfaces.indexOf(element.businessObject.data);
       parent.businessObject.data.interfaces.splice(idx, 1);
-    } else if (element.businessObject.type == ObjectType.IssueFolder) {
-      // Remove interface from parent's list
+    } else if (element.businessObject.type == ObjectType.Issue) {
+      // Remove issue from parent's list
       const parentId = element.businessObject.data.parentId;
       const parent = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == parentId);
       const idx = parent.businessObject.data.issues.indexOf(element.businessObject.data);
       parent.businessObject.data.issues.splice(idx, 1);
     }
-
 
     return true;
   }
@@ -401,128 +401,6 @@ export default class GropiusDiagram {
 
   public createConnection(id: string, sourceId: string, targetId: string, style: GropiusConnectionStyle, waypoints?: Array<Coordinates>) {
     this._createConnection(id, sourceId, targetId, style, waypoints, false);
-  }
-
-  public exportDiagram(): string {
-    const elements = this.elementRegistry._elements;
-
-    let diagram: SerializedDiagram = {
-      shapes: [],
-      connections: []
-    };
-
-    Object.values(elements).forEach((element: any) => {
-      element = element.element;
-      if (element.businessObject) {
-        if (element.businessObject.type == ObjectType.ComponentVersion) {// Only serialize main components
-
-          // Serialize interfaces
-          const interfaces: Array<SerializedInterface> = this.serializeInterfaces(element);
-          const issues: Array<SerializedIssueFolder> = this.serializeIssues(element);
-
-          // Main (gropius) shape serialized
-          const serializedShape = {
-            grShape: element.businessObject.data,
-            x: element.x,
-            y: element.y,
-            interfaces: interfaces,
-            issues: issues
-          };
-
-          diagram.shapes.push(serializedShape);
-        } else if (element.businessObject.type == ObjectType.Connection) {
-          const source = element.source.businessObject.data.sourceId;
-          const target = element.target.businessObject.data.targetId;
-          const id = element.target.businessObject.data.id;
-
-
-          diagram.connections.push({
-            id: id,
-            sourceId: source,
-            targetId: target,
-            waypoints: element.waypoints,
-            style: element.custom.style
-          });
-        }
-      }
-    });
-
-    const diagramAsText = JSON.stringify(diagram);
-    console.log(diagram, diagramAsText);
-    return diagramAsText;
-  }
-
-  private serializeInterfaces(element: any) {
-    const elements = this.elementRegistry._elements;
-    let interfaces: Array<SerializedInterface> = [];
-    element.businessObject.data.interfaces.forEach((interf: any) => {
-      // Find interface (diagram) object for interface
-      const interfaceObject = this.elementRegistry.get(interf.shapeId);
-      // Find connection object for shape-to-interface connection
-      const connectionObject = Object.values(elements).find((e: any) => {
-        e = e.element;
-        if (!e.id.startsWith("connection"))
-          return false;
-
-        return e.source.businessObject.data.id == element.businessObject.data.id &&
-          e.target.businessObject.data.id == interf.id;
-      });
-
-      if (!interfaceObject || !connectionObject) {
-        console.error("Unknown interface or connection for", interf, interfaceObject, connectionObject);
-        return;
-      }
-
-      // Add interface to list
-      interfaces.push({
-        interface: interf,
-        coordinates: { x: interfaceObject.x, y: interfaceObject.y },
-        // @ts-ignore
-        waypoints: connectionObject.element.waypoints
-      });
-    });
-    return interfaces;
-  }
-
-  private serializeIssues(element: any) {
-    const elements = this.elementRegistry._elements;
-    let issues: Array<SerializedIssueFolder> = [];
-    element.businessObject.data.issues.forEach((issue: any) => {
-      // Find issueFolder (diagram) object for issueFolder
-      const issueObject = this.elementRegistry.get(issue.shapeId);
-
-      if (!issueObject) {
-        console.error("Unknown issueFolder for", issue, issueObject);
-        return;
-      }
-
-      // Add issueFolder to list
-      issues.push({
-        issue: issue,
-        coordinates: { x: issueObject.x, y: issueObject.y }
-      });
-    });
-    return issues;
-  }
-
-  public importDiagramString(diagram: string) {
-    this.importDiagram(JSON.parse(diagram));
-  }
-
-  public importDiagram(diagram: SerializedDiagram) {
-    diagram.shapes.forEach(shape => {
-      const object = this.createComponentBase(shape.grShape, { x: shape.x, y: shape.y });
-      shape.interfaces.forEach(interf => {
-        this.drawInterface(object, interf.interface, interf.coordinates, interf.waypoints);
-      });
-      shape.issues.forEach(issue => {
-        this.drawIssueFolder(object, issue.issue, issue.coordinates);
-      });
-    });
-
-    diagram.connections.forEach(connection => {
-      this._createConnection(connection.id, connection.sourceId, connection.targetId, connection.style, connection.waypoints);
-    });
   }
 
   public setDarkMode(enabled: boolean): void {
@@ -648,6 +526,30 @@ export default class GropiusDiagram {
 
     element.outgoing?.forEach((con: any) => {
       this.setHiddeStyleAttribute(con, this.elementRegistry.getGraphics(con), hidden);
+    });
+  }
+
+  public exportDiagram(): string {
+    return exportDiagram(this.elementRegistry)
+  }
+
+  public importDiagramString(diagram: string) {
+    this.importDiagram(JSON.parse(diagram));
+  }
+
+  public importDiagram(diagram: SerializedDiagram) {
+    diagram.shapes.forEach(shape => {
+      const object = this.createComponentBase(shape.grShape, { x: shape.x, y: shape.y });
+      shape.interfaces.forEach(interf => {
+        this.drawInterface(object, interf.interface, interf.coordinates, interf.waypoints);
+      });
+      shape.issues.forEach(issue => {
+        this.drawIssueFolder(object, issue.issue, issue.coordinates);
+      });
+    });
+
+    diagram.connections.forEach(connection => {
+      this._createConnection(connection.id, connection.sourceId, connection.targetId, connection.style, connection.waypoints);
     });
   }
 

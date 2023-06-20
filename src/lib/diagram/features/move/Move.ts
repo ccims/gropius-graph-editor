@@ -178,7 +178,7 @@ export default function MoveEvents(
     }
 
     if (context.shapes.length == 1 && (context.shapes[0].businessObject.type == ObjectType.Interface
-      || context.shapes[0].businessObject.type == ObjectType.IssueFolder)) {
+      || context.shapes[0].businessObject.type == ObjectType.Issue)) {
       // Only one sub-element shall be moved
       shapes = context.shapes;
     } else {

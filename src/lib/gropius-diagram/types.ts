@@ -13,7 +13,7 @@ export enum ObjectType {
   Connection,
   SubConnection,
   Interface,
-  IssueFolder
+  Issue
 }
 
 export interface GropiusType {
