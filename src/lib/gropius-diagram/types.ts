@@ -95,6 +95,7 @@ export interface SerializedIssueFolder {
 }
 
 export  interface SerializedConnection {
+  id: string,
   waypoints: Array<Coordinates>,
   sourceId: string,
   targetId: string,
