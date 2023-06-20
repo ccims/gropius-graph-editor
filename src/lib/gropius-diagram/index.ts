@@ -214,7 +214,7 @@ export default class GropiusDiagram {
         { x: diagramInterfaceObject.x, y: diagramInterfaceObject.y + diagramInterfaceObject.height / 2 }
       ];
 
-    let con = this.createConnection(parentShape.businessObject.data.id, diagramInterfaceObject.businessObject.data.id, {
+    let con = this._createConnection(parentShape.businessObject.data.id, diagramInterfaceObject.businessObject.data.id, {
       strokeColor: parentBusinessObject.grType.style.stroke,
       strokeWidth: 2,
       strokeDasharray: "",
@@ -227,7 +227,7 @@ export default class GropiusDiagram {
     return diagramInterfaceObject;
   }
 
-  public createInterface(id: string, parentId: string, name: string, shape: Shape, version: string,coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
+  public createInterface(id: string, parentId: string, name: string, shape: Shape, version: string, coordinates?: Coordinates, waypoints?: Array<Coordinates>) {
     let diagramParentObject = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == parentId);
     const parentBusinessObject = diagramParentObject.businessObject.data;
 
@@ -379,7 +379,7 @@ export default class GropiusDiagram {
     return this.canvas.addConnection(connection, this.root);
   }
 
-  public createConnection(sourceId: string, targetId: string, style: GropiusConnectionStyle, waypoints?: Array<Coordinates>, isSubConnection = false) {
+  private _createConnection(sourceId: string, targetId: string, style: GropiusConnectionStyle, waypoints?: Array<Coordinates>, isSubConnection: boolean = false) {
     const sourceElement = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == sourceId);
     const targetElement = this.elementRegistry.find((element: any) => element.businessObject && element.businessObject.data && element.businessObject.data.id == targetId);
 
@@ -398,6 +398,10 @@ export default class GropiusDiagram {
     return this.createConnectionBase(connection, style, isSubConnection);
   }
 
+  public createConnection(sourceId: string, targetId: string, style: GropiusConnectionStyle, waypoints?: Array<Coordinates>) {
+    this._createConnection(sourceId, targetId, style, waypoints, false);
+  }
+
   public exportDiagram(): string {
     const elements = this.elementRegistry._elements;
 
@@ -408,39 +412,38 @@ export default class GropiusDiagram {
 
     Object.values(elements).forEach((element: any) => {
       element = element.element;
-      if (element.id.startsWith("shape")) {
-        if (element.businessObject.type != ObjectType.ComponentVersion) // Only serialize main components
-          return;
+      if (element.businessObject) {
+        if (element.businessObject.type == ObjectType.ComponentVersion) {// Only serialize main components
 
-        // Serialize interfaces
-        const interfaces: Array<SerializedInterface> = this.serializeInterfaces(element);
-        const issues: Array<SerializedIssueFolder> = this.serializeIssues(element);
+          // Serialize interfaces
+          const interfaces: Array<SerializedInterface> = this.serializeInterfaces(element);
+          const issues: Array<SerializedIssueFolder> = this.serializeIssues(element);
 
-        // Main (gropius) shape serialized
-        const serializedShape = {
-          grShape: element.businessObject.data,
-          x: element.x,
-          y: element.y,
-          interfaces: interfaces,
-          issues: issues
-        };
+          // Main (gropius) shape serialized
+          const serializedShape = {
+            grShape: element.businessObject.data,
+            x: element.x,
+            y: element.y,
+            interfaces: interfaces,
+            issues: issues
+          };
 
-        diagram.shapes.push(serializedShape);
+          diagram.shapes.push(serializedShape);
+        } else if (element.businessObject.type == ObjectType.Connection) {
+          const source = element.source.businessObject.data.id;
+          const target = element.target.businessObject.data.id;
 
-      } else if (element.id.startsWith("connection")) {
-        const source = element.source.businessObject.data.id;
-        const target = element.target.businessObject.data.id;
+          // If target ID starts with source ID -> Connection is a Sub-Connection (e.g. Component-to-Interface)
+          if (target.startsWith(source))
+            return;
 
-        // If target ID starts with source ID -> Connection is a Sub-Connection (e.g. Component-to-Interface)
-        if (target.startsWith(source))
-          return;
-
-        diagram.connections.push({
-          sourceId: source,
-          targetId: target,
-          waypoints: element.waypoints,
-          style: element.custom.style
-        });
+          diagram.connections.push({
+            sourceId: source,
+            targetId: target,
+            waypoints: element.waypoints,
+            style: element.custom.style
+          });
+        }
       }
     });
 
@@ -518,7 +521,7 @@ export default class GropiusDiagram {
     });
 
     diagram.connections.forEach(connection => {
-      this.createConnection(connection.sourceId, connection.targetId, connection.style, connection.waypoints);
+      this._createConnection(connection.sourceId, connection.targetId, connection.style, connection.waypoints);
     });
   }
 
@@ -701,12 +704,12 @@ export default class GropiusDiagram {
 
         graph.children.push(group);
       } else if (element.businessObject.type == ObjectType.Connection) {
-        // console.log(element)
-        graph.edges.push({
-          id: element.id,
-          sources: [element.source.id],
-          targets: [element.target.id]
-        });
+        if (!element.businessObject.data.targetId.startsWith(element.businessObject.data.sourceId))
+          graph.edges.push({
+            id: element.id,
+            sources: [element.source.id],
+            targets: [element.target.id]
+          });
       }
     });
 
@@ -909,7 +912,7 @@ export default class GropiusDiagram {
       }
     }, { x: 150, y: 250 });
 
-    this.createConnection("1", "2", {
+    this._createConnection("1", "2", {
       sourceMarkerType: ConnectionMarker.None,
       strokeColor: "#e05d01",
       strokeDasharray: "",
@@ -917,7 +920,7 @@ export default class GropiusDiagram {
       targetMarkerType: ConnectionMarker.ArrowRight
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
-    this.createConnection("4", "2", {
+    this._createConnection("4", "2", {
       sourceMarkerType: ConnectionMarker.None,
       strokeColor: "#e05d01",
       strokeDasharray: "",
@@ -925,7 +928,7 @@ export default class GropiusDiagram {
       targetMarkerType: ConnectionMarker.ArrowRight
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
-    this.createConnection("33", "25", {
+    this._createConnection("33", "25", {
       sourceMarkerType: ConnectionMarker.None,
       strokeColor: "#e05d01",
       strokeDasharray: "",
@@ -933,7 +936,7 @@ export default class GropiusDiagram {
       targetMarkerType: ConnectionMarker.ArrowRight
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
-    this.createConnection("23", "34", {
+    this._createConnection("23", "34", {
       sourceMarkerType: ConnectionMarker.None,
       strokeColor: "#e05d01",
       strokeDasharray: "",
@@ -941,7 +944,7 @@ export default class GropiusDiagram {
       targetMarkerType: ConnectionMarker.ArrowRight
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
-    this.createConnection("2", "3", {
+    this._createConnection("2", "3", {
       sourceMarkerType: ConnectionMarker.None,
       strokeColor: "#e05d01",
       strokeDasharray: "",
@@ -949,7 +952,7 @@ export default class GropiusDiagram {
       targetMarkerType: ConnectionMarker.ArrowRight
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
-    this.createConnection("21", "13", {
+    this._createConnection("21", "13", {
       sourceMarkerType: ConnectionMarker.None,
       strokeColor: "#e05d01",
       strokeDasharray: "",
@@ -957,7 +960,7 @@ export default class GropiusDiagram {
       targetMarkerType: ConnectionMarker.ArrowRight
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
-    this.createConnection("28", "14", {
+    this._createConnection("28", "14", {
       sourceMarkerType: ConnectionMarker.None,
       strokeColor: "#e05d01",
       strokeDasharray: "",
