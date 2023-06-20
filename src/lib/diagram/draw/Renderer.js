@@ -37,7 +37,7 @@ import { query as domQuery } from "min-dom";
 import Ids from "ids";
 import { el, vi } from "vuetify/locale";
 import { ConnectionMarker, Shape } from "@/lib/diagram/types";
-import { ObjectType } from "@/lib/gropius-compatibility/types";
+import { ObjectType } from "@/lib/gropius-diagram/types";
 
 let RENDERER_IDS = new Ids();
 
