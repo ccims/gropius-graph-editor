@@ -8,7 +8,7 @@ export interface BusinessObject {
 }
 
 export enum ObjectType {
-  Gropius,
+  ComponentVersion,
   Version,
   Connection,
   SubConnection,
@@ -28,7 +28,7 @@ export interface GropiusShape {
   version: string,
   grType: GropiusType,
   interfaces: Array<GropiusInterface>,
-  issueFolders: Array<GropiusIssueFolder>
+  issues: Array<GropiusIssue>
 }
 
 export interface GropiusConnection {
@@ -40,6 +40,7 @@ export interface GropiusConnection {
 export interface GropiusInterface {
   id: string,
   shapeId: string,
+  parentId: string,
   connectionId: string,
   name: string
   shape: Shape
@@ -47,9 +48,10 @@ export interface GropiusInterface {
   version: string
 }
 
-export interface GropiusIssueFolder {
+export interface GropiusIssue {
   id: string
   shapeId: string,
+  parentId: string,
   connectionId: string,
   path: string
   color: string
@@ -79,7 +81,7 @@ export interface SerializedShape {
   x: number,
   y: number,
   interfaces: Array<SerializedInterface>,
-  issueFolders: Array<SerializedIssueFolder>
+  issues: Array<SerializedIssueFolder>
 }
 
 export interface SerializedInterface {
@@ -89,7 +91,7 @@ export interface SerializedInterface {
 }
 
 export interface SerializedIssueFolder {
-  issueFolder: GropiusIssueFolder,
+  issue: GropiusIssue,
   coordinates: Coordinates
 }
 

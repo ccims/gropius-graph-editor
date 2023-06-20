@@ -35,7 +35,7 @@ import {
 import EventBus from "diagram-js/lib/core/EventBus";
 import Modeling from "diagram-js/lib/features/modeling/Modeling";
 import { Base } from "diagram-js/lib/model";
-import { GropiusInterface, GropiusIssueFolder, ObjectType } from "@/lib/gropius-compatibility/types";
+import { GropiusInterface, GropiusIssue, ObjectType } from "@/lib/gropius-compatibility/types";
 
 const round = Math.round;
 
@@ -186,21 +186,21 @@ export default function MoveEvents(
 
       // Add all not-versions and connections
       context.shapes.forEach((shape: any) => {
-        if (shape.id.startsWith("shape") && shape.businessObject.type == ObjectType.Gropius
+        if (shape.id.startsWith("shape") && shape.businessObject.type == ObjectType.ComponentVersion
           || shape.id.startsWith("connection"))
           shapes.push(shape);
       });
 
       // Add all sub-components (versions, interfaces, etc)
       context.shapes.forEach((shape: any) => {
-        if (shape.id.startsWith("shape") && shape.businessObject.type == ObjectType.Gropius) {
+        if (shape.id.startsWith("shape") && shape.businessObject.type == ObjectType.ComponentVersion) {
           shapes.push(shape.custom.versionObject);
 
           shape.businessObject.data.interfaces.forEach((interf: GropiusInterface) => {
             shapes.push(elementRegistry.get(interf.shapeId));
           });
 
-          shape.businessObject.data.issueFolders.forEach((issueFolder: GropiusIssueFolder) => {
+          shape.businessObject.data.issues.forEach((issueFolder: GropiusIssue) => {
             shapes.push(elementRegistry.get(issueFolder.shapeId));
           });
         }

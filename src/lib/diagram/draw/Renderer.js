@@ -125,7 +125,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
     render(visuals, element, element.custom.style);
 
 
-    if (element.businessObject.type === ObjectType.Gropius || element.businessObject.type === ObjectType.Version) {
+    if (element.businessObject.type === ObjectType.ComponentVersion || element.businessObject.type === ObjectType.Version) {
       renderEmbeddedLabel(
         visuals,
         element,

@@ -58,7 +58,7 @@ ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
   };
 
   switch(element.businessObject.type) {
-    case ObjectType.Gropius:
+    case ObjectType.ComponentVersion:
       return {
         "delete": deleteIcon,
         "connect": connectIcon

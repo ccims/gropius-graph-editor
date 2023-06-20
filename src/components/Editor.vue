@@ -20,7 +20,7 @@
     <button @click=handleThemeChange>Theme Switch</button>
     <button @click=handleExport>Export</button>
     <button @click=autolayout>Layout</button>
-    <label><input type="checkbox" @change="setHideIssues" v-model="hideIssues"/>Hide Issues</label>
+    <label><input type="checkbox" @change="setHideIssues" v-model="hideIssues" />Hide Issues</label>
 
     <div id="container"></div>
     <AddComponent
@@ -47,23 +47,24 @@ import { GropiusType } from "@/lib/gropius-compatibility/types";
 import { defineComponent } from "vue";
 
 import gropiusapi from "@/mixins/api";
+import { ConnectionMarker } from "@/lib/diagram/types";
 
 let diagram: GropiusCompatibility;
 let coordinates: Coordinates = {
   x: 0,
-  y: 0,
+  y: 0
 };
 
 let elementToDelete: string = "";
 
 export default defineComponent({
   props: {
-    msg: String,
+    msg: String
   },
   components: {
     AddComponent,
     Confirm,
-    AddConnection,
+    AddConnection
   },
   mixins: [gropiusapi],
   data() {
@@ -87,32 +88,38 @@ export default defineComponent({
       this.showAddComponent = true;
       coordinates = {
         x: coordinatesAdded.x,
-        y: coordinatesAdded.y,
+        y: coordinatesAdded.y
       };
     };
 
     diagram.onDeleteShape = (id: string) => {
       this.showConfirmPopup = true;
-      elementToDelete = id
+      elementToDelete = id;
     };
 
-    diagram.onAddConnection = (sourceId: string, targetId: string) => {
-      console.log(sourceId, targetId)
-    }
+    diagram.onAddConnection = (sourceId: string, targetId: string, waypoints: Coordinates[]) => {
+      diagram.createConnection(sourceId, targetId, {
+        strokeColor: "orange",
+        strokeWidth: 3,
+        strokeDasharray: "5 5",
+        sourceMarkerType: ConnectionMarker.Round,
+        targetMarkerType: ConnectionMarker.Right
+      }, waypoints);
+    };
   },
   methods: {
 
     handleThemeChange() {
-      this.darkMode = !this.darkMode
-      diagram.setDarkMode(this.darkMode)
+      this.darkMode = !this.darkMode;
+      diagram.setDarkMode(this.darkMode);
     },
 
     handleExport() {
-      diagram.exportDiagram()
+      diagram.exportDiagram();
     },
 
     autolayout() {
-      diagram.autolayout()
+      diagram.autolayout();
     },
 
     /**
@@ -131,16 +138,16 @@ export default defineComponent({
     },
 
     setHideIssues() {
-      diagram.setObjectTypeVisibility(ObjectType.Interface, this.hideIssues)
+      diagram.setObjectTypeVisibility(ObjectType.IssueFolder, this.hideIssues);
     },
 
     /**
      * Called when the user has selected a component type and version
      */
     onComponentSelected(type: GropiusType, version: string) {
-      const id = (Math.floor(Math.random() * 900) + 100).toString()
+      const id = (Math.floor(Math.random() * 900) + 100).toString();
 
-      diagram.createComponent(id, id, version, type, coordinates)
+      diagram.createComponent(id, id, version, type, coordinates);
 
       this.showAddComponent = false;
     },
@@ -154,8 +161,8 @@ export default defineComponent({
       setTimeout(() => {
         this.showConnectionNotification = false;
       }, 4000);
-    },
-  },
+    }
+  }
 });
 </script>
 
