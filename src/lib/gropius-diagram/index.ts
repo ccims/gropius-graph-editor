@@ -36,7 +36,7 @@ export default class GropiusDiagram {
 
 
   public onAddShape?: (coordinates: Coordinates) => void;
-  public onDeleteShape?: (id: string) => void;
+  public onDelete?: (id: string) => void;
   public onAddConnection?: (sourceId: string, targetId: string, waypoints: Array<Coordinates>) => void;
 
 
@@ -72,8 +72,8 @@ export default class GropiusDiagram {
 
     this.canvas._eventBus.on("context.shape.delete", (e: any) => {
       const element = e.element;
-      if (this.onDeleteShape && element.businessObject && element.businessObject.data) {
-        this.onDeleteShape(e.element.businessObject.data.id);
+      if (this.onDelete && element.businessObject && element.businessObject.data) {
+        this.onDelete(e.element.businessObject.data.id);
       } else {
         console.error("Something went wrong on a delete event");
       }

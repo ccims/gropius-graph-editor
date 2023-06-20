@@ -97,7 +97,7 @@ export default defineComponent({
       };
     };
 
-    diagram.onDeleteShape = (id: string) => {
+    diagram.onDelete = (id: string) => {
       this.showConfirmPopup = true;
       elementToDelete = id;
     };
