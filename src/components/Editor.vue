@@ -17,11 +17,13 @@
       @onDeny="onDenyDelete"
     ></Confirm>
     <!-- ref anstelle -->
-    <button @click=handleThemeChange>Theme Switch</button>
-    <button @click=handleExport>Export</button>
-    <button @click=autolayout>Layout</button>
-    <label><input type="checkbox" @change="setHideIssues" v-model="hideIssues" />Hide Issues</label>
-    <label><input type="checkbox" @change="setHideInterfaces" v-model="hideInterfaces" />Hide Interfaces</label>
+    <div>
+      <button class="ui" @click=handleThemeChange>Theme Switch</button>
+      <button class="ui" @click=handleExport>Export</button>
+      <button class="ui" @click=autolayout>Layout</button>
+      <label class="ui"><input type="checkbox" @change="setHideIssues" v-model="hideIssues" /> Hide Issues</label>
+      <label class="ui"><input type="checkbox" @change="setHideInterfaces" v-model="hideInterfaces" /> Hide Interfaces</label>
+    </div>
 
     <div id="container"></div>
     <AddComponent
@@ -175,6 +177,22 @@ export default defineComponent({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 @import "../../node_modules/diagram-js/assets/diagram-js.css";
+
+.ui {
+  width: 10em;
+  height: 2em;
+  margin-bottom: 0.25em;
+  margin-top: 0.25em;
+  margin-right: 0.25em;
+  background-color: orange;
+  border-radius: 5px;
+  border: 2px solid black;
+}
+
+label {
+  padding: 0.3em 0.6em 0.3em 0.6em
+}
+
 
 .editor-container {
   display: grid;
