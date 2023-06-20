@@ -138,13 +138,9 @@ export default defineComponent({
      * Called when the user has selected a component type and version
      */
     onComponentSelected(type: GropiusType, version: string) {
-      const grShape: GropiusShape = {
-        name: (Math.floor(Math.random() * 900) + 100).toString(),
-        version: version,
-        grType: type
-      }
+      const id = (Math.floor(Math.random() * 900) + 100).toString()
 
-      diagram.createComponent(grShape, coordinates)
+      diagram.createComponent(id, id, version, type, coordinates)
 
       this.showAddComponent = false;
     },

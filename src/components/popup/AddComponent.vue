@@ -24,7 +24,7 @@
           <v-window-item :value="2">
             <v-container fluid>
               <h3>Select a version</h3>
-              <v-select label="Select" :items="componentVersions"></v-select>
+              <v-select label="Select" :items="componentVersions" v-model="selectedComponentVersion"></v-select>
               <v-btn @click="wizardCompleted">Completed</v-btn>
             </v-container>
           </v-window-item>
