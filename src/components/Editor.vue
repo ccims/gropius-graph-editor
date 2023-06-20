@@ -132,7 +132,7 @@ export default defineComponent({
      */
     onConfirmDelete() {
       this.showConfirmPopup = false;
-      diagram?.deleteShape(elementToDelete);
+      diagram?.delete(elementToDelete);
     },
 
     /**

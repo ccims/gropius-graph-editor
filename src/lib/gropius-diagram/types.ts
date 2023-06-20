@@ -44,7 +44,6 @@ export interface GropiusInterface {
   connectionId: string,
   name: string
   shape: Shape
-  openShape: boolean
   version: string
 }
 
