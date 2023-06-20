@@ -433,10 +433,6 @@ export default class GropiusDiagram {
           const source = element.source.businessObject.data.id;
           const target = element.target.businessObject.data.id;
 
-          // If target ID starts with source ID -> Connection is a Sub-Connection (e.g. Component-to-Interface)
-          if (target.startsWith(source))
-            return;
-
           diagram.connections.push({
             sourceId: source,
             targetId: target,
