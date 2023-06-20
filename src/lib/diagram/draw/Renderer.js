@@ -167,7 +167,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         strokeWidth: 2,
         strokeDasharray: ""
       };
-      attrs.markerEnd = marker(ConnectionMarker.Right, "black", "black", false);
+      attrs.markerEnd = marker(ConnectionMarker.ArrowRightFill, "black", "black", false);
     }
     // if ((element.custom && element.custom.label) || true)
     //   renderExternalLabel(visuals, element, "test");
@@ -587,7 +587,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
   function createMarker(id, type, fill, stroke, isStart = false) {
     let marker;
     switch (type) {
-      case ConnectionMarker.Round:
+      case ConnectionMarker.Circle:
         marker = svgCreate("circle", {
           cx: 6,
           cy: 6,
@@ -607,7 +607,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
           ref: { x: (isStart ? 3 : 9), y: 6 }
         });
         break;
-      case ConnectionMarker.ArrowLeft:
+      case ConnectionMarker.ArrowLeftOpen:
         marker = svgCreate("path", {
           d: "M 11 5 L 1 10 L 11 15",
           ...lineStyle({
@@ -627,7 +627,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
           scale: 0.5
         });
 
-      case ConnectionMarker.ArrowRight:
+      case ConnectionMarker.ArrowRightOpen:
         marker = svgCreate("path", {
           d: "M 1 5 L 11 10 L 1 15",
           ...lineStyle({
@@ -647,7 +647,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
           scale: 0.5
         });
 
-      case ConnectionMarker.Composition:
+      case ConnectionMarker.Diamond:
         marker = svgCreate("path", {
           d: "M 0 10 L 8 6 L 16 10 L 8 14 Z",
           ...lineStyle({
@@ -676,7 +676,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
           scale: 0.5
         });
 
-      case ConnectionMarker.Right:
+      case ConnectionMarker.ArrowRightFill:
         marker = svgCreate("path", {
           d: "M 1 5 L 11 10 L 1 15 Z",
           ...lineStyle({
@@ -696,7 +696,7 @@ export default function Renderer(eventBus, styles, canvas, textRenderer) {
         });
         break;
 
-      case ConnectionMarker.Left:
+      case ConnectionMarker.ArrowLeftFill:
         marker = svgCreate("path", {
           d: "M 11 5 L 1 10 L 11 15 Z",
           ...lineStyle({

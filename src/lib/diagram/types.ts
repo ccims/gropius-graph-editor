@@ -14,11 +14,11 @@ export enum Shape {
 
 export enum ConnectionMarker {
   None,
-  Right,
-  Left,
-  Round,
-  ArrowLeft,
-  ArrowRight,
-  Composition,
+  ArrowRightFill,
+  ArrowLeftFill,
+  Circle,
+  ArrowLeftOpen,
+  ArrowRightOpen,
+  Diamond,
   Slash,
 }

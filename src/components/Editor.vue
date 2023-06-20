@@ -103,12 +103,12 @@ export default defineComponent({
     };
 
     diagram.onAddConnection = (sourceId: string, targetId: string, waypoints: Coordinates[]) => {
-      diagram.createConnection(sourceId, targetId, {
-        strokeColor: "orange",
+      diagram.createConnection("" + Math.random(),sourceId, targetId, {
+        color: "orange",
         strokeWidth: 3,
         strokeDasharray: "5 5",
-        sourceMarkerType: ConnectionMarker.Round,
-        targetMarkerType: ConnectionMarker.Right
+        sourceMarkerType: ConnectionMarker.Diamond,
+        targetMarkerType: ConnectionMarker.ArrowRightOpen
       }, waypoints);
     };
   },

@@ -218,7 +218,7 @@ export default class GropiusDiagram {
       strokeWidth: 2,
       strokeDasharray: "",
       sourceMarkerType: ConnectionMarker.None,
-      targetMarkerType: ConnectionMarker.ArrowRight
+      targetMarkerType: ConnectionMarker.ArrowRightOpen
     }, waypoints, true);
 
     diagramInterfaceObject.businessObject.data.connectionId = con.id;
@@ -653,7 +653,7 @@ export default class GropiusDiagram {
       color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
-      targetMarkerType: ConnectionMarker.ArrowRight
+      targetMarkerType: ConnectionMarker.ArrowRightOpen
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
     this._createConnection("2", "4", "2", {
@@ -661,7 +661,7 @@ export default class GropiusDiagram {
       color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
-      targetMarkerType: ConnectionMarker.ArrowRight
+      targetMarkerType: ConnectionMarker.ArrowRightOpen
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
     this._createConnection("3", "33", "25", {
@@ -669,7 +669,7 @@ export default class GropiusDiagram {
       color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
-      targetMarkerType: ConnectionMarker.ArrowRight
+      targetMarkerType: ConnectionMarker.ArrowRightOpen
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
     this._createConnection("4", "23", "34", {
@@ -677,7 +677,7 @@ export default class GropiusDiagram {
       color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
-      targetMarkerType: ConnectionMarker.ArrowRight
+      targetMarkerType: ConnectionMarker.ArrowRightOpen
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
     this._createConnection("4", "2", "3", {
@@ -685,7 +685,7 @@ export default class GropiusDiagram {
       color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
-      targetMarkerType: ConnectionMarker.ArrowRight
+      targetMarkerType: ConnectionMarker.ArrowRightOpen
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
     this._createConnection("5", "21", "13", {
@@ -693,7 +693,7 @@ export default class GropiusDiagram {
       color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
-      targetMarkerType: ConnectionMarker.ArrowRight
+      targetMarkerType: ConnectionMarker.ArrowRightOpen
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
     this._createConnection("6", "28", "14", {
@@ -701,7 +701,7 @@ export default class GropiusDiagram {
       color: "#e05d01",
       strokeDasharray: "",
       strokeWidth: 2,
-      targetMarkerType: ConnectionMarker.ArrowRight
+      targetMarkerType: ConnectionMarker.ArrowRightOpen
     }, [{ x: a.x, y: a.y }, { x: b.x, y: b.y }]);
 
     this.autolayout();
