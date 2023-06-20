@@ -1,6 +1,6 @@
 import { ObjectType, SerializedDiagram, SerializedInterface, SerializedIssueFolder } from "@/lib/gropius-diagram/types";
 
-export function exportDiagram(elementRegistry: any): string {
+export function exportDiagram(elementRegistry: any): SerializedDiagram {
   const elements = elementRegistry._elements;
 
   let diagram: SerializedDiagram = {
@@ -44,9 +44,8 @@ export function exportDiagram(elementRegistry: any): string {
     }
   });
 
-  const diagramAsText = JSON.stringify(diagram);
-  console.log(diagram, diagramAsText);
-  return diagramAsText;
+  console.log(diagram);
+  return diagram;
 }
 
 export function serializeInterfaces(element: any, elementRegistry: any) {
@@ -82,7 +81,6 @@ export function serializeInterfaces(element: any, elementRegistry: any) {
 }
 
 export function serializeIssues(element: any, elementRegistry: any) {
-  const elements = elementRegistry._elements;
   let issues: Array<SerializedIssueFolder> = [];
   element.businessObject.data.issues.forEach((issue: any) => {
     // Find issueFolder (diagram) object for issueFolder

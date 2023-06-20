@@ -87,7 +87,7 @@ export default defineComponent({
     //@ts-ignore
     diagram.init(document.getElementById("container"));
     // this.diagram.getGropiusShapeNames()
-    diagram.test();
+    diagram.demo();
 
     diagram.onAddShape = (coordinatesAdded: Coordinates) => {
       this.showAddComponent = true;
@@ -120,7 +120,7 @@ export default defineComponent({
     },
 
     handleExport() {
-      diagram.exportDiagram();
+      diagram.export();
     },
 
     autolayout() {
