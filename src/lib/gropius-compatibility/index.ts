@@ -21,13 +21,9 @@ import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
 
 import ELK from "elkjs/lib/elk.bundled.js";
-import { scaleSvgPath } from "@/lib/gropius-compatibility/util";
+import { getTextBasedDimensions, getVersionOffsetFromShape, scaleSvgPath } from "@/lib/gropius-compatibility/util";
 
 const elk = new ELK();
-
-const HEIGHT_PER_LINE = 20;
-const WIDTH_PER_CHARACTER = 10;
-const PADDING = 10;
 
 export default class GropiusCompatibility {
   private container: any;
@@ -37,6 +33,9 @@ export default class GropiusCompatibility {
   private elementRegistry: any;
   private modeling: any;
   private root: any;
+
+  private hideIssueFolders: boolean = false;
+  private hideInterfaces: boolean = false;
 
   public onAddShape?: (coordinates: Coordinates) => void;
   public onDeleteShape?: (id: string) => void;
@@ -111,92 +110,6 @@ export default class GropiusCompatibility {
 
   }
 
-  private getCharacterCountForSize(width: number, height: number) {
-    return Math.floor(((width - PADDING) / WIDTH_PER_CHARACTER) * ((height - PADDING) / HEIGHT_PER_LINE));
-  }
-
-  private getCharacterCountForSizeByType(width: number, height: number, shape: Shape) {
-    let factor = 1;
-
-    switch (shape) {
-      case Shape.Diamond:
-        factor = 3;
-        break;
-      case Shape.Triangle:
-        factor = 3;
-        break;
-      case Shape.Octagon:
-        factor = 1.25;
-        break;
-      case Shape.Circle:
-      case Shape.Ellipse:
-        factor = 1.5;
-        break;
-      case Shape.Hexagon:
-        factor = 1.1;
-        break;
-    }
-
-    return this.getCharacterCountForSize(width, height) / factor;
-  }
-
-  public getDimensions(minWidth: number, minHeight: number, maxScale: number, text: string, shape: Shape): { width: number, height: number, text: string } {
-
-    const maxWidth = Math.floor(minWidth * maxScale);
-    const maxHeight = Math.floor(minHeight * maxScale);
-
-    let width = minWidth;
-    let height = minHeight;
-    let adjustedText = text;
-
-    const characters = text.length;
-    // max number of characters based on max size
-    let estimatedMaxCharacters = this.getCharacterCountForSizeByType(maxWidth, maxHeight, shape);
-
-    if (characters > estimatedMaxCharacters) {
-      // If there are more characters than the max size would allow
-      // Cut text and add "..." at the end
-      // Theoretically not necessary but speeds things up
-      // Like "pre-cutting". It will get shortened in rendering,
-      // but to speed up the renderer we pre-cut it.
-      // Disabled to avoid cutting too much. Is fine unless there is big text on small shape
-
-
-      // adjustedText = text.slice(0, maxCharacters).slice(0,-3) + "..."
-
-      width = maxWidth;
-      height = maxHeight;
-    } else {
-      // There is room to resize
-
-      let ratio = height / width;
-      let charactersForSize = this.getCharacterCountForSizeByType(width, height, shape);
-
-      const increaseBy = 10;
-      while (characters > charactersForSize) {
-        // while sizes not big enough
-        width += increaseBy;
-        width = width > maxWidth ? maxWidth : width;
-
-        height = Math.round(ratio * width);
-        height = height > maxHeight ? maxHeight : height;
-        // additional loop breaker
-        if (width == maxWidth && height == maxHeight)
-          break;
-
-        // recalculate the characters that fit in updated size
-        charactersForSize = this.getCharacterCountForSizeByType(width, height, shape);
-      }
-    }
-
-    const ret = {
-      width: width,
-      height: height,
-      text: adjustedText
-    };
-    return ret;
-  }
-
   public createComponentBase(grShape: GropiusShape, coordinates: Coordinates) {
     const componentObject = this.drawComponent(grShape, coordinates);
     componentObject.custom.versionObject = this.drawVersion(componentObject);
@@ -220,7 +133,7 @@ export default class GropiusCompatibility {
   private drawComponent(grShape: GropiusShape, coordinates: Coordinates) {
     const grStyle = grShape.grType.style;
 
-    let dimensions = this.getDimensions(grStyle.minWidth, grStyle.minHeight, grStyle.maxScale, grShape.name, grShape.grType.shape);
+    let dimensions = getTextBasedDimensions(grStyle.minWidth, grStyle.minHeight, grStyle.maxScale, grShape.name, grShape.grType.shape);
     let shape = {
       x: coordinates.x,
       y: coordinates.y,
@@ -248,32 +161,8 @@ export default class GropiusCompatibility {
     return this.createShape(shape);
   }
 
-  private getVersionOffsetFromShape(componentShape: any): Coordinates {
-    const shape = componentShape.custom.shape;
-    const w = componentShape.width,
-      h = componentShape.height,
-      vh = 40, // version width
-      vw = 90;  // version height
-
-    switch (shape) {
-      case Shape.Diamond:
-      case Shape.Parallelogram:
-      case Shape.Circle:
-      case Shape.Octagon:
-      case Shape.Triangle:
-      case Shape.Hexagon:
-      case Shape.Trapeze:
-      case Shape.Ellipse:
-      case Shape.Rectangle:
-        //default:
-        return { x: w / 2 - vw / 2, y: h };
-    }
-
-    return { x: 0, y: 0 };
-  }
-
   private drawVersion(componentShape: any) {
-    const offsets = this.getVersionOffsetFromShape(componentShape);
+    const offsets = getVersionOffsetFromShape(componentShape);
     const offsetX = offsets.x,
       offsetY = offsets.y;
 
@@ -707,7 +596,7 @@ export default class GropiusCompatibility {
         "cycleBreaking.strategy": "INTERACTIVE",
         "layering.strategy": "INTERACTIVE",
         "crossingMinimization.semiInteractive": true,
-        "separateConnectedComponents": false,
+        "separateConnectedComponents": false
       },
       children: Array<any>(),
       edges: Array<any>()
@@ -752,7 +641,7 @@ export default class GropiusCompatibility {
           layoutOptions: {
             // "elk.algorithm": "layered",
             "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]",
-            "spacing.baseValue": "50",
+            "spacing.baseValue": "50"
           },
           children: Array<any>(),
           edges: Array<any>()
@@ -822,25 +711,25 @@ export default class GropiusCompatibility {
 
     node.edges.forEach((edge: any) => {
       edge.sections.forEach((section: any) => {
-        let waypoints = [section.startPoint]
+        let waypoints = [section.startPoint];
 
-        if(section.bendPoints)
+        if (section.bendPoints)
           section.bendPoints.forEach((bp: Coordinates) => {
-            waypoints.push(bp)
-          })
+            waypoints.push(bp);
+          });
 
-        waypoints.push(section.endPoint)
+        waypoints.push(section.endPoint);
 
         waypoints.forEach(wp => {
           wp.x += x;
           wp.y += y;
-        })
+        });
 
-        const connection = this.elementRegistry.get(edge.id)
-        connection.waypoints = waypoints
+        const connection = this.elementRegistry.get(edge.id);
+        connection.waypoints = waypoints;
         this.canvas._eventBus.fire("element.changed", { element: connection });
-      })
-    })
+      });
+    });
 
   }
 
@@ -867,6 +756,45 @@ export default class GropiusCompatibility {
     });
   }
 
+  public setObjectTypeVisibility(objType: ObjectType, hidden: boolean) {
+    const elements = Object.values(this.elementRegistry._elements);
+    elements.forEach((element: any) => {
+      const obj = element.element;
+      if (obj.businessObject && obj.businessObject.type == objType) {
+        this.setHiddeStyleAttribute(obj, element.gfx, hidden);
+
+        if(obj.businessObject.type == ObjectType.Gropius) {
+          const versionObject = obj.custom.versionObject
+          console.log(versionObject)
+          this.setHiddeStyleAttribute(versionObject, this.elementRegistry.getGraphics(versionObject), hidden)
+
+          obj.businessObject.data.interfaces.forEach((interf: any) => {
+            const interfElement = this.elementRegistry.get(interf.shapeId)
+            this.setHiddeStyleAttribute(interfElement, this.elementRegistry.getGraphics(interfElement), hidden)
+          })
+
+          obj.businessObject.data.issueFolders.forEach((issue: any) => {
+            const issueElement = this.elementRegistry.get(issue.shapeId)
+            this.setHiddeStyleAttribute(issueElement, this.elementRegistry.getGraphics(issueElement), hidden)
+          })
+        }
+      }
+    });
+  }
+
+  private setHiddeStyleAttribute(element: any, gfx: any, hidden: boolean) {
+    const style = document.createAttribute("style");
+    style.value = "visibility:" + (hidden ? "hidden" : "block");
+    gfx.attributes.setNamedItem(style);
+
+    element.incoming?.forEach((con: any) => {
+      this.setHiddeStyleAttribute(con, this.elementRegistry.getGraphics(con), hidden);
+    });
+
+    element.outgoing?.forEach((con: any) => {
+      this.setHiddeStyleAttribute(con, this.elementRegistry.getGraphics(con), hidden);
+    });
+  }
 
   public test() {
 
@@ -1031,6 +959,5 @@ export default class GropiusCompatibility {
     // });
     //
     // this.canvas.addConnection(connection1, this.root);
-
   }
 }

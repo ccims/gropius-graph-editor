@@ -20,6 +20,7 @@
     <button @click=handleThemeChange>Theme Switch</button>
     <button @click=handleExport>Export</button>
     <button @click=autolayout>Layout</button>
+    <label><input type="checkbox" @change="setHideIssues" v-model="hideIssues"/>Hide Issues</label>
 
     <div id="container"></div>
     <AddComponent
@@ -40,9 +41,7 @@ import AddComponent from "./popup/AddComponent.vue";
 import AddConnection from "./popup/AddConnection.vue";
 
 import GropiusCompatibility from "../lib/gropius-compatibility";
-import {
-  GropiusShape,
-} from "../lib/gropius-compatibility/types";
+import { GropiusShape, ObjectType } from "../lib/gropius-compatibility/types";
 import { Coordinates } from "@/types/HelperTypes";
 import { GropiusType } from "@/lib/gropius-compatibility/types";
 import { defineComponent } from "vue";
@@ -73,7 +72,8 @@ export default defineComponent({
       showAddComponent: false,
       showAddConnection: false,
       showConnectionNotification: false,
-      darkMode: false
+      darkMode: false,
+      hideIssues: false
     };
   },
 
@@ -128,6 +128,10 @@ export default defineComponent({
      */
     onDenyDelete() {
       this.showConfirmPopup = false;
+    },
+
+    setHideIssues() {
+      diagram.setObjectTypeVisibility(ObjectType.Interface, this.hideIssues)
     },
 
     /**

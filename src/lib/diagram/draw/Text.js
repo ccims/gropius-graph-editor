@@ -261,7 +261,7 @@ Text.prototype.createText = function(text, options) {
  *
  * @return {Dimensions}
  */
-Text.prototype.getDimensions = function(text, options) {
+Text.prototype.getTextBasedDimensions = function(text, options) {
   return this.layoutText(text, options).dimensions;
 };
 
