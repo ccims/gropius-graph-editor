@@ -629,9 +629,8 @@ export default class GropiusDiagram {
         this.createIssue("23", "2", svgPath, "#33dd88");
         this.createIssue("24", "2", svgPath, "#00bbbb");
         this.createIssue("25", "2", svgPath, "#dd11bb");
-        this.createIssue("26", "2", svgPath, "#aa33bb");
-        this.createIssue("27", "2", svgPath, "#7733ff");
         this.createIssue("28", "2", svgPath, "#0033bb");
+
 
         let c = this.createComponent("3", "Shipping Service", "2.13.37", {
             name: "x",

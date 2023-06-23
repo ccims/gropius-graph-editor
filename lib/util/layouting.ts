@@ -11,7 +11,7 @@ export function autolayout(elementRegistry: ElementRegistry, canvas: any) {
     layoutOptions: {
       "elk.padding": "[top=0.0,left=0.0,bottom=0.0,right=0.0]",
       "elk.algorithm": "layered",
-      "spacing.baseValue": "100",
+      "spacing.baseValue": "150",
       "hierarchyHandling": "INCLUDE_CHILDREN",
       "elk.edgeRouting": "ORTHOGONAL",
       "cycleBreaking.strategy": "INTERACTIVE",
