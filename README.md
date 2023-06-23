@@ -39,6 +39,35 @@ diagram.onAddIssue = (id: string) => {
 diagram.onDelete = (id: string) => {
     ...
 }
+```
+
+Some icons require the following CSS classes. See `app/src/components/Editor` for example icons.
+
+```css
+
+.palette-icon-lasso-tool {
+  background: url("data:image/svg+xml...");
+}
+
+.palette-icon-create-shape {
+  background: url("...");
+}
+
+.context-pad-icon-remove {
+  background: url("...") !important;
+}
+
+.context-pad-icon-issue {
+  background: url("...") !important;
+}
+
+.context-pad-icon-interface {
+  background: url("...") !important;
+}
+
+.context-pad-icon-connect {
+  background: url("...") !important;
+}
 
 ```
 
