@@ -28,6 +28,14 @@ diagram.onAddConnection = (sourceId: string, targetId: string, waypoints: Coordi
     ...
 }
 
+diagram.onAddInterface = (id: string) => {
+    ...
+}
+
+diagram.onAddIssue = (id: string) => {
+    ...
+}
+
 diagram.onDelete = (id: string) => {
     ...
 }
