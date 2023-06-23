@@ -4,7 +4,7 @@ import {
 
 import {
   Shape
-} from "@/lib/diagram/types";
+} from "@/lib/gropius-diagram/diagram/types";
 
 export default {
   data() {
@@ -35,8 +35,8 @@ export default {
             minWidth: 100,
             minHeight: 50,
             maxScale: 1,
-            color: "white",
-            stroke: "black",
+            color: "#ffffff",
+            stroke: "#000000",
             strokeWidth: 2,
             strokeDasharray: "",
             radius: 5
@@ -49,8 +49,8 @@ export default {
             minWidth: 100,
             minHeight: 50,
             maxScale: 1,
-            color: "white",
-            stroke: "black",
+            color: "#ffffff",
+            stroke: "#000000",
             strokeWidth: 2,
             strokeDasharray: "",
             radius: 5
@@ -63,8 +63,8 @@ export default {
             minWidth: 100,
             minHeight: 50,
             maxScale: 1,
-            color: "white",
-            stroke: "black",
+            color: "#ffffff",
+            stroke: "#000000",
             strokeWidth: 2,
             strokeDasharray: "",
             radius: 5
@@ -77,8 +77,8 @@ export default {
             minWidth: 100,
             minHeight: 50,
             maxScale: 1,
-            color: "white",
-            stroke: "black",
+            color: "#ffffff",
+            stroke: "#000000",
             strokeWidth: 2,
             strokeDasharray: "",
             radius: 5
@@ -91,8 +91,8 @@ export default {
             minWidth: 100,
             minHeight: 50,
             maxScale: 1,
-            color: "white",
-            stroke: "black",
+            color: "#ffffff",
+            stroke: "#000000",
             strokeWidth: 2,
             strokeDasharray: "",
             radius: 5
@@ -105,8 +105,8 @@ export default {
             minWidth: 100,
             minHeight: 50,
             maxScale: 1,
-            color: "white",
-            stroke: "black",
+            color: "#ffffff",
+            stroke: "#000000",
             strokeWidth: 2,
             strokeDasharray: "",
             radius: 5
@@ -119,8 +119,8 @@ export default {
             minWidth: 100,
             minHeight: 50,
             maxScale: 1,
-            color: "white",
-            stroke: "black",
+            color: "#ffffff",
+            stroke: "#000000",
             strokeWidth: 2,
             strokeDasharray: "",
             radius: 5
@@ -133,8 +133,8 @@ export default {
             minWidth: 100,
             minHeight: 50,
             maxScale: 1,
-            color: "white",
-            stroke: "black",
+            color: "#ffffff",
+            stroke: "#000000",
             strokeWidth: 2,
             strokeDasharray: "",
             radius: 5
@@ -147,8 +147,8 @@ export default {
             minWidth: 100,
             minHeight: 50,
             maxScale: 1,
-            color: "white",
-            stroke: "black",
+            color: "#ffffff",
+            stroke: "#000000",
             strokeWidth: 2,
             strokeDasharray: "",
             radius: 5

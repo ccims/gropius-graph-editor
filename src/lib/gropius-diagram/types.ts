@@ -1,4 +1,4 @@
-import { ConnectionMarker, Shape } from "@/lib/diagram/types";
+import { ConnectionMarker, Shape } from "@/lib/gropius-diagram/diagram/types";
 import { Coordinates } from "@/types/HelperTypes";
 
 

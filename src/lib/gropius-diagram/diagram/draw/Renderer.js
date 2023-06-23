@@ -36,7 +36,7 @@ import visuals from "diagram-js/lib/features/grid-snapping/visuals";
 import { query as domQuery } from "min-dom";
 import Ids from "ids";
 import { el, vi } from "vuetify/locale";
-import { ConnectionMarker, Shape } from "@/lib/diagram/types";
+import { ConnectionMarker, Shape } from "@/lib/gropius-diagram/diagram/types";
 import { ObjectType } from "@/lib/gropius-diagram/types";
 
 let RENDERER_IDS = new Ids();

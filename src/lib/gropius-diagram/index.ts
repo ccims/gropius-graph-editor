@@ -1,5 +1,5 @@
 // @ts-ignore
-import EditorLib from "../diagram/Editor";
+import EditorLib from "./diagram/Editor";
 import { Coordinates } from "@/types/HelperTypes";
 import {
   GropiusConnection,
@@ -12,17 +12,17 @@ import {
   SerializedDiagram,
   SerializedInterface,
   SerializedIssueFolder
-} from "@/lib/gropius-diagram/types";
+} from "./types";
 
-import { ConnectionMarker, Shape } from "@/lib/diagram/types";
+import { ConnectionMarker, Shape } from "./diagram/types";
 
 // @ts-ignore
 import Diagram from "diagram-js";
 import { Connection } from "diagram-js/lib/model";
 
-import { getTextBasedDimensions, getVersionOffsetFromShape, scaleSvgPath } from "@/lib/gropius-diagram/util";
-import { autolayout } from "@/lib/gropius-diagram/layouting";
-import { exportDiagram } from "@/lib/gropius-diagram/export";
+import { getTextBasedDimensions, getVersionOffsetFromShape, scaleSvgPath } from "./util/utilFunctions";
+import { autolayout } from "./util/layouting";
+import { exportDiagram } from "./util/export";
 
 export default class GropiusDiagram {
   private container: any;
@@ -464,15 +464,14 @@ export default class GropiusDiagram {
         element.custom.style.stroke = stroke;
         element.custom.style.fill = fill;
       } else if (element.businessObject.type == ObjectType.Connection || element.businessObject.type == ObjectType.SubConnection) {
-
-        if (enabled && element.custom.style.strokeColor == black)
+        if (enabled && element.custom.style.color == black)
           stroke = white;
-        else if (!enabled && element.custom.style.strokeColor == white) {
+        else if (!enabled && element.custom.style.color == white) {
           stroke = black;
         } else
           return;
 
-        element.custom.style.strokeColor = stroke;
+        element.custom.style.color = stroke;
       }
       this.canvas._eventBus.fire("element.changed", { element: element });
     });
@@ -640,7 +639,7 @@ export default class GropiusDiagram {
         minWidth: 150,
         minHeight: 100,
         maxScale: 5,
-        color: "#999999",
+        color: "#ffffff",
         stroke: "#000000",
         strokeWidth: 2,
         strokeDasharray: "",
@@ -650,7 +649,7 @@ export default class GropiusDiagram {
 
     this._createConnection("1", "1", "2", {
       sourceMarkerType: ConnectionMarker.None,
-      color: "#e05d01",
+      color: "#000000",
       strokeDasharray: "",
       strokeWidth: 2,
       targetMarkerType: ConnectionMarker.ArrowRightOpen

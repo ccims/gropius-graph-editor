@@ -1,5 +1,5 @@
 import * as SVGPath from "svgpath"
-import { Shape } from "@/lib/diagram/types";
+import { Shape } from "@/lib/gropius-diagram/diagram/types";
 import { Coordinates } from "@/types/HelperTypes";
 
 

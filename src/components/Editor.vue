@@ -50,7 +50,7 @@ import { GropiusType } from "@/lib/gropius-diagram/types";
 import { defineComponent } from "vue";
 
 import gropiusapi from "@/mixins/api";
-import { ConnectionMarker } from "@/lib/diagram/types";
+import { ConnectionMarker } from "@/lib/gropius-diagram/diagram/types";
 
 let diagram: GropiusDiagram;
 let coordinates: Coordinates = {
