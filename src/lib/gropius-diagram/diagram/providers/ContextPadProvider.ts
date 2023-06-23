@@ -37,6 +37,14 @@ ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
     connect.start(event, element, autoActivate);
   }
 
+  function createInterface(event: any, element: any, autoActivate: any) {
+    modeling._eventBus.fire("context.shape.interface", { element: element });
+  }
+
+  function createIssue(event: any, element: any, autoActivate: any) {
+    modeling._eventBus.fire("context.shape.issue", { element: element });
+  }
+
   const deleteIcon = {
     group: "edit",
     className: "context-pad-icon-remove",
@@ -44,6 +52,26 @@ ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
     action: {
       click: removeElement,
       dragstart: removeElement
+    }
+  };
+
+  const interfaceIcon = {
+    group: "edit1",
+    className: "context-pad-icon-interface",
+    title: "Interface",
+    action: {
+      click: createInterface,
+      dragstart: createInterface
+    }
+  };
+
+  const issueIcon = {
+    group: "edit2",
+    className: "context-pad-icon-issue",
+    title: "Issue",
+    action: {
+      click: createIssue,
+      dragstart: createIssue
     }
   };
 
@@ -61,7 +89,9 @@ ContextPadProvider.prototype.getContextPadEntries = function(element: any) {
     case ObjectType.ComponentVersion:
       return {
         "delete": deleteIcon,
-        "connect": connectIcon
+        "connect": connectIcon,
+        "Interface": interfaceIcon,
+        "Issue": issueIcon
       };
     case ObjectType.Interface:
       return {
