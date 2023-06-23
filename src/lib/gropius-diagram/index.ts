@@ -1,6 +1,6 @@
 // @ts-ignore
 import EditorLib from "./diagram/Editor";
-import { Coordinates } from "@/types/HelperTypes";
+import { Coordinates } from "./types";
 import {
   GropiusConnection,
   GropiusConnectionStyle,

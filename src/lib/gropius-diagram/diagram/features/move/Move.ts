@@ -35,7 +35,7 @@ import {
 import EventBus from "diagram-js/lib/core/EventBus";
 import Modeling from "diagram-js/lib/features/modeling/Modeling";
 import { Base } from "diagram-js/lib/model";
-import { GropiusInterface, GropiusIssue, ObjectType } from "@/lib/gropius-diagram/types";
+import { GropiusInterface, GropiusIssue, ObjectType } from "../../../types";
 
 const round = Math.round;
 

@@ -1,6 +1,6 @@
 import EventBus from "diagram-js/lib/core/EventBus";
 import Modeling from "diagram-js/lib/features/modeling/Modeling";
-import { ObjectType } from "@/lib/gropius-diagram/types";
+import { ObjectType } from "../../types";
 
 /**
  * A example context pad provider.

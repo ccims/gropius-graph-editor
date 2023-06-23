@@ -1,6 +1,6 @@
 import * as SVGPath from "svgpath"
-import { Shape } from "@/lib/gropius-diagram/diagram/types";
-import { Coordinates } from "@/types/HelperTypes";
+import { Shape } from "../diagram/types";
+import { Coordinates } from "../types";
 
 
 const HEIGHT_PER_LINE = 20;

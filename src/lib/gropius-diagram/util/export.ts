@@ -1,4 +1,4 @@
-import { ObjectType, SerializedDiagram, SerializedInterface, SerializedIssueFolder } from "@/lib/gropius-diagram/types";
+import { ObjectType, SerializedDiagram, SerializedInterface, SerializedIssueFolder } from "../types";
 
 export function exportDiagram(elementRegistry: any): SerializedDiagram {
   const elements = elementRegistry._elements;

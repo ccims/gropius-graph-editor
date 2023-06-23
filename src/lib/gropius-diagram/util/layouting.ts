@@ -1,5 +1,5 @@
-import { GropiusInterface, GropiusIssue, ObjectType } from "@/lib/gropius-diagram/types";
-import { Coordinates } from "@/types/HelperTypes";
+import { GropiusInterface, GropiusIssue, ObjectType } from "../types";
+import { Coordinates } from "../types";
 import ElementRegistry from "diagram-js/lib/core/ElementRegistry";
 
 import ELK from "elkjs/lib/elk.bundled.js";

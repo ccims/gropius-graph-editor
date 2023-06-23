@@ -15,7 +15,7 @@ import {
 import {
   assignStyle
 } from "min-dom";
-import { Shape } from "@/lib/gropius-diagram/diagram/types";
+import { Shape } from "../types";
 
 /**
  * @typedef {import("../util/Types").Dimensions} Dimensions

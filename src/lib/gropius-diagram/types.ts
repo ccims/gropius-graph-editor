@@ -1,6 +1,4 @@
 import { ConnectionMarker, Shape } from "@/lib/gropius-diagram/diagram/types";
-import { Coordinates } from "@/types/HelperTypes";
-
 
 export interface BusinessObject {
   type: ObjectType,
@@ -105,4 +103,9 @@ export  interface SerializedConnection {
 export interface SerializedDiagram {
   shapes: Array<SerializedShape>,
   connections: Array<SerializedConnection>
+}
+
+export interface Coordinates {
+  x: number;
+  y: number;
 }
