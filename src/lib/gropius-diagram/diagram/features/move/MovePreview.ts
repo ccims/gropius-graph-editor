@@ -64,10 +64,10 @@ export default function MovePreview(
     return filteredElements;
   }
 
-  function getAllDraggedElements(shapes) {
+  function getAllDraggedElements(shapes: any) {
     const allShapes = selfAndAllChildren(shapes, true);
 
-    const allConnections = map(allShapes, function (shape) {
+    const allConnections = map(allShapes, function (shape: any) {
       return (shape.incoming || []).concat(shape.outgoing || []);
     });
 

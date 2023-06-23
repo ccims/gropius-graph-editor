@@ -72,6 +72,7 @@ export function autolayout(elementRegistry: ElementRegistry, canvas: any) {
       // Layout Issue Folders
       element.businessObject.data.issues.forEach((issue: GropiusIssue) => {
         const element = elementRegistry.get(issue.shapeId);
+
         issues.children.push({
           id: element.id,
           width: element.width,
@@ -84,6 +85,7 @@ export function autolayout(elementRegistry: ElementRegistry, canvas: any) {
       // Layout Interfaces
       element.businessObject.data.interfaces.forEach((interf: GropiusInterface) => {
         const element = elementRegistry.get(interf.shapeId);
+
         interfaces.children.push({
           id: element.id,
           width: element.width,

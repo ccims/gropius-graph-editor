@@ -120,7 +120,8 @@ export default defineComponent({
     },
 
     handleExport() {
-      diagram.export();
+      const d = diagram.export();
+      console.log(JSON.stringify(d))
     },
 
     autolayout() {
