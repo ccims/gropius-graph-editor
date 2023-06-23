@@ -71,8 +71,23 @@ Some icons require the following CSS classes. See `app/src/components/Editor` fo
 
 ```
 
+## Interact with the lib via UI
 
-## Methods
+### Palette Menu
+On the left is the palette menu with the following features:
+- Lasso tool: Select multiple shapes in order to move them simultaneously
+- Create shape: Place a temporary "shadow" shape. After the drop, the `onAddShape` method will be called and the temporary shape deleted.
+
+### Context Menu
+This menu is on the right side of each shape. Different kinds of shapes provide different features. Over all there are the following:
+
+- Delete: Delete the shape
+- Connection: Connect it to another shape (applies basic rules). After the drop, the `onAddConnection` method will be called and the temporary connection deleted
+- Create Interface: The `onInterfaceAdd` method will be called
+- Create Issue: The `onIssueAdd` method will be called
+
+
+## Interact with the lib via code
 
 ### Create a ComponentVersion
 
@@ -184,7 +199,7 @@ diagram.autolayout()
 ```
 
 
-## Style
+## Styles
 
 ### Shapes
 
