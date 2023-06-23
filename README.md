@@ -6,20 +6,20 @@
 Create a div in which the diagram should be drawn
 
 **HTML**
-```
+```html
 <div id="gropius"></div>
 ```
 
 
 **Typescript**
-```
+```ts
 diagram = new GropiusDiagram();
 diagram.init(document.getElementById("gropius"));
 ```
 
 To listen to events set the callback methods
 
-```
+```ts
 diagram.onAddShape = (coordinates: Coordinates) => {
     ...
 }
@@ -47,7 +47,9 @@ diagram.onDelete = (id: string) => {
 
 ### Create a ComponentVersion
 
-`diagram.createComponent(id, name, version, grType, coordinates)`
+```ts
+diagram.createComponent(id, name, version, grType, coordinates)
+```
 
 - `id` : ID as string
 - `name` : Text to be written into the shape
@@ -56,7 +58,9 @@ diagram.onDelete = (id: string) => {
 
 ### Create an Interface
 
-`diagram.createInterface(id, parentId, name, shape, version, [coordinates], [waypoints])`
+```ts
+diagram.createInterface(id, parentId, name, shape, version, [coordinates], [waypoints])
+```
 
 - `id` : ID of the interface
 - `parentId` : ID of the ComponentVersion the interface belongs to
@@ -68,7 +72,9 @@ diagram.onDelete = (id: string) => {
 
 ### Create an Issue (-icon)
 
-`diagram.createIssue(id, parentId, path, color, [coordinates])`
+```ts
+diagram.createIssue(id, parentId, path, color, [coordinates])
+```
 
 - `id` : ID of the issue
 - `parentId` : ID of the ComponentVersion the interface belong to
@@ -78,7 +84,9 @@ diagram.onDelete = (id: string) => {
 
 ### Create Connection
 
-`diagram.createConnection(id, sourceId, targetId, style, [waypoints], [isSubConnection])`
+```ts
+diagram.createConnection(id, sourceId, targetId, style, [waypoints], [isSubConnection])
+```
 
 - `id` : ID of the connection (optional)
 - `sourceId` : ID of the source shape
@@ -90,7 +98,8 @@ diagram.onDelete = (id: string) => {
 
 Deletes a connection or shape along with its connections. If the shape is a `ComponentVersion`, all issues and interfaces will be deleted as well.
 
-`diagram.delete(id)`
+```tsdiagram.delete(id)
+```
 
 - `id` : ID of the shape/connection to be deleted
 
@@ -98,29 +107,39 @@ Deletes a connection or shape along with its connections. If the shape is a `Com
 
 Export the diagram as `SerializedDiagram` object. Can be stringyfied.
 
-`diagram.export()`
+```ts
+diagram.export()
+```
 
 ### Import Diagram
 
 Import a diagram from text or object.
 
-`diagram.importDiagram(diagram)`
+```ts
+diagram.importDiagram(diagram)
+```
 
 - `diagram`: Object of type `SerializedDiagram`
 
-`diagram.importDiagramString(serializedDiagram)`
+```ts
+diagram.importDiagramString(serializedDiagram)
+```
 
 - `serializedDiagram` : string of serialized diagram
 
 ### Dark Mode
 
-`diagram.setDarkMode(enabled)`
+```ts
+diagram.setDarkMode(enabled)
+```
 
 - `enabled` : Boolean
 
 ### Hide Components
 
-`diagram.setObjectTypeVisibility(objType, hidden)`
+```ts
+diagram.setObjectTypeVisibility(objType, hidden)
+```
 
 - `objType` : Object typ to hide (e.g. `Interface` or `Issue`)
 - `hidden` : Boolean whether the specified is hidden or visible
@@ -131,7 +150,9 @@ Layout the whole diagram.
 
 **WARNING**: this will very likely move all components around!
 
-`diagram.autolayout()`
+```ts
+diagram.autolayout()
+```
 
 
 ## Style
