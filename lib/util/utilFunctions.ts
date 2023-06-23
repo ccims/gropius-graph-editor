@@ -98,9 +98,10 @@ export function getVersionOffsetFromShape(componentShape: any): Coordinates {
     vw = 90;  // version height
 
   switch (shape) {
+    case Shape.Circle:
+      return { x: w / 2 - vw / 2, y: w };
     case Shape.Diamond:
     case Shape.Parallelogram:
-    case Shape.Circle:
     case Shape.Octagon:
     case Shape.Triangle:
     case Shape.Hexagon:
