@@ -39,6 +39,12 @@ CustomRuleProvider.prototype.init = function() {
     if(source.businessObject.type == ObjectType.Version || target.businessObject.type == ObjectType.Version)
       return false
 
+    if(source.businessObject.type == ObjectType.Connection || source.businessObject.type == ObjectType.SubConnection)
+      return false
+
+    if(target.businessObject.type == ObjectType.Connection || target.businessObject.type == ObjectType.SubConnection)
+      return false
+
     return true;
   });
 
